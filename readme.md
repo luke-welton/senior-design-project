@@ -10,8 +10,8 @@ If you're looking at this, you are presumably:
 
 Regardless of who you are, welcome! Here, I'll give some assistance on how you can get everything up and running.
 
+# Requirements
 
-#Requirements
 1. [Node.js](https://nodejs.org) - We've written this app with cross-compatibility between Android and iOS in mind,
 so we are using the React Native framework, which requires Node.js
 2. [React Native](https://facebook.github.io/react-native/) - A framework written by the supreme overlords over at Facebook
@@ -27,7 +27,8 @@ so contact one of them if you're desperate to help the app development.
 Alternatively, you can use this with your own database's API key, change around a few things, and it should work fine.
 
 
-#Getting Started
+# Getting Started
+
 Got everything installed? Good! There's a few more steps to make sure everything's up and running.
 1. Clone this repository. I'm sure you know how to do this if you're on GitHub,
 and if not, guides are a mere Google search away.
