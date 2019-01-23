@@ -11,15 +11,27 @@ export class Client {
         this.phone = _data.phone;
     }
 
+    //this can be deleted later, i just added it to make sure data was being collected correctly
     toString() {
         return this.stageName;
+    }
+
+    toData() {
+        return {
+            first: this.firstName,
+            last: this.lastName,
+            middle: this.middleInitial,
+            stage: this.stageName,
+            email: this.email,
+            phone: this.phone
+        };
     }
 }
 
 export class Event {
     constructor(_id, _data) {
         this.id = _id;
-        this.clientID = _data.clientID;
+        this.clientID = _data.client;
         this.price = _data.price;
         this.start = Util.toDateTime({
             date: _data.date,
@@ -36,5 +48,15 @@ export class Event {
         }
 
         this.end = endTime;
+    }
+
+    toData() {
+        return {
+            date: Util.toDateString(this.start),
+            start: Util.toTimeString(this.start),
+            end: Util.toTimeString(this.end),
+            client: this.clientID,
+            price: this.price
+        };
     }
 }
