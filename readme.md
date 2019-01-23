@@ -8,7 +8,9 @@ If you're looking at this, you are presumably:
 4. Someone curious about the work of one of the members of the group
 5. Someone looking to improve the app after we've finished our work
 
-Regardless oh who you are, welcome! Here, I'll give some assistance on how you can get everything up and running.
+Regardless of who you are, welcome! Here, I'll give some assistance on how you can get everything up and running.
+
+
 #Requirements
 1. [Node.js](https://nodejs.org) - We've written this app with cross-compatibility between Android and iOS in mind,
 so we are using the React Native framework, which requires Node.js
@@ -23,6 +25,8 @@ and works decently well with React Native and Expo.
 5. Our API Key for Firebase - Don't have it? You probably shouldn't then. This should be in the hands of our sponsor or Dr. Chang,
 so contact one of them if you're desperate to help the app development.
 Alternatively, you can use this with your own database's API key, change around a few things, and it should work fine.
+
+
 #Getting Started
 Got everything installed? Good! There's a few more steps to make sure everything's up and running.
 1. Clone this repository. I'm sure you know how to do this if you're on GitHub,
