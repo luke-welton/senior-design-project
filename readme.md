@@ -2,11 +2,11 @@ Hello! This is the repository for Group 1 for COMP 4710: Senior Design Project i
 We are working on a booking system for Music Matters, located in Montgomery, AL.
 If you're looking at this, you are presumably:
 
-1. A member of the group
-2. Our glorious professor, Dr. Kai Chang
-3. Our glorious sponsor, ((add his name later i forgot it lmao))
-4. Someone curious about the work of one of the members of the group
-5. Someone looking to improve the app after we've finished our work
+* A member of the group
+* Our glorious professor, Dr. Kai Chang
+* Our glorious sponsor, ((add his name later i forgot it lmao))
+* Someone curious about the work of one of the members of the group
+* Someone looking to improve the app after we've finished our work
 
 Regardless of who you are, welcome! Here, I'll give some assistance on how you can get everything up and running.
 
@@ -40,13 +40,13 @@ namely Expo, React, React Native, Firebase, and all of their dependencies.
     ```
 4. Create a file named `auth.json` in the root project folder, and enter the code shown above.
 This will allow you to access the database to be able to retrieve information from it and write to it.
-***UNDER NO CIRCUMSTANCES SHOULD YOU EVER ADD THIS FILE TO YOUR REPOSITORY*** (or post it anywhere public).
+    * ***UNDER NO CIRCUMSTANCES SHOULD YOU EVER ADD THIS FILE TO YOUR REPOSITORY*** (or post it anywhere public).
 This will compromise the security of the database, and if you're a group member, congrats,
 you just wrecked the entire project for everyone.
 4. Run `expo start`. This will get everything running to be able to access the app from your phone.
 5. Code to your heart's content using your preferred text editor.
 7. When you're ready to compile everything into an app, hit Ctrl+C and enter `expo build:ios` or `expo build:android`.
-8. It'll ask if you want to include your own certificate.
+    * It'll ask if you want to include your own certificate.
 If you have one, feel free to use it, or just let Expo do their own thing.
 
 Once Expo's machines finish up everything, you'll get a nice IPA or APK for you to upload to the corresponding app marketplace! 
