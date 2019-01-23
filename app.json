@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "MusicMatters",
-    "slug": "MusicMatters",
+    "name": "Music Matters Booking System",
+    "slug": "music-matters",
     "privacy": "public",
     "sdkVersion": "32.0.0",
     "platforms": [
       "ios",
       "android"
     ],
-    "version": "1.0.0",
+    "version": "0.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -23,7 +23,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.musicmatters.bookingsystem"
+    },
+    "android": {
+      "package": "com.musicmatters.bookingsystem"
     }
   }
 }
