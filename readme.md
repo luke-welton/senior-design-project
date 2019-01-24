@@ -4,7 +4,7 @@ If you're looking at this, you are presumably:
 
 * A member of the group
 * Our glorious professor, Dr. Kai Chang
-* Our glorious sponsor, ((add his name later i forgot it lmao))
+* Our glorious sponsor, Mike Moody
 * Someone curious about the work of one of the members of the group
 * Someone looking to improve the app after we've finished our work
 
@@ -56,6 +56,7 @@ Once Expo's machines finish up everything, you'll get a nice IPA or APK for you 
 Includes a tutorial on how to write in React, good development tips for each platform, and documentation on what all React Native has to offer.
 * [Firebase Realtime Database Documentation](https://firebase.google.com/docs/database/) -
 Documentation on how to interact with Firebase to access and change information.
+    * [Firebase Reference Documentation](https://firebase.google.com/docs/reference/js/) - The above guide is useful for finding out how to do a thing you want correctly, but this is useful for knowing exactly what a function will do. I've included this because I had a lot of trouble finding it.
 
 * [Expo Documentation](https://docs.expo.io/versions/latest/) -
 All the documentation you need for how to work with Expo. Not quite as necessary as the other two, as Expo is more limited,

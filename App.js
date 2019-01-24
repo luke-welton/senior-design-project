@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import {Client, Event} from "./objects.js";
-import db from "./database";
+import db from "./database.js";
 
 // Firebase's implementation utilizes long timers,
 // which React Native doesn't like and throws a warning,
