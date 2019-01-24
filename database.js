@@ -11,36 +11,40 @@ class Database {
         this.eventDB = this.db.ref("events");
     }
 
-    getClients(callback) {
-        this.clientDB.on("value", data => {
-            let _clients = data.val();
-            let foundClients = [];
+    getClients() {
+        return new Promise((res, rej) => {
+            this.clientDB.once("value").then(data => {
+                let _clients = data.val();
+                let foundClients = [];
 
-            for (let clientID in _clients) {
-                if (_clients.hasOwnProperty(clientID)) {
-                    let clientObj = new Client(clientID, _clients[clientID]);
-                    foundClients.push(clientObj);
+                for (let clientID in _clients) {
+                    if (_clients.hasOwnProperty(clientID)) {
+                        let clientObj = new Client(clientID, _clients[clientID]);
+                        foundClients.push(clientObj);
+                    }
                 }
-            }
 
-            callback(foundClients);
+                res(foundClients);
+            }).catch(err => rej(err));
         });
     }
 
-    getEvents(callback) {
-        this.eventDB.on("value", data => {
-            let _events = data.val();
-            let foundEvents = [];
+    getEvents() {
+        return new Promise((res, rej) => {
+            this.eventDB.once("value").then(data => {
+                let _events = data.val();
+                let foundEvents = [];
 
-            for (let eventID in _events) {
-                if (_events.hasOwnProperty(eventID)) {
-                    let eventObj = new Event(eventID, _events[eventID]);
-                    foundEvents.push(eventObj);
+                for (let eventID in _events) {
+                    if (_events.hasOwnProperty(eventID)) {
+                        let eventObj = new Event(eventID, _events[eventID]);
+                        foundEvents.push(eventObj);
+                    }
                 }
-            }
 
-            callback(foundEvents);
-        })
+                res(foundEvents);
+            }).catch(err => rej(err));
+        });
     }
 
     addClient(_client) {

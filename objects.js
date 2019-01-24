@@ -1,4 +1,4 @@
-import Util from "./util";
+import {toTimeString, toDateString, toDateTime, dayInMS} from "./util";
 
 export class Client {
     constructor(_id, _data) {
@@ -33,18 +33,18 @@ export class Event {
         this.id = _id;
         this.clientID = _data.client;
         this.price = _data.price;
-        this.start = Util.toDateTime({
+        this.start = toDateTime({
             date: _data.date,
             time: _data.start
         });
 
-        let endTime = Util.toDateTime({
+        let endTime = toDateTime({
             date: _data.date,
             time: _data.end
         });
 
         if (endTime < this.start) {
-            endTime.setMilliseconds(endTime.getMilliseconds() + Util.dayInMS);
+            endTime.setMilliseconds(endTime.getMilliseconds() + dayInMS);
         }
 
         this.end = endTime;
@@ -52,9 +52,9 @@ export class Event {
 
     toData() {
         return {
-            date: Util.toDateString(this.start),
-            start: Util.toTimeString(this.start),
-            end: Util.toTimeString(this.end),
+            date: toDateString(this.start),
+            start: toTimeString(this.start),
+            end: toTimeString(this.end),
             client: this.clientID,
             price: this.price
         };

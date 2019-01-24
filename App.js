@@ -16,17 +16,17 @@ export default class App extends React.Component {
             events: null
         };
 
-        db.getClients(clients => {
+        db.getClients().then(clients => {
             this.setState({
                 clients: clients
             });
-        });
+        }).catch(err => console.log(err));
 
-        db.getEvents(events => {
+        db.getEvents().then(events => {
             this.setState({
                 events: events
             })
-        })
+        }).catch(err => console.log(err));
     }
 
     render() {
