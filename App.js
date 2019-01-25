@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import {Client, Event} from "./objects.js";
+import { Calendar } from 'react-native-calendars';
 import db from "./database.js";
 
 // Firebase's implementation utilizes long timers,
@@ -30,27 +29,30 @@ export default class App extends React.Component {
     }
 
     render() {
-        if (this.state.clients === null) {
-            return (
-                <View style={styles.container}>
-                    <Text>Loading data...</Text>
-                </View>
-            )
-        } else {
-            return (
-                <View style={styles.container}>
-                    <Text>{this.state.clients.toString()}</Text>
-                </View>
-            );
-        }
+        return <Calendar/>
+        //
+        //
+        // if (this.state.clients === null) {
+        //     return (
+        //         <View style={styles.container}>
+        //             <Text>Loading data...</Text>
+        //         </View>
+        //     );
+        // } else {
+        //     return (
+        //         <View style={styles.container}>
+        //             <Text>{this.state.clients.toString()}</Text>
+        //         </View>
+        //     );
+        // }
     };
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});
+//
+// const styles = StyleSheet.create({
+//     container: {
+//         flex: 1,
+//         backgroundColor: '#fff',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//     },
+// });

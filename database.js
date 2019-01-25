@@ -106,4 +106,4 @@ const firebaseConfig = {
     databaseURL: "https://music-matters-229420.firebaseio.com",
     storageBucket: "music-matters-229420.appspot.com"
 };
-export default new Database(firebaseConfig)
+export default new Database(firebaseConfig);
