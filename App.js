@@ -1,8 +1,6 @@
 import React from 'react';
-import { CalendarList } from 'react-native-calendars';
-import { View, Text, Picker } from 'react-native';
-import Styles from "./styles.js";
-import db from "./database.js";
+import MonthView from "./MonthView"
+import DayView from "./DayView"
 
 // Firebase's implementation utilizes long timers,
 // which React Native doesn't like and throws a warning,
@@ -15,7 +13,7 @@ export default class App extends React.Component {
         this.state = {
             clients: null,
             events: null,
-            venue: 1
+            selectedDate: null
         };
 
         // commented out to avoid unnecessary db calls
@@ -34,21 +32,22 @@ export default class App extends React.Component {
     }
 
     render() {
-        return (
-            <View style={Styles.appContainer}>
-                <Text style={Styles.statusBar}> </Text>
-                <Picker style={Styles.calPicker}
-                        selectedValue={this.state.venue.toString()}
-                        onValueChange={(value) => {
-                            this.setState({venue: parseInt(value)});
-                        }}
-                >
-                    <Picker.Item label="Venue A" value="1" />
-                    <Picker.Item label="Venue B" value="2" />
-                    <Picker.Item label="Venue C" value="3" />
-                </Picker>
-                <CalendarList style={Styles.calendar} />
-            </View>
-        );
+        if (this.state.selectedDate === null) {
+            return (
+                <MonthView
+                    onDateSelect={(date) => {
+                        this.setState({selectedDate: date});
+                    }}
+                />
+            );
+        } else {
+            return (
+                <DayView selectedDate={this.state.selectedDate}
+                    onClose={() => {
+                        this.setState({selectedDate: null});
+                    }}
+                />
+            );
+        }
     };
 }
