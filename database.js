@@ -11,6 +11,7 @@ class Database {
         this.eventDB = this.db.ref("events");
     }
 
+    // load information on all clients
     getClients() {
         return new Promise((res, rej) => {
             this.clientDB.once("value").then(data => {
@@ -29,7 +30,15 @@ class Database {
         });
     }
 
-    getEvents() {
+    // load information for all events
+    // this probably should not be used too much bc there will presumably be a lot of these
+    getEvents(options) {
+        if (!!options) {
+            options = {}
+        }
+
+        //TODO: add in support for venue & time period within options
+
         return new Promise((res, rej) => {
             this.eventDB.once("value").then(data => {
                 let _events = data.val();
