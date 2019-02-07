@@ -28,6 +28,8 @@
     },
     "android": {
       "package": "com.musicmatters.bookingsystem"
-    }
+    },
+    "description": "This is the prototype for our calendar booking system for Music Matters, a musical performance booking venue in Montgomery, AL.",
+    "githubUrl": "https://github.com/luke-welton/senior-design-project"
   }
 }

@@ -13,7 +13,7 @@ export class Client {
 
     //this can be deleted later, i just added it to make sure data was being collected correctly
     toString() {
-        return this.stageName;
+        return this.stageName; //add a ciomment
     }
 
     toData() {
