@@ -38,6 +38,22 @@ export function toAMPM(militaryTime) {
     return [splits.join(":"), ampm].join(" ");
 }
 
+export function toMilitaryTime(ampmTime) {
+    let splits = ampmTime.split(" ");
+    let ampm = splits[1];
+
+    splits = splits[0].split(":");
+    let hour = parseInt(splits[0]);
+
+    if (hour === 12 && ampm === "AM") {
+        hour = 0;
+    } else if (hour < 12 && ampm === "PM") {
+        hour += 12;
+    }
+
+    return [hour, splits[1]].join(":");
+}
+
 //handles converting given data of date and/or time into a JS date object
 export function toDateTime(data) {
     let returnDateTime = new Date();

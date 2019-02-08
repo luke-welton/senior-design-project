@@ -1,25 +1,46 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Event } from "./objects"
-import { View, Picker, TextInput, Text, TouchableOpacity } from "react-native"
+import { Event, Client, Venue } from "./objects"
+import { View, Picker, TextInput, Text, TouchableOpacity, Button } from "react-native"
 import { RadioGroup } from "react-native-btr";
 import DateTimePicker from "react-native-modal-datetime-picker"
 import Styles from "./styles"
-import { toTimeString, toAMPM} from "./util";
+import {toTimeString, toAMPM, toDateString, toMilitaryTime, toUS} from "./util";
 
 
 export default class EventView extends React.Component {
     static propTypes = {
-        event: PropTypes.object,
-        defaultVenue: PropTypes.string,
-        clientList: PropTypes.arrayOf(PropTypes.object).isRequired,
-        venueList: PropTypes.arrayOf(PropTypes.object).isRequired,
-        eventList: PropTypes.arrayOf(PropTypes.object).isRequired
+        event: PropTypes.instanceOf(Event),
+        isNew: PropTypes.bool,
+        defaultVenue: PropTypes.string.isRequired,
+        defaultDate: PropTypes.instanceOf(Date),
+        clientList: PropTypes.arrayOf(PropTypes.instanceOf(Client)).isRequired,
+        venueList: PropTypes.arrayOf(PropTypes.instanceOf(Venue)).isRequired,
+        eventList: PropTypes.arrayOf(PropTypes.instanceOf(Event)).isRequired,
+        onSave: PropTypes.func.isRequired,
+        onClose: PropTypes.func.isRequired,
+        onDelete: PropTypes.func
     };
 
     constructor(props) {
+        if (!!props.event) {
+            props.event = new Event();
+            props.event.venueID = props.defaultVenue;
+            props.isNew = true;
+        } else {
+            props.isNew = false;
+        }
+
         super(props);
-        this.customTime = false;
+        this.state = {
+            clientID:  this.props.event.clientID,
+            venueID: this.props.event.venueID,
+            price: this.props.event.price,
+            date: toDateString(this.props.event.start),
+            startTime: toTimeString(this.props.event.start),
+            endTime: toTimeString(this.props.event.end),
+            customTime: false
+        };
     }
 
     _generateClientDropdown() {
@@ -54,8 +75,8 @@ export default class EventView extends React.Component {
             }
         ];
 
-        let timeString = [toAMPM(toTimeString(this.props.event.start)),
-                          toAMPM(toTimeString(this.props.event.end))].join(" - ");
+        let timeString = [toAMPM(this.state.startTime),
+                          toAMPM(this.state.endTime)].join(" - ");
 
         let value = -1;
         for (let button in buttons) {
@@ -63,7 +84,12 @@ export default class EventView extends React.Component {
                 value = button.value;
             }
         }
-        if (value < 0) value = 0;
+        if (value < 0) {
+            value = 0;
+            if (!this.state.customTime) {
+                this.setState({customTime: true});
+            }
+        }
 
         let selected = buttons.find(button => {
             return button.value === value;
@@ -74,29 +100,38 @@ export default class EventView extends React.Component {
     }
 
     render() {
-        if (!!this.props.event) {
-            this.props.event = new Event();
-            this.props.event.venueID = this.props.defaultVenue;
-        }
-
         let event = this.props.event;
 
         return (
-            <View style={Styles.eventView}>
+            <View style={Styles.infoView}>
                 {/* Client Selector */}
-                <Picker selectedValue={event.clientID}>
+                <Text>Client</Text>
+                <Picker
+                    selectedValue = {event.clientID}
+                    onValueChange = {value => this.setState({clientID: value})}
+                >
                     {this._generateClientDropdown()}
                 </Picker>
 
+                <Text>Venue</Text>
                 {/* Venue Selector */}
-                <Picker selectedValue={event.venueID}>
+                <Picker
+                    selectedValue = {event.venueID}
+                    onValueChange = {value => this.setState({venueID: value})}
+                >
                     {this._generateVenueDropdown()}
                 </Picker>
 
-                {/* Price Input */}
-                <MoneyInput defaultValue={event.price} />
+
+                {/* Date Selector */}
+                <Text>Date</Text>
+                <DateInput
+                    value={this.state.date}
+                    onValueChange={value => this.setState({date: value})}
+                />
 
                 {/* Time Selector*/}
+                <Text>Time</Text>
                 <RadioGroup
                     radioButtons = {this._generateRadioButtons()}
                     onPress = {buttons => {
@@ -105,103 +140,148 @@ export default class EventView extends React.Component {
                         if (selected.value === 0 && !this.state.customTime) {
                             this.setState({customTime: true});
                         } else if (selected.value !== 0 && this.state.customTime) {
-                            this.setState({customTime: false});
+                            let splits = selected.label.split("-");
+                            this.setState({
+                                customTime: false,
+                                startTime: toMilitaryTime(splits[0]),
+                                endTime: toMilitaryTime(splits[1])
+                            });
                         }
                     }}
                 />
                 <View style={this.state.customTime ? null : Styles.hide}>
                     <Text>Start Time</Text>
                     <TimeInput
-                        value = {toAMPM(toTimeString(event.start))}
-                        onValueChange = {time => {
-
-                        }}
+                        value = {toAMPM(this.state.startTime)}
+                        onValueChange = {time => this.setState({startTime: time})}
                     />
                     <Text>End Time</Text>
                     <TimeInput
-                        value = {toAMPM(toTimeString(event.end))}
-                        onValueChange = {time => {
-
-                        }}
+                        value = {toAMPM(this.state.endTime)}
+                        onValueChange = {time => this.setState({endTime: time})}
                     />
                 </View>
 
-                {/* Save Button */}
+                {/* Price Input */}
+                <Text>Price</Text>
+                <TextInput
+                    keyboardStyle="numeric"
+                    value={this.state.price}
+                    onChangeText={value => {
+                        let numeric = parseInt(value);
+                        if (isNaN(numeric)) {
+                            alert("Please only enter monetary values.")
+                        } else {
+                            this.setState({price: numeric / 100});
+                        }
+                    }}
+                />
 
-                {/* Update Button */}
+                {/* Create/Update Button */}
+                    <Button
+                        title = {this.props.isNew ? "Create Event" : "Save Event"}
+                        onPress = {() => {
+                            let ev = this;
+                            this.props.event.update({
+                                clientID: ev.state.clientID,
+                                venueID: ev.state.venueID,
+                                price: ev.state.price,
+                                date: ev.state.date,
+                                startTime: ev.state.startTime,
+                                endTime: ev.state.endTime
+                            });
 
-                {/* Delete Button */}
+                            this.props.onSave(this.props.event);
+                        }}
+                    />
+
+                { /* Delete Button */
+                    this.props.isNew ? null :
+                        <Button
+                            title = "Delete Event"
+                            color: "red"
+                            onPress = {this.props.onDelete}
+                        />
+                }
             </View>
         );
     }
 }
 
-class MoneyInput extends React.Component {
+//helper class to input dater since the timepicker is bizarrely complex
+class DateInput extends React.Component {
     static propTypes = {
-        defaultValue: PropTypes.Number
-    };
-
-    constructor(props) {
-        super(props);
-        this.value = 0.00;
-    }
-
-    _verifyValue(value) {
-        let numeric = parseInt(value);
-        if (isNaN(numeric)) {
-            alert("Please only enter monetary values.")
-        } else {
-            this.setState({value: numeric / 100});
-        }
-    }
-
-    render() {
-        return(
-            <TextInput
-                keyboardStyle="numeric"
-                value={this.state.value}
-                onChangeText={this._verifyValue}
-            />
-        );
-    }
-}
-
-class TimeInput extends React.Component {
-    static propTypes = {
-        onValueChange: PropTypes.func,
+        onValueChange: PropTypes.func.isRequired,
         value: PropTypes.string
     };
 
     constructor(props) {
         super(props);
-        this.value = this.props.value || "";
-        this.open = false;
+        this.state = {
+            value: this.props.value || toUS(toDateString(new Date())),
+            open: false
+        };
+    }
+
+    render() {
+        return (
+            <View>
+                <TouchableOpacity style={Styles.datetimeInput}
+                    onPress = {() => this.setState({open: true})}
+                >
+                    <Text>{this.state.value}</Text>
+                </TouchableOpacity>
+                <DateTimePicker
+                    mode = "date"
+                    isVisible = {this.state.open}
+                    onConfirm = {date => {
+                        this.setState({
+                            value: date,
+                            open: false
+                        });
+                    }}
+                    onCancel = {() => this.setState({open: false})}
+                />
+            </View>
+        );
+    }
+}
+
+//helper class to input time since the timepicker is bizarrely complex
+class TimeInput extends React.Component {
+    static propTypes = {
+        onValueChange: PropTypes.func.isRequired,
+        value: PropTypes.string
+    };
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: this.props.value || "",
+            open: false
+        };
     }
 
     render() {
         return(
             <View>
-                <TouchableOpacity style={Styles.timeInput}
-                    onPress = {() => {
-                        this.setState({open: true});
-                    }}
+                <TouchableOpacity style={Styles.datetimeInput}
+                    onPress = {() => this.setState({open: true})}
                 >
                     <Text>{this.state.value}</Text>
                 </TouchableOpacity>
                 <DateTimePicker
-                    isVisible={this.state.open}
+                    mode = "time"
+                    isVisible={ this.state.open }
                     onConfirm = {time => {
                         this.setState({
                             value: time,
                             open: false
                         });
 
-                        if (typeof this.props.onValueChange === "function") this.props.onValueChange(time);
+                        this.props.onValueChange(toMilitaryTime(time));
                     }}
-                    onCancel = {() => {
-                        this.setState({open: false});
-                    }}
-                    mode = "time"
+                    onCancel = {() => this.setState({open: false})}
                 />
             </View>
         );
