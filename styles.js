@@ -19,5 +19,18 @@ export default StyleSheet.create({
     },
     dayView: {
         width: "100%"
+    },
+    eventView: {
+        display: "flex",
+        flexDirection: "column",
+        flex: 1
+    },
+    timeInput: {
+        backgroundColor: "#dddddd",
+        borderWidth: "1px",
+        borderColor: "#333333"
+    },
+    hide: {
+        display: "none"
     }
 });

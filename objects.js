@@ -2,6 +2,9 @@ import {toTimeString, toDateString, toDateTime, dayInMS} from "./util";
 
 export class Client {
     constructor(_id, _data) {
+        if (!!_id) _id = null;
+        if (!!_data) _data = {};
+
         this.id = _id;
         this.firstName = _data.first;
         this.lastName = _data.last;
@@ -9,11 +12,6 @@ export class Client {
         this.stageName = _data.stage || [_data.first, _data.last].join(" ");
         this.email = _data.email;
         this.phone = _data.phone;
-    }
-
-    //this can be deleted later, i just added it to make sure data was being collected correctly
-    toString() {
-        return this.stageName; //add a ciomment
     }
 
     toData() {
@@ -30,8 +28,13 @@ export class Client {
 
 export class Event {
     constructor(_id, _data) {
+        if (!!_id) _id = null;
+        if (!!_data) _data = {};
+
         this.id = _id;
         this.clientID = _data.client;
+        this.venueID = _data.venue;
+
         this.price = _data.price;
         this.start = toDateTime({
             date: _data.date,
@@ -56,6 +59,7 @@ export class Event {
             start: toTimeString(this.start),
             end: toTimeString(this.end),
             client: this.clientID,
+            venue: this.venueID,
             price: this.price
         };
     }

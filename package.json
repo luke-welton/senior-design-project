@@ -10,10 +10,12 @@
     "expo": "^32.0.0",
     "firebase": "^5.8.0",
     "lodash": "latest",
+    "prop-types": "latest",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
+    "react-native-btr": "^1.1.4",
     "react-native-calendars": "^1.21.0",
-    "prop-types": "latest"
+    "react-native-modal-datetime-picker": "^6.0.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"

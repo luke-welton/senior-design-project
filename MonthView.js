@@ -5,6 +5,10 @@ import {Picker, Platform, Text, View} from "react-native";
 import {CalendarList} from "react-native-calendars";
 
 export default class MonthView extends React.Component {
+    static propTypes = {
+        onDateSelect: PropTypes.func.isRequired
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -38,7 +42,3 @@ export default class MonthView extends React.Component {
         );
     }
 }
-
-MonthView.propTypes = {
-    onDateSelect: PropTypes.func.isRequired
-};
