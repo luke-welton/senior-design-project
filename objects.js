@@ -2,8 +2,8 @@ import {toTimeString, toDateString, toDateTime, dayInMS} from "./util";
 
 export class Client {
     constructor(_id, _data) {
-        if (!!_id) _id = null;
-        if (!!_data) _data = {};
+        if (!_id) _id = null;
+        if (!_data) _data = {};
 
         this.id = _id;
         this.firstName = _data.first;
@@ -28,13 +28,13 @@ export class Client {
 
 export class Event {
     constructor(_id, _data) {
-        if (!!_id) _id = null;
-        if (!!_data) _data = {};
+        if (!_id) _id = null;
+        if (!_data) _data = {};
 
         this.id = _id;
         this.clientID = _data.client;
         this.venueID = _data.venue;
-        this.price = _data.price;
+        this.price = _data.price || 0.00;
 
         this.start = toDateTime({
             date: _data.date,
@@ -54,7 +54,7 @@ export class Event {
     }
 
     update(data) {
-        if (!!data) return;
+        if (!data) return;
 
         this.clientID = data.clientID || this.clientID;
         this.venueID = data.venueID || this.venueID;
@@ -96,5 +96,8 @@ export class Event {
 }
 
 export class Venue {
-
+    constructor(_id, _name) {
+        this.id = _id;
+        this.name = _name;
+    }
 }

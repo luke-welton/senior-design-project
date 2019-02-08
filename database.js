@@ -33,7 +33,7 @@ class Database {
     // load information for all events
     // this probably should not be used too much bc there will presumably be a lot of these
     getEvents(options) {
-        if (!!options) {
+        if (!options) {
             options = {}
         }
 

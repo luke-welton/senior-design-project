@@ -3,10 +3,12 @@ import PropTypes from "prop-types";
 import Styles from "./styles.js";
 import {Picker, Platform, Text, View} from "react-native";
 import {CalendarList} from "react-native-calendars";
+import {Venue} from "./objects";
 
 export default class MonthView extends React.Component {
     static propTypes = {
-        onDateSelect: PropTypes.func.isRequired
+        onDateSelect: PropTypes.func.isRequired,
+        venues: PropTypes.arrayOf(PropTypes.instanceOf(Venue)).isRequired
     };
 
     constructor(props) {
@@ -18,8 +20,7 @@ export default class MonthView extends React.Component {
 
     render() {
         return (
-            <View style={Styles.appContainer}>
-                <Text style={Styles.statusBar}> </Text>
+            <View style={[Styles.appContainer, Styles.monthView]}>
                 <Picker style={Styles.calPicker}
                         selectedValue={this.state.venue.toString()}
                         onValueChange={(value) => {
