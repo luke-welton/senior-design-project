@@ -34,8 +34,8 @@ export class Event {
         this.id = _id;
         this.clientID = _data.client;
         this.venueID = _data.venue;
-
         this.price = _data.price;
+
         this.start = toDateTime({
             date: _data.date,
             time: _data.start
@@ -53,6 +53,36 @@ export class Event {
         this.end = endTime;
     }
 
+    update(data) {
+        if (!!data) return;
+
+        this.clientID = data.clientID || this.clientID;
+        this.venueID = data.venueID || this.venueID;
+        this.price = data.price || this.price;
+
+        if (data.start) this.start = data.start;
+        if (data.end) this.end = data.end;
+
+        if (data.date) {
+            let splits = data.date.split("-");
+            this.start.setFullYear(splits[0], splits[1] -1, splits[2]);
+            this.end.setFullYear(splits[0], splits[1] - 1, splits[2]);
+        }
+        if (data.startTime) {
+            let splits = data.startTime.split(":");
+            this.start.setMinutes(splits[0], splits[1]);
+        }
+        if (data.endTime) {
+            let splits = data.endTime.split(":");
+            this.end.setMinutes(splits[0], splits[1]);
+        }
+
+        if (this.end < this.start) {
+            this.end.setMilliseconds(this.end.getMilliseconds() + dayInMS);
+        }
+    }
+
+
     toData() {
         return {
             date: toDateString(this.start),
@@ -63,4 +93,8 @@ export class Event {
             price: this.price
         };
     }
+}
+
+export class Venue {
+
 }
