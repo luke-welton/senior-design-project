@@ -2,16 +2,20 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Event, Client, Venue } from "./objects"
 import { View, Picker, TextInput, Text, TouchableOpacity, Button } from "react-native"
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview"
 import { RadioGroup } from "react-native-btr";
 import DateTimePicker from "react-native-modal-datetime-picker"
 import Styles from "./styles"
-import {toTimeString, toAMPM, toDateString, toMilitaryTime, toUS} from "./util";
+import {toTimeString, toAMPM, toDateString, toMilitaryTime, toUS, toLocalTime, toUTC, toDateTime, toISO} from "./util";
 
+const defaultTimes = [
+    "7:30 PM - 9:00 PM",
+    "9:30 PM - 11:00 PM"
+];
 
 export default class EventView extends React.Component {
     static propTypes = {
-        event: PropTypes.instanceOf(Event),
-        isNew: PropTypes.bool,
+        event: PropTypes.instanceOf(Event).isRequired,
         defaultVenue: PropTypes.string.isRequired,
         defaultDate: PropTypes.instanceOf(Date),
         clientList: PropTypes.arrayOf(PropTypes.instanceOf(Client)).isRequired,
@@ -23,50 +27,56 @@ export default class EventView extends React.Component {
     };
 
     constructor(props) {
-        if (!!props.event) {
-            props.event = new Event();
-            props.event.venueID = props.defaultVenue;
-            props.isNew = true;
-        } else {
-            props.isNew = false;
+        let venueID = props.event.venueID;
+        let isNew = false;
+
+        if (!props.event.id) {
+            venueID = props.defaultVenue;
+            isNew = true;
         }
 
         super(props);
         this.state = {
             clientID:  this.props.event.clientID,
-            venueID: this.props.event.venueID,
+            venueID: venueID,
             price: this.props.event.price,
             date: toDateString(this.props.event.start),
-            startTime: toTimeString(this.props.event.start),
-            endTime: toTimeString(this.props.event.end),
-            customTime: false
+            startTime: toTimeString(toLocalTime(this.props.event.start)),
+            endTime: toTimeString(toLocalTime(this.props.event.end)),
+            customTime: false,
+            isNew: isNew
         };
+
+        let timeString = [toAMPM(this.state.startTime), toAMPM(this.state.endTime)].join(" - ");
+        if (!defaultTimes.includes(timeString)) {
+            this.state.customTime = true;
+        }
     }
 
     _generateClientDropdown() {
         let dropdown = [];
-        for (let client in this.props.clientList) {
-            dropdown.push(<Picker.Item label={client.stageName} value={client.id} />);
-        }
+        this.props.clientList.forEach(client => {
+            dropdown.push(<Picker.Item label={client.stageName} value={client.id} key={client.id} />);
+        });
         return dropdown;
     }
 
     _generateVenueDropdown() {
         let dropdown = [];
-        for (let venue in this.props.venueList) {
-            dropdown.push(<Picker.Item label={venue.name} value={venue.id} />);
-        }
+        this.props.venueList.forEach(venue => {
+            dropdown.push(<Picker.Item label={venue.name} value={venue.id} key={venue.id} />);
+        });
         return dropdown;
     }
 
     _generateRadioButtons() {
         let buttons = [
             {
-                label: "7:30 PM - 9:00 PM",
+                label: defaultTimes[0],
                 value: 1
             },
             {
-                label: "9:30 PM - 11:00 PM",
+                label: defaultTimes[1],
                 value: 2
             },
             {
@@ -78,132 +88,127 @@ export default class EventView extends React.Component {
         let timeString = [toAMPM(this.state.startTime),
                           toAMPM(this.state.endTime)].join(" - ");
 
-        let value = -1;
-        for (let button in buttons) {
-            if (button.label === timeString) {
-                value = button.value;
-            }
-        }
-        if (value < 0) {
-            value = 0;
-            if (!this.state.customTime) {
-                this.setState({customTime: true});
-            }
+        let matchingButton = buttons.find(button => {
+            return button.label === timeString;
+        });
+        if (!matchingButton) {
+            matchingButton = buttons[buttons.length - 1];
         }
 
-        let selected = buttons.find(button => {
-            return button.value === value;
-        });
-        selected.checked = true;
+        matchingButton.checked = true;
 
         return buttons;
     }
 
     render() {
-        let event = this.props.event;
-
         return (
-            <View style={Styles.infoView}>
+            <KeyboardAwareScrollView style={[Styles.appContainer, Styles.infoView]}>
                 {/* Client Selector */}
-                <Text>Client</Text>
-                <Picker
-                    selectedValue = {event.clientID}
-                    onValueChange = {value => this.setState({clientID: value})}
-                >
-                    {this._generateClientDropdown()}
-                </Picker>
+                <View style={Styles.inputRow}>
+                    <Text style={Styles.inputTitle}>Client</Text>
+                    <Picker style={Styles.pickerBox}
+                        selectedValue = {this.state.clientID}
+                        onValueChange = {value => this.setState({clientID: value})}
+                    >
+                        {this._generateClientDropdown()}
+                    </Picker>
+                </View>
 
-                <Text>Venue</Text>
                 {/* Venue Selector */}
-                <Picker
-                    selectedValue = {event.venueID}
-                    onValueChange = {value => this.setState({venueID: value})}
-                >
-                    {this._generateVenueDropdown()}
-                </Picker>
+                <View style={Styles.inputRow}>
+                    <Text style={Styles.inputTitle}>Venue</Text>
+                    <Picker style={Styles.pickerBox}
+                        selectedValue = {this.state.venueID}
+                        onValueChange = {value => this.setState({venueID: value})}
+                    >
+                        {this._generateVenueDropdown()}
+                    </Picker>
+                </View>
 
 
                 {/* Date Selector */}
-                <Text>Date</Text>
-                <DateInput
-                    value={this.state.date}
-                    onValueChange={value => this.setState({date: value})}
-                />
-
-                {/* Time Selector*/}
-                <Text>Time</Text>
-                <RadioGroup
-                    radioButtons = {this._generateRadioButtons()}
-                    onPress = {buttons => {
-                        let selected = buttons.find(b => b.checked);
-
-                        if (selected.value === 0 && !this.state.customTime) {
-                            this.setState({customTime: true});
-                        } else if (selected.value !== 0 && this.state.customTime) {
-                            let splits = selected.label.split("-");
-                            this.setState({
-                                customTime: false,
-                                startTime: toMilitaryTime(splits[0]),
-                                endTime: toMilitaryTime(splits[1])
-                            });
-                        }
-                    }}
-                />
-                <View style={this.state.customTime ? null : Styles.hide}>
-                    <Text>Start Time</Text>
-                    <TimeInput
-                        value = {toAMPM(this.state.startTime)}
-                        onValueChange = {time => this.setState({startTime: time})}
-                    />
-                    <Text>End Time</Text>
-                    <TimeInput
-                        value = {toAMPM(this.state.endTime)}
-                        onValueChange = {time => this.setState({endTime: time})}
+                <View style={Styles.inputRow}>
+                    <Text style={Styles.inputTitle}>Date</Text>
+                    <DateInput style={Styles.inputBox}
+                        value={toUS(this.state.date)}
+                        onValueChange={value => this.setState({date: value})}
                     />
                 </View>
 
+                {/* Time Selector*/}
+                <View style={Styles.inputRow}>
+                    <Text style={Styles.inputTitle}>Time</Text>
+                    <RadioGroup style={Styles.datetimeContainer}
+                        radioButtons = {this._generateRadioButtons()}
+                        onPress = {buttons => {
+                            let selected = buttons.find(b => b.checked);
+
+                            if (selected.value === 0 && !this.state.customTime) {
+                                this.setState({customTime: true});
+                            } else if (selected.value !== 0 && this.state.customTime) {
+                                let splits = selected.label.split("-");
+                                this.setState({
+                                    customTime: false,
+                                    startTime: toMilitaryTime(splits[0]),
+                                    endTime: toMilitaryTime(splits[1])
+                                });
+                            }
+                        }}
+                    />
+                    <View style={this.state.customTime ? Styles.customTimeContainer : Styles.hide}>
+                        <View style={Styles.inputRow}>
+                            <Text style={Styles.inputTitle}>Start Time</Text>
+                            <TimeInput
+                                value = {toAMPM(this.state.startTime)}
+                                onValueChange = {time => this.setState({startTime: time})}
+                            />
+                        </View>
+                        <View style={Styles.inputRow}>
+                            <Text style={Styles.inputTitle}>End Time</Text>
+                            <TimeInput
+                                value = {toAMPM(this.state.endTime)}
+                                onValueChange = {time => this.setState({endTime: time})}
+                            />
+                        </View>
+                    </View>
+                </View>
+
                 {/* Price Input */}
-                <Text>Price</Text>
-                <TextInput
-                    keyboardStyle="numeric"
-                    value={this.state.price}
-                    onChangeText={value => {
-                        let numeric = parseInt(value);
-                        if (isNaN(numeric)) {
-                            alert("Please only enter monetary values.")
-                        } else {
-                            this.setState({price: numeric / 100});
-                        }
-                    }}
-                />
+                <View style={Styles.inputRow}>
+                    <Text style={Styles.inputTitle}>Price</Text>
+                    <TextInput style={Styles.inputBox}
+                        keyboardStyle = "numeric"
+                        value = { this.state.price === 0 ? "" : this.state.price.toString()}
+                        onChangeText = {value => {
+                            let numeric = value === "" ? 0 : parseFloat(value);
+                            if (isNaN(numeric)) {
+                                alert("Please only enter monetary values.");
+                                this.setState({price: this.state.price});
+                            } else {
+                                this.setState({price: numeric});
+                            }
+                        }}
+                    />
+                </View>
 
                 {/* Create/Update Button */}
-                    <Button
-                        title = {this.props.isNew ? "Create Event" : "Save Event"}
+                    <Button style={Styles.buttons}
+                        title = {this.state.isNew ? "Create Event" : "Save Event"}
                         onPress = {() => {
-                            let ev = this;
-                            this.props.event.update({
-                                clientID: ev.state.clientID,
-                                venueID: ev.state.venueID,
-                                price: ev.state.price,
-                                date: ev.state.date,
-                                startTime: ev.state.startTime,
-                                endTime: ev.state.endTime
-                            });
-
+                            this.props.event.update(this.state);
                             this.props.onSave(this.props.event);
                         }}
                     />
 
                 { /* Delete Button */
-                    this.props.isNew ? null :
-                        <Button
+                    this.state.isNew ? null :
+                        <Button style={Styles.buttons}
                             title = "Delete Event"
-                            color: "red"
+                            color = "red"
                             onPress = {this.props.onDelete}
                         />
                 }
-            </View>
+            </KeyboardAwareScrollView>
         );
     }
 }
@@ -215,23 +220,30 @@ class DateInput extends React.Component {
         value: PropTypes.string
     };
 
+    static defaultProps = {
+        value: toUS(toDateString(new Date()))
+    };
+
     constructor(props) {
         super(props);
         this.state = {
-            value: this.props.value || toUS(toDateString(new Date())),
+            value: toDateTime({date: toISO(this.props.value)}),
             open: false
         };
     }
 
     render() {
+        let localTime = toLocalTime(this.state.value);
+
         return (
-            <View>
-                <TouchableOpacity style={Styles.datetimeInput}
+            <View style={Styles.datetimeContainer}>
+                <TouchableOpacity style={Styles.inputBox}
                     onPress = {() => this.setState({open: true})}
                 >
-                    <Text>{this.state.value}</Text>
+                    <Text>{toUS(toDateString(localTime))}</Text>
                 </TouchableOpacity>
                 <DateTimePicker
+                    date = {localTime}
                     mode = "date"
                     isVisible = {this.state.open}
                     onConfirm = {date => {
@@ -239,6 +251,7 @@ class DateInput extends React.Component {
                             value: date,
                             open: false
                         });
+                        this.props.onValueChange(toDateString(date));
                     }}
                     onCancel = {() => this.setState({open: false})}
                 />
@@ -256,30 +269,38 @@ class TimeInput extends React.Component {
 
     constructor(props) {
         super(props);
+
+        let msIn15Mins = 1000 * 60 * 15;
+        let now = new Date();
+        now.setMilliseconds(Math.ceil(now.getMilliseconds() / msIn15Mins) * msIn15Mins);
+        now = toUTC(now);
+
         this.state = {
-            value: this.props.value || "",
+            value: this.props.value ? toDateTime({time: toMilitaryTime(this.props.value)}) : now,
             open: false
         };
     }
 
     render() {
         return(
-            <View>
-                <TouchableOpacity style={Styles.datetimeInput}
+            <View style={Styles.datetimeContainer}>
+                <TouchableOpacity style={Styles.inputBox}
                     onPress = {() => this.setState({open: true})}
                 >
-                    <Text>{this.state.value}</Text>
+                    <Text>{toAMPM(toTimeString(toLocalTime(this.state.value)))}</Text>
                 </TouchableOpacity>
                 <DateTimePicker
+                    date = {this.state.value}
                     mode = "time"
-                    isVisible={ this.state.open }
+                    isVisible={this.state.open}
                     onConfirm = {time => {
+                        time = toLocalTime(time);
                         this.setState({
                             value: time,
                             open: false
                         });
 
-                        this.props.onValueChange(toMilitaryTime(time));
+                        this.props.onValueChange(toTimeString(time));
                     }}
                     onCancel = {() => this.setState({open: false})}
                 />

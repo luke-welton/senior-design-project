@@ -1,3 +1,15 @@
+//handles converting time from UTC to local time zone
+export function toLocalTime(_date) {
+    let offset = _date.getTimezoneOffset() / 60;
+    return new Date(_date.getMilliseconds() + offset * dayInMS / 24);
+}
+
+//handles converting time from local time zone to UTC
+export function toUTC(_date) {
+    let offset = _date.getTimezoneOffset() / 60;
+    return new Date(_date.getMilliseconds() - offset * dayInMS / 24 );
+}
+
 //handles converting a JS Date object into an ISO date string
 export function toDateString(_date) {
     let year = _date.getFullYear();
@@ -17,7 +29,12 @@ export function toDateString(_date) {
 
 //handles converting a JS date object into a time string
 export function toTimeString(time) {
-    return [time.getUTCHours(), time.getUTCMinutes()].join(":");
+    let minutes = time.getUTCMinutes();
+    if (minutes < 10) {
+        minutes = "0" + minutes;
+    }
+
+    return [time.getUTCHours(), minutes].join(":");
 }
 
 //handles converting military time to AM/PM format
@@ -56,6 +73,8 @@ export function toMilitaryTime(ampmTime) {
 
 //handles converting given data of date and/or time into a JS date object
 export function toDateTime(data) {
+    if (!data) data = {};
+
     let returnDateTime = new Date();
 
     if (data.date) {
@@ -74,7 +93,7 @@ export function toDateTime(data) {
         returnDateTime.setHours(0, 0, 0, 0);
     }
 
-    return returnDateTime;
+    return toUTC(returnDateTime);
 }
 
 //handles converting ISO date strings into US date strings
