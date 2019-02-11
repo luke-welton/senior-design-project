@@ -213,7 +213,7 @@ export default class EventView extends React.Component {
     }
 }
 
-//helper class to input dater since the timepicker is bizarrely complex
+//helper class to input date since the datepicker is bizarrely complex
 class DateInput extends React.Component {
     static propTypes = {
         onValueChange: PropTypes.func.isRequired,
@@ -226,6 +226,7 @@ class DateInput extends React.Component {
 
     constructor(props) {
         super(props);
+
         this.state = {
             value: toDateTime({date: toISO(this.props.value)}),
             open: false
@@ -272,7 +273,7 @@ class TimeInput extends React.Component {
 
         let msIn15Mins = 1000 * 60 * 15;
         let now = new Date();
-        now.setMilliseconds(Math.ceil(now.getMilliseconds() / msIn15Mins) * msIn15Mins);
+        now.setMilliseconds(Math.ceil(now.getTime() / msIn15Mins) * msIn15Mins);
         now = toUTC(now);
 
         this.state = {

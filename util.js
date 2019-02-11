@@ -1,13 +1,13 @@
 //handles converting time from UTC to local time zone
 export function toLocalTime(_date) {
     let offset = _date.getTimezoneOffset() / 60;
-    return new Date(_date.getMilliseconds() + offset * dayInMS / 24);
+    return new Date(_date.getTime() + offset * dayInMS / 24);
 }
 
 //handles converting time from local time zone to UTC
 export function toUTC(_date) {
     let offset = _date.getTimezoneOffset() / 60;
-    return new Date(_date.getMilliseconds() - offset * dayInMS / 24 );
+    return new Date(_date.getTime() - offset * dayInMS / 24 );
 }
 
 //handles converting a JS Date object into an ISO date string
@@ -84,11 +84,11 @@ export function toDateTime(data) {
         }
 
         let splits = toParse.split("-");
-        returnDateTime.setFullYear(splits[0], parseInt(splits[1] - 1), splits[2]);
+        returnDateTime.setFullYear(parseInt(splits[0]), parseInt(splits[1]) - 1, parseInt(splits[2]));
     }
     if (data.time) {
         let splits = data.time.split(":");
-        returnDateTime.setHours(splits[0], splits[1], 0, 0);
+        returnDateTime.setHours(parseInt(splits[0]), parseInt(splits[1]), 0, 0);
     } else {
         returnDateTime.setHours(0, 0, 0, 0);
     }
