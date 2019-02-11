@@ -29,12 +29,15 @@ export class Client {
 export class Event {
     constructor(_id, _data) {
         if (!_id) _id = null;
-        if (!_data) _data = {};
+        if (!_data) _data = {
+            price: 0.00,
+            date: toDateString(new Date())
+        };
 
         this.id = _id;
         this.clientID = _data.client;
         this.venueID = _data.venue;
-        this.price = _data.price || 0.00;
+        this.price = _data.price;
 
         this.start = toDateTime({
             date: _data.date,
@@ -47,7 +50,7 @@ export class Event {
         });
 
         if (endTime < this.start) {
-            endTime.setMilliseconds(endTime.getMilliseconds() + dayInMS);
+            endTime.setMilliseconds(endTime.getTime() + dayInMS);
         }
 
         this.end = endTime;
@@ -78,7 +81,7 @@ export class Event {
         }
 
         if (this.end < this.start) {
-            this.end.setMilliseconds(this.end.getMilliseconds() + dayInMS);
+            this.end.setMilliseconds(this.end.getTime() + dayInMS);
         }
     }
 

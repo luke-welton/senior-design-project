@@ -4,7 +4,7 @@ import MonthView from "./MonthView"
 import DayView from "./DayView"
 import EventView from "./EventView"
 import Styles from "./styles"
-import {toDateTime} from "./util";
+import {toDateString, toDateTime} from "./util";
 import {Event, Client, Venue} from "./objects";
 
 // Firebase's implementation utilizes long timers,
@@ -33,10 +33,9 @@ export default class App extends React.Component {
             clients: genericClients,
             events: [],
             venues: genericVenues,
-            currentVenue: "",
-            selectedDate: toDateTime(),
+            currentVenue: genericVenues[0].id.toString(),
+            selectedDate: toDateString(new Date()),
             selectedEvent: new Event()
-
         };
 
         // commented out to avoid unnecessary db calls
@@ -59,7 +58,7 @@ export default class App extends React.Component {
         //load events
         //load venues
         //set currentVenue to first venue
-        this.setState({currentVenue: ""});
+        this.setState({currentVenue: genericVenues[0]});
     }
 
     render() {
@@ -75,7 +74,6 @@ export default class App extends React.Component {
                 <EventView
                     event = {this.state.selectedEvent}
                     defaultVenue = {this.state.currentVenue}
-                    defaultDate = {this.state.selectedDate}
                     clientList = {this.state.clients}
                     venueList = {this.state.venues}
                     eventList = {this.state.events}

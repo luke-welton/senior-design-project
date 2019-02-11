@@ -19,11 +19,9 @@ export default class DayView extends React.Component {
         //set default displayed dates to +/- 3 days from selected dates
         for (let mult in _.range(7)) {
             let date = toLocalTime(toDateTime({date: this.props.selectedDate}));
-            date.setMilliseconds(date.getMilliseconds() + mult * dayInMS);
+            date.setMilliseconds(date.getTime() + mult * dayInMS);
             dateEvents[toDateString(date)] = [];
         }
-
-        console.log(dateEvents);
 
         return (
             <View style={[Styles.appContainer, Styles.dayView]}>
