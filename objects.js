@@ -5,7 +5,7 @@ export class Client {
         if (!_id) _id = 0;
         if (!_data) _data = {};
 
-        this.id = _id;
+        this.id = _id.toString();
         this.firstName = _data.first;
         this.lastName = _data.last;
         this.middleInitial = _data.middle;
@@ -100,7 +100,7 @@ export class Event {
 
 export class Venue {
     constructor(_id, _name) {
-        this.id = _id;
+        this.id = _id.toString();
         this.name = _name;
     }
 }

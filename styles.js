@@ -54,6 +54,7 @@ export default StyleSheet.create({
         flexBasis: 0
     },
     pickerBox: {
+        display: "flex",
         paddingLeft: 10,
         paddingRight: 10,
         backgroundColor: "#eee",
