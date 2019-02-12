@@ -13,8 +13,8 @@ export class Client {
         this.email = _data.email;
         this.phone = _data.phone;
     }
-
     toData() {
+
         return {
             first: this.firstName,
             last: this.lastName,
@@ -37,7 +37,7 @@ export class Event {
         this.id = _id;
         this.clientID = _data.client;
         this.venueID = _data.venue;
-        this.price = _data.price;
+        this.price = parseFloat(_data.price || 0);
 
         this.start = toDateTime({
             date: _data.date,

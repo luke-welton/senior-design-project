@@ -40,7 +40,7 @@ export default class EventView extends React.Component {
         this.state = {
             clientID:  this.props.event.clientID,
             venueID: venueID,
-            price: this.props.event.price,
+            price: this.props.event.price.toString() || "",
             date: toDateString(this.props.event.start),
             startTime: toTimeString(toLocalTime(this.props.event.start)),
             endTime: toTimeString(toLocalTime(this.props.event.end)),
@@ -148,21 +148,25 @@ export default class EventView extends React.Component {
                             }
                         }}
                     />
-                    <View style={this.state.customTime ? Styles.customTimeContainer : Styles.hide}>
-                        <View style={Styles.inputRow}>
-                            <Text style={Styles.inputTitle}>Start Time</Text>
-                            <TimeInput
-                                value = {toAMPM(this.state.startTime)}
-                                onValueChange = {time => this.setState({startTime: time})}
-                            />
-                        </View>
-                        <View style={Styles.inputRow}>
-                            <Text style={Styles.inputTitle}>End Time</Text>
-                            <TimeInput
-                                value = {toAMPM(this.state.endTime)}
-                                onValueChange = {time => this.setState({endTime: time})}
-                            />
-                        </View>
+                </View>
+                <View style={this.state.customTime ? Styles.customTimeContainer : Styles.hide}>
+                    <View style={Styles.inputTitle} />
+                    <View style={Styles.inputRow}>
+                        <Text style={Styles.inputTitle}>Start Time</Text>
+                        <TimeInput
+                            value = {toAMPM(this.state.startTime)}
+                            onValueChange = {time => this.setState({startTime: time})}
+                        />
+                    </View>
+                </View>
+                <View style={this.state.customTime ? Styles.customTimeContainer : Styles.hide}>
+                    <View style={Styles.inputTitle} />
+                    <View style={Styles.inputRow}>
+                        <Text style={Styles.inputTitle}>End Time</Text>
+                        <TimeInput
+                            value = {toAMPM(this.state.endTime)}
+                            onValueChange = {time => this.setState({endTime: time})}
+                        />
                     </View>
                 </View>
 
@@ -171,10 +175,10 @@ export default class EventView extends React.Component {
                     <Text style={Styles.inputTitle}>Price</Text>
                     <TextInput style={Styles.inputBox}
                         keyboardType = "numeric"
-                        value = { this.state.price === 0 ? "" : this.state.price.toFixed(2)}
+                        value = {this.state.price}
                         onChangeText = {value => {
-                            if ((/\d*\.?\d*/).test(value)) {
-                                this.setState({price: value === "" ? 0 : parseFloat(value)});
+                            if (new RegExp(`^[0-9]*\.?[0-9]*$`).test(value)) {
+                                this.setState({price: value});
                             } else {
                                 alert("Please only enter monetary values.");
                                 this.setState({price: this.state.price});
@@ -287,7 +291,7 @@ class TimeInput extends React.Component {
                     mode = "time"
                     isVisible={this.state.open}
                     onConfirm = {time => {
-                        time = toLocalTime(time);
+                        time = toUTC(time);
                         this.setState({
                             value: time,
                             open: false
