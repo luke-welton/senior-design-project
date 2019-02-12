@@ -1,8 +1,3 @@
-import React from "react";
-import {Picker, Platform, PickerIOS} from "react-native";
-import IOSPicker from "react-native-ios-picker";
-import PropTypes from "prop-types";
-
 //handles converting time from UTC to local time zone
 export function toLocalTime(_date) {
     let offset = _date.getTimezoneOffset() / 60;
@@ -142,54 +137,3 @@ export function toISO(usDate) {
 //useful variable containing exactly how many milliseconds are in a day
 let dayInMS = 24 * 60 * 60 * 1000;
 export { dayInMS };
-
-//dropdowns are rendered real weird on iOS, so this is a class to handle switching
-//between native on Android and IOSPicker on iOS.
-export class Dropdown extends React.Component {
-    static propTypes = {
-        selectedValue: PropTypes.string,
-        onValueChange: PropTypes.func.isRequired,
-        options: PropTypes.arrayOf(PropTypes.object).isRequired,
-        style: PropTypes.object
-    };
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            value: props.selectedValue
-        };
-    }
-
-    render() {
-        if (Platform.OS === "android") {
-            return (
-                <Picker style={this.props.style || null}
-                    selectedValue = {this.state.value}
-                    onValueChange = {value => {
-                        this.setState({value: value});
-                        this.props.onValueChange(value);
-                    }}
-                >
-                    { this.props.options.map((data, index) =>
-                        <Picker.Item key={index} label={data.label} value={data.value} />
-                    )}
-                </Picker>
-            );
-        } else {
-            return (
-                <IOSPicker style={this.props.style || null}
-                    mode = "modal"
-                    selectedValue={this.state.value}
-                    onValueChange = {value => {
-                        this.setState({value: value});
-                        this.props.onValueChange(value);
-                    }}
-                >
-                    { this.props.options.map((data, index) =>
-                        <Picker.Item key={index} label={data.label} value={data.value} />
-                    )}
-                </IOSPicker>
-            );
-        }
-    }
-}
