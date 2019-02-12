@@ -6,8 +6,8 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview"
 import { RadioGroup } from "react-native-btr";
 import DateTimePicker from "react-native-modal-datetime-picker"
 import Styles from "./styles"
-import {toTimeString, toAMPM, toDateString, toMilitaryTime, toUS, toLocalTime, toUTC, toDateTime, toISO} from "./util";
-import Dropdown from "react-native-picker-select";
+import {toTimeString, toAMPM, toDateString, toMilitaryTime, toUS, toLocalTime, toUTC, toDateTime, toISO,
+        Dropdown} from "./util";
 
 const defaultTimes = [
     "7:30 PM - 9:00 PM",
@@ -92,14 +92,13 @@ export default class EventView extends React.Component {
                 <View style={Styles.inputRow}>
                     <Text style={Styles.inputTitle}>Client</Text>
                     <Dropdown style={Styles.pickerBox}
-                        items = { this.props.clientList.map(client => {
+                        options = { this.props.clientList.map(client => {
                             return {
                                 label: client.stageName,
-                                value: client.id,
-                                key: client.id
+                                value: client.id
                             };
                         })}
-                        value = {this.state.clientID}
+                        selectedValue = {this.state.clientID}
                         onValueChange = {value => this.setState({clientID: value})}
                     />
                 </View>
@@ -108,14 +107,13 @@ export default class EventView extends React.Component {
                 <View style={Styles.inputRow}>
                     <Text style={Styles.inputTitle}>Venue</Text>
                     <Dropdown style={Styles.pickerBox}
-                        items = { this.props.venueList.map(venue => {
+                        options = { this.props.venueList.map(venue => {
                             return {
                                 label: venue.name,
-                                value: venue.id,
-                                key: venue.id
+                                value: venue.id
                             };
                         })}
-                        value = {this.state.venueID}
+                        selectedValue = {this.state.venueID}
                         onValueChange = {value => this.setState({venueID: value})}
                     />
                 </View>
@@ -172,15 +170,14 @@ export default class EventView extends React.Component {
                 <View style={Styles.inputRow}>
                     <Text style={Styles.inputTitle}>Price</Text>
                     <TextInput style={Styles.inputBox}
-                        keyboardStyle = "numeric"
-                        value = { this.state.price === 0 ? "" : this.state.price.toString()}
+                        keyboardType = "numeric"
+                        value = { this.state.price === 0 ? "" : this.state.price.toFixed(2)}
                         onChangeText = {value => {
-                            let numeric = value === "" ? 0 : parseFloat(value);
-                            if (isNaN(numeric)) {
+                            if ((/\d*\.?\d*/).test(value)) {
+                                this.setState({price: value === "" ? 0 : parseFloat(value)});
+                            } else {
                                 alert("Please only enter monetary values.");
                                 this.setState({price: this.state.price});
-                            } else {
-                                this.setState({price: numeric});
                             }
                         }}
                     />
