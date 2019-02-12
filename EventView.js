@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Event, Client, Venue } from "./objects"
-import { View, Picker, TextInput, Text, TouchableOpacity, Button } from "react-native"
+import { View, TextInput, Text, TouchableOpacity, Button } from "react-native"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview"
 import { RadioGroup } from "react-native-btr";
 import DateTimePicker from "react-native-modal-datetime-picker"
 import Styles from "./styles"
-import {toTimeString, toAMPM, toDateString, toMilitaryTime, toUS, toLocalTime, toUTC, toDateTime, toISO} from "./util";
+import {toTimeString, toAMPM, toDateString, toMilitaryTime, toUS, toLocalTime, toUTC, toDateTime, toISO, Dropdown} from "./util";
 
 const defaultTimes = [
     "7:30 PM - 9:00 PM",
@@ -53,22 +53,6 @@ export default class EventView extends React.Component {
         }
     }
 
-    _generateClientDropdown() {
-        let dropdown = [];
-        this.props.clientList.forEach(client => {
-            dropdown.push(<Picker.Item label={client.stageName} value={client.id} key={client.id} />);
-        });
-        return dropdown;
-    }
-
-    _generateVenueDropdown() {
-        let dropdown = [];
-        this.props.venueList.forEach(venue => {
-            dropdown.push(<Picker.Item label={venue.name} value={venue.id} key={venue.id} />);
-        });
-        return dropdown;
-    }
-
     _generateRadioButtons() {
         let buttons = [
             {
@@ -106,23 +90,31 @@ export default class EventView extends React.Component {
                 {/* Client Selector */}
                 <View style={Styles.inputRow}>
                     <Text style={Styles.inputTitle}>Client</Text>
-                    <Picker style={Styles.pickerBox}
+                    <Dropdown style={Styles.pickerBox}
+                        options = {this.props.clientList.map(client => {
+                            return {
+                                label: client.stageName,
+                                value: client.id
+                            };
+                        })}
                         selectedValue = {this.state.clientID}
                         onValueChange = {value => this.setState({clientID: value})}
-                    >
-                        {this._generateClientDropdown()}
-                    </Picker>
+                    />
                 </View>
 
                 {/* Venue Selector */}
                 <View style={Styles.inputRow}>
                     <Text style={Styles.inputTitle}>Venue</Text>
-                    <Picker style={Styles.pickerBox}
+                    <Dropdown style={Styles.pickerBox}
+                        options = {this.props.venueList.map(venue => {
+                            return {
+                                label: venue.name,
+                                value: venue.id
+                            };
+                        })}
                         selectedValue = {this.state.venueID}
                         onValueChange = {value => this.setState({venueID: value})}
-                    >
-                        {this._generateVenueDropdown()}
-                    </Picker>
+                    />
                 </View>
 
 
