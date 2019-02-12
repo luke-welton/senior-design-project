@@ -3,24 +3,20 @@ import { StyleSheet, Platform } from 'react-native';
 export default StyleSheet.create({
     appContainer: {
         display: "flex",
-        flex: 1,
         flexDirection: "column",
         marginTop: Platform.OS === "android" ? 25 : 20
     },
     calPicker: {
-        width: "100%"
+
     },
     monthView: {
-        width: "100%"
+
     },
     dayView: {
-        width: "100%"
+
     },
     infoView: {
-        display: "flex",
-        flexDirection: "column",
-        padding: 20,
-        paddingBottom: 0
+        padding: 20
     },
     hide: {
         display: "none"
@@ -35,30 +31,40 @@ export default StyleSheet.create({
         marginRight: 5,
         fontSize: 20,
         flexBasis: 0,
-        flexGrow: 2,
+        flexGrow: 1,
         flexShrink: 0
     },
     inputBox: {
         padding: 10,
         backgroundColor: "#eee",
-        flexGrow: 8,
+        flexGrow: 4,
         flexBasis: 0,
-        fontSize: 15
+        fontSize: 15,
+        flexShrink: 1
     },
     customTimeContainer: {
         display: "flex",
-        flexDirection: "column"
+        width: "80%",
+        alignSelf: "flex-end"
+    },
+    customTimeTitle: {
+        marginRight: 5,
+        fontSize: 17.5,
+        flexGrow: 1,
+        flexBasis: 0,
+        textAlign: "center"
     },
     datetimeContainer: {
-        flexGrow: 8,
+        flexGrow: 4,
         flexBasis: 0
     },
     pickerBox: {
         display: "flex",
         paddingLeft: 10,
         paddingRight: 10,
+        marginLeft: 5,
         backgroundColor: "#eee",
-        flexGrow: 8,
+        flexGrow: 4,
         flexBasis: 0
     },
     buttons: {
