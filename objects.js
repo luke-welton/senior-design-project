@@ -2,7 +2,7 @@ import {toTimeString, toDateString, toDateTime, dayInMS} from "./util";
 
 export class Client {
     constructor(_id, _data) {
-        if (!_id) _id = null;
+        if (!_id) _id = 0;
         if (!_data) _data = {};
 
         this.id = _id;

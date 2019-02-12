@@ -6,7 +6,8 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview"
 import { RadioGroup } from "react-native-btr";
 import DateTimePicker from "react-native-modal-datetime-picker"
 import Styles from "./styles"
-import {toTimeString, toAMPM, toDateString, toMilitaryTime, toUS, toLocalTime, toUTC, toDateTime, toISO, Dropdown} from "./util";
+import {toTimeString, toAMPM, toDateString, toMilitaryTime, toUS, toLocalTime, toUTC, toDateTime, toISO} from "./util";
+import Dropdown from "react-native-picker-select";
 
 const defaultTimes = [
     "7:30 PM - 9:00 PM",
@@ -91,13 +92,14 @@ export default class EventView extends React.Component {
                 <View style={Styles.inputRow}>
                     <Text style={Styles.inputTitle}>Client</Text>
                     <Dropdown style={Styles.pickerBox}
-                        options = {this.props.clientList.map(client => {
+                        items = { this.props.clientList.map(client => {
                             return {
                                 label: client.stageName,
-                                value: client.id
+                                value: client.id,
+                                key: client.id
                             };
                         })}
-                        selectedValue = {this.state.clientID}
+                        value = {this.state.clientID}
                         onValueChange = {value => this.setState({clientID: value})}
                     />
                 </View>
@@ -106,13 +108,14 @@ export default class EventView extends React.Component {
                 <View style={Styles.inputRow}>
                     <Text style={Styles.inputTitle}>Venue</Text>
                     <Dropdown style={Styles.pickerBox}
-                        options = {this.props.venueList.map(venue => {
+                        items = { this.props.venueList.map(venue => {
                             return {
                                 label: venue.name,
-                                value: venue.id
+                                value: venue.id,
+                                key: venue.id
                             };
                         })}
-                        selectedValue = {this.state.venueID}
+                        value = {this.state.venueID}
                         onValueChange = {value => this.setState({venueID: value})}
                     />
                 </View>
