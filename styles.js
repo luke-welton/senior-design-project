@@ -35,12 +35,14 @@ export default StyleSheet.create({
         marginRight: 5,
         fontSize: 20,
         flexBasis: 0,
-        flexGrow: 1
+        flexGrow: 2,
+        flexShrink: 0
     },
     inputBox: {
         padding: 10,
         backgroundColor: "#eee",
-        flexGrow: 5,
+        flexGrow: 8,
+        flexBasis: 0,
         fontSize: 15
     },
     customTimeContainer: {
@@ -48,13 +50,15 @@ export default StyleSheet.create({
         flexDirection: "column"
     },
     datetimeContainer: {
-        flex: 5
+        flexGrow: 8,
+        flexBasis: 0
     },
     pickerBox: {
         paddingLeft: 10,
         paddingRight: 10,
         backgroundColor: "#eee",
-        flexGrow: 5
+        flexGrow: 8,
+        flexBasis: 0
     },
     buttons: {
         alignSelf: "flex-end",
