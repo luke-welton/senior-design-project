@@ -150,9 +150,9 @@ export default class EventView extends React.Component {
                     />
                 </View>
                 <View style={this.state.customTime ? Styles.customTimeContainer : Styles.hide}>
-                    <View style={Styles.inputTitle} />
+                    {/*<View style={Styles.inputTitle} />*/}
                     <View style={Styles.inputRow}>
-                        <Text style={Styles.inputTitle}>Start Time</Text>
+                        <Text style={Styles.customTimeTitle}>Start Time</Text>
                         <TimeInput
                             value = {toAMPM(this.state.startTime)}
                             onValueChange = {time => this.setState({startTime: time})}
@@ -160,9 +160,9 @@ export default class EventView extends React.Component {
                     </View>
                 </View>
                 <View style={this.state.customTime ? Styles.customTimeContainer : Styles.hide}>
-                    <View style={Styles.inputTitle} />
+                    {/*<View style={Styles.inputTitle} />*/}
                     <View style={Styles.inputRow}>
-                        <Text style={Styles.inputTitle}>End Time</Text>
+                        <Text style={Styles.customTimeTitle}>End Time</Text>
                         <TimeInput
                             value = {toAMPM(this.state.endTime)}
                             onValueChange = {time => this.setState({endTime: time})}
