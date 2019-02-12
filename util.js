@@ -4,15 +4,15 @@ import {Picker, Platform} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 
 //handles converting time from UTC to local time zone
-export function toLocalTime(_date) {
-    let offset = _date.getTimezoneOffset() / 60;
-    return new Date(_date.getTime() + offset * dayInMS / 24);
+export function toLocalTime(_time) {
+    let offset = new Date().getTimezoneOffset() / 60;
+    return new Date(_time.getTime() + offset * dayInMS / 24);
 }
 
 //handles converting time from local time zone to UTC
-export function toUTC(_date) {
-    let offset = _date.getTimezoneOffset() / 60;
-    return new Date(_date.getTime() - offset * dayInMS / 24 );
+export function toUTC(_time) {
+    let offset = new Date().getTimezoneOffset() / 60;
+    return new Date(_time.getTime() - offset * dayInMS / 24 );
 }
 
 //handles converting a JS Date object into an ISO date string
@@ -34,12 +34,12 @@ export function toDateString(_date) {
 
 //handles converting a JS date object into a time string
 export function toTimeString(time) {
-    let minutes = time.getUTCMinutes();
+    let minutes = time.getMinutes();
     if (minutes < 10) {
         minutes = "0" + minutes;
     }
 
-    return [time.getUTCHours(), minutes].join(":");
+    return [time.getHours(), minutes].join(":");
 }
 
 //handles converting military time to AM/PM format
