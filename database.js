@@ -20,7 +20,7 @@ class Database {
 
                 for (let clientID in _clients) {
                     if (_clients.hasOwnProperty(clientID)) {
-                        let clientObj = new Client(clientID, _clients[clientID]);
+                        let clientObj = new Client(_clients[clientID], clientID);
                         foundClients.push(clientObj);
                     }
                 }
@@ -46,7 +46,7 @@ class Database {
 
                 for (let eventID in _events) {
                     if (_events.hasOwnProperty(eventID)) {
-                        let eventObj = new Event(eventID, _events[eventID]);
+                        let eventObj = new Event(_events[eventID], eventID);
                         foundEvents.push(eventObj);
                     }
                 }

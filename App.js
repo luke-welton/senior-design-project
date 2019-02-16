@@ -1,24 +1,16 @@
 import React from 'react';
-import {View, ActivityIndicator} from 'react-native'
-import MonthView from "./MonthView"
-import DayView from "./DayView"
-import EventView from "./EventView"
-import Styles from "./styles"
-import {toDateString, toDateTime} from "./util";
-import {Event, Client, Venue} from "./objects";
+import {View, ActivityIndicator} from 'react-native';
+import MonthView from "./MonthView";
+import DayView from "./DayView";
+import EventView from "./EventView";
+import db from "./database";
+import Styles from "./styles";
+import {Venue} from "./objects";
 
 // Firebase's implementation utilizes long timers,
 // which React Native doesn't like and throws a warning,
 // so this is here to ignore that.
 console.ignoredYellowBox = ['Setting a timer'];
-
-const genericClients = [
-    new Client(0, {stage: "Luke Welton"}),
-    new Client(1, {stage: "Stacey Henderson"}),
-    new Client(2, {stage: "Rizwan Ibrahim"}),
-    new Client(3, {stage: "Ciaira Hughes"}),
-    new Client(4, {stage: "Jean-Luc Beaudette"})
-];
 
 const genericVenues = [
     new Venue(0, "Venue A"),
@@ -29,40 +21,33 @@ const genericVenues = [
 export default class App extends React.Component {
     constructor(props) {
         super(props);
+
+        this.clients = [];
+        this.events = [];
+        this.venues = [];
+
         this.state = {
-            clients: genericClients,
-            events: [],
-            venues: genericVenues,
-            currentVenue: genericVenues[0].id.toString(),
-            selectedDate: toDateString(new Date()),
-            selectedEvent: new Event()
+            loaded: false,
+            currentVenue: null,
+            selectedDate: null,
+            selectedEvent: null
         };
-
-        // commented out to avoid unnecessary db calls
-
-        // db.getClients().then(clients => {
-        //     this.setState({
-        //         clients: clients
-        //     });
-        // }).catch(err => console.log(err));
-        //
-        // db.getEvents().then(events => {
-        //     this.setState({
-        //         events: events
-        //     })
-        // }).catch(err => console.log(err));
     }
 
     _initLoad() {
-        //load clients
-        //load events
-        //load venues
-        //set currentVenue to first venue
-        this.setState({currentVenue: genericVenues[0]});
+        let loadVenues = Promise.resolve(genericVenues);
+
+        Promise.all([db.getClients(), db.getEvents(), loadVenues]).then(values => {
+            this.clients = values[0];
+            this.events = values[1];
+            this.venues = values[2];
+
+            this.setState({loaded: true});
+        }).catch(err => console.log(err));
     }
 
     render() {
-        if (this.state.currentVenue === null) {
+        if (!this.state.loaded) {
             this._initLoad();
             return (
                 <View style={Styles.appContainer}>
@@ -70,39 +55,39 @@ export default class App extends React.Component {
                 </View>
             )
         } else {
-            return (
-                <EventView
-                    event = {this.state.selectedEvent}
-                    defaultVenue = {this.state.currentVenue}
-                    clientList = {this.state.clients}
-                    venueList = {this.state.venues}
-                    eventList = {this.state.events}
-                    onSave = {newEvent => {
-                        this.state.events.push(newEvent);
-
-                    }}
-                    onClose={() => {
-                    }}
-                />
-            );
-            // if (this.state.selectedDate === null) {
-            //     return (
-            //         <MonthView
-            //             venues = {genericVenues}
-            //             onDateSelect={(date) => {
-            //                 this.setState({selectedDate: date});
-            //             }}
-            //         />
-            //     );
-            // } else {
-            //     return (
-            //         <DayView selectedDate={this.state.selectedDate}
-            //             onClose={() => {
-            //                 this.setState({selectedDate: null});
-            //             }}
-            //         />
-            //     );
-            // }
+            // return (
+            //     <EventView
+            //         event = {this.state.selectedEvent}
+            //         defaultVenue = {this.state.currentVenue}
+            //         clientList = {this.state.clients}
+            //         venueList = {this.state.venues}
+            //         eventList = {this.state.events}
+            //         onSave = {newEvent => {
+            //             this.state.events.push(newEvent);
+            //
+            //         }}
+            //         onClose={() => {
+            //         }}
+            //     />
+            // );
+            if (this.state.selectedDate === null) {
+                return (
+                    <MonthView
+                        venues = {genericVenues}
+                        onDateSelect={(date) => {
+                            this.setState({selectedDate: date});
+                        }}
+                    />
+                );
+            } else {
+                return (
+                    <DayView selectedDate={this.state.selectedDate}
+                        onClose={() => {
+                            this.setState({selectedDate: null});
+                        }}
+                    />
+                );
+            }
         }
     };
 }
