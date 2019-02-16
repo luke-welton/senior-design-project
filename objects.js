@@ -1,24 +1,45 @@
 import {toTimeString, toDateString, toDateTime, dayInMS} from "./util";
 
+class Performer {
+    constructor(_data) {
+        this.firstName = _data.first;
+        this.lastName = _data.last;
+        this.middleInitial = _data.middle;
+    }
+
+    toData() {
+        return {
+            first: this.firstName,
+            last: this.lastName,
+            middle: this.middleInitial
+        };
+    };
+}
+
 export class Client {
     constructor(_id, _data) {
         if (!_id) _id = 0;
         if (!_data) _data = {};
 
         this.id = _id.toString();
-        this.firstName = _data.first;
-        this.lastName = _data.last;
-        this.middleInitial = _data.middle;
+
+        this.performers = [];
+        _data.performers.forEach(data => {
+            this.performers.push(new Performer(data))
+        });
+
         this.stageName = _data.stage || [_data.first, _data.last].join(" ");
         this.email = _data.email;
         this.phone = _data.phone;
     }
     toData() {
+        let performers = [];
+        this.performers.forEach(performer => {
+            performers.push(performer.toData());
+        });
 
         return {
-            first: this.firstName,
-            last: this.lastName,
-            middle: this.middleInitial,
+            performers: performers,
             stage: this.stageName,
             email: this.email,
             phone: this.phone
