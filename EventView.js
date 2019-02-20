@@ -6,8 +6,8 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview"
 import { RadioGroup } from "react-native-btr";
 import DateTimePicker from "react-native-modal-datetime-picker"
 import Styles from "./styles"
-import {toTimeString, toAMPM, toDateString, toMilitaryTime, toUS, toLocalTime, toUTC, toDateTime, toISO,
-        Dropdown} from "./util";
+import {toTimeString, toAMPM, toDateString, toMilitaryTime, toUS, toLocalTime, toDateTime, toISO,
+        Dropdown, TimeInput} from "./util";
 
 const defaultTimes = [
     "7:30 PM - 9:00 PM",
@@ -16,9 +16,9 @@ const defaultTimes = [
 
 export default class EventView extends React.Component {
     static propTypes = {
-        event: PropTypes.instanceOf(Event).isRequired,
-        defaultVenue: PropTypes.string.isRequired,
-        defaultDate: PropTypes.instanceOf(Date),
+        event: PropTypes.instanceOf(Event),
+        defaultVenue: PropTypes.instanceOf(Venue).isRequired,
+        defaultDate: PropTypes.instanceOf(Date).isRequired,
         clientList: PropTypes.arrayOf(PropTypes.instanceOf(Client)).isRequired,
         venueList: PropTypes.arrayOf(PropTypes.instanceOf(Venue)).isRequired,
         eventList: PropTypes.arrayOf(PropTypes.instanceOf(Event)).isRequired,
@@ -28,24 +28,20 @@ export default class EventView extends React.Component {
     };
 
     constructor(props) {
-        let venueID = props.event.venueID;
-        let isNew = false;
-
-        if (!props.event.id) {
-            venueID = props.defaultVenue;
-            isNew = true;
-        }
-
         super(props);
+
+        let event = this.props.event || new Event();
+
+        this.isNew = !event.id;
+
         this.state = {
-            clientID:  this.props.event.clientID,
-            venueID: venueID,
-            price: this.props.event.price.toString() || "",
-            date: toDateString(this.props.event.start),
-            startTime: toTimeString(toLocalTime(this.props.event.start)),
-            endTime: toTimeString(toLocalTime(this.props.event.end)),
-            customTime: false,
-            isNew: isNew
+            clientID:  event.clientID || this.props.clientList[0].id,
+            venueID: this.isNew ? this.props.defaultVenue.id : event.venueID,
+            price: event.price.toString() || "",
+            date: toDateString(event.start),
+            startTime: toTimeString(toLocalTime(event.start)),
+            endTime: toTimeString(toLocalTime(event.end)),
+            customTime: false
         };
 
         let timeString = [toAMPM(this.state.startTime), toAMPM(this.state.endTime)].join(" - ");
@@ -142,8 +138,8 @@ export default class EventView extends React.Component {
                                 let splits = selected.label.split("-");
                                 this.setState({
                                     customTime: false,
-                                    startTime: toMilitaryTime(splits[0]),
-                                    endTime: toMilitaryTime(splits[1])
+                                    startTime: toMilitaryTime(splits[0].trim()),
+                                    endTime: toMilitaryTime(splits[1].trim())
                                 });
                             }
                         }}
@@ -189,15 +185,17 @@ export default class EventView extends React.Component {
 
                 {/* Create/Update Button */}
                     <Button style={Styles.buttons}
-                        title = {this.state.isNew ? "Create Event" : "Save Event"}
+                        title = {this.isNew ? "Create Event" : "Save Event"}
                         onPress = {() => {
-                            this.props.event.update(this.state);
-                            this.props.onSave(this.props.event);
+                            let event = this.props.event || new Event();
+
+                            event.update(this.state);
+                            this.props.onSave(event);
                         }}
                     />
 
                 { /* Delete Button */
-                    this.state.isNew ? null :
+                    this.isNew ? null :
                         <Button style={Styles.buttons}
                             title = "Delete Event"
                             color = "red"
@@ -257,51 +255,3 @@ class DateInput extends React.Component {
     }
 }
 
-//helper class to input time since the timepicker is bizarrely complex
-class TimeInput extends React.Component {
-    static propTypes = {
-        onValueChange: PropTypes.func.isRequired,
-        value: PropTypes.string
-    };
-
-    constructor(props) {
-        super(props);
-
-        let msIn15Mins = 1000 * 60 * 15;
-        let now = new Date();
-        now.setMilliseconds(Math.ceil(now.getTime() / msIn15Mins) * msIn15Mins);
-        now = toUTC(now);
-
-        this.state = {
-            value: this.props.value ? toDateTime({time: toMilitaryTime(this.props.value)}) : now,
-            open: false
-        };
-    }
-
-    render() {
-        return(
-            <View style={Styles.datetimeContainer}>
-                <TouchableOpacity style={Styles.inputBox}
-                    onPress = {() => this.setState({open: true})}
-                >
-                    <Text>{toAMPM(toTimeString(toLocalTime(this.state.value)))}</Text>
-                </TouchableOpacity>
-                <DateTimePicker
-                    date = {this.state.value}
-                    mode = "time"
-                    isVisible={this.state.open}
-                    onConfirm = {time => {
-                        time = toUTC(time);
-                        this.setState({
-                            value: time,
-                            open: false
-                        });
-
-                        this.props.onValueChange(toTimeString(time));
-                    }}
-                    onCancel = {() => this.setState({open: false})}
-                />
-            </View>
-        );
-    }
-}

@@ -1,7 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {Picker, Platform} from "react-native";
+import {Picker, Platform, Text, TouchableOpacity, View} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
+import DateTimePicker from "react-native-modal-datetime-picker";
+import Styles from "./styles";
 
 //handles converting time from UTC to local time zone
 export function toLocalTime(_time) {
@@ -65,6 +67,7 @@ export function toMilitaryTime(ampmTime) {
     let ampm = splits[1];
 
     splits = splits[0].split(":");
+
     let hour = parseInt(splits[0]);
 
     if (hour === 12 && ampm === "AM") {
@@ -185,5 +188,54 @@ export class Dropdown extends React.Component {
                 />
             );
         }
+    }
+}
+
+//helper class to input time since the timepicker is bizarrely complex
+export class TimeInput extends React.Component {
+    static propTypes = {
+        onValueChange: PropTypes.func.isRequired,
+        value: PropTypes.string
+    };
+
+    constructor(props) {
+        super(props);
+
+        let msIn15Mins = 1000 * 60 * 15;
+        let now = new Date();
+        now.setMilliseconds(Math.ceil(now.getTime() / msIn15Mins) * msIn15Mins);
+        now = toUTC(now);
+
+        this.state = {
+            value: this.props.value ? toDateTime({time: toMilitaryTime(this.props.value)}) : now,
+            open: false
+        };
+    }
+
+    render() {
+        return(
+            <View style={Styles.datetimeContainer}>
+                <TouchableOpacity style={Styles.inputBox}
+                                  onPress = {() => this.setState({open: true})}
+                >
+                    <Text>{toAMPM(toTimeString(toLocalTime(this.state.value)))}</Text>
+                </TouchableOpacity>
+                <DateTimePicker
+                    date = {this.state.value}
+                    mode = "time"
+                    isVisible={this.state.open}
+                    onConfirm = {time => {
+                        time = toUTC(time);
+                        this.setState({
+                            value: time,
+                            open: false
+                        });
+
+                        this.props.onValueChange(toTimeString(time));
+                    }}
+                    onCancel = {() => this.setState({open: false})}
+                />
+            </View>
+        );
     }
 }

@@ -81,7 +81,7 @@ export class Event {
 
         this.clientID = data.clientID || this.clientID;
         this.venueID = data.venueID || this.venueID;
-        this.price = data.price || this.price;
+        this.price = parseInt(data.price || this.price);
 
         if (data.start) this.start = data.start;
         if (data.end) this.end = data.end;
@@ -93,11 +93,11 @@ export class Event {
         }
         if (data.startTime) {
             let splits = data.startTime.split(":");
-            this.start.setMinutes(splits[0], splits[1]);
+            this.start.setHours(splits[0], splits[1]);
         }
         if (data.endTime) {
             let splits = data.endTime.split(":");
-            this.end.setMinutes(splits[0], splits[1]);
+            this.end.setHours(splits[0], splits[1]);
         }
 
         if (this.end < this.start) {
