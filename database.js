@@ -7,9 +7,31 @@ class Database {
         Firebase.initializeApp(config);
 
         this.db = Firebase.database();
-        this.clientDB = this.db.ref("clients");
-        this.eventDB = this.db.ref("events");
+        this.clientDB = this.db.ref("database/clients");
+        this.eventDB = this.db.ref("database/events");
     }
+
+    // moveDB() {
+    //     let newDB = this.db.ref("database");
+    //     let newClientDB = newDB.child("clients");
+    //     let newEventDB = newDB.child("events");
+    //
+    //     this.getClients().then(clients => {
+    //         clients.forEach(client => {
+    //             newClientDB.push(client.toData()).then(() => {
+    //
+    //             });
+    //         });
+    //     });
+    //
+    //     this.getEvents().then(events => {
+    //         events.forEach(event => {
+    //             newEventDB.push(event.toData()).then(() => {
+    //
+    //             });
+    //         });
+    //     })
+    // }
 
     // load information on all clients
     getClients() {
