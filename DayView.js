@@ -4,30 +4,42 @@ import Styles from "./styles";
 import {Agenda} from "react-native-calendars";
 import React from "react";
 import _ from "lodash";
-import {toDateTime, toDateString, dayInMS, toLocalTime} from "./util";
+import {toDateString, dayInMS} from "./util";
+import {Event} from "./objects";
 
 //DayView
 export default class DayView extends React.Component {
     static propTypes = {
         selectedDate: PropTypes.string.isRequired,
+        events: PropTypes.arrayOf(PropTypes.instanceOf(Event)).isRequired,
         onClose: PropTypes.func.isRequired
     };
 
-    render() {
+    _generateDateStorage() {
         let dateEvents = {};
 
-        //set default displayed dates to +/- 3 days from selected dates
-        for (let mult in _.range(7)) {
-            let date = toLocalTime(toDateTime({date: this.props.selectedDate}));
+        _.range(-14, 14).forEach(mult => {
+            let date = new Date(this.props.selectedDate.getTime());
             date.setMilliseconds(date.getTime() + mult * dayInMS);
             dateEvents[toDateString(date)] = [];
-        }
+        });
 
+        this.props.events.forEach(event => {
+            let eventDate = toDateString(event.start);
+            if (dateEvents[eventDate]) {
+                dateEvents[eventDate].push(event);
+            }
+        });
+
+        return dateEvents;
+    }
+
+    render() {
         return (
             <View style={[Styles.appContainer, Styles.dayView]}>
                 <Agenda style={Styles.dayView}
                         selected={this.props.selectedDate}
-                        items = {dateEvents}
+                        items = {this._generateDateStorage()}
                         onCalendarToggled={this.props.onClose}
                         renderEmptyDate={() => {
                             return(<View />)

@@ -44,8 +44,7 @@ export default class App extends React.Component {
 
             this.setState({
                 loaded: true,
-                selectedVenue: values[2][0],
-                selectedDate: new Date()
+                selectedVenue: values[2][0]
             });
         }).catch(err => console.log(err));
     }
@@ -59,40 +58,41 @@ export default class App extends React.Component {
                 </View>
             )
         } else {
-            return (
-                <EventView
-                    event = {this.state.selectedEvent}
-                    defaultVenue = {this.state.selectedVenue}
-                    defaultDate = {this.state.selectedDate}
-                    clientList = {this.clients}
-                    venueList = {this.venues}
-                    eventList = {this.events}
-                    onSave = {newEvent => {
-                        db.addEvent(newEvent).catch(err => console.log(err));
-                        this.events.push(newEvent);
-                    }}
-                    onClose={() => {
-                    }}
-                />
-            );
-            // if (this.state.selectedDate === null) {
-            //     return (
-            //         <MonthView
-            //             venues = {genericVenues}
-            //             onDateSelect={(date) => {
-            //                 this.setState({selectedDate: date});
-            //             }}
-            //         />
-            //     );
-            // } else {
-            //     return (
-            //         <DayView selectedDate={this.state.selectedDate}
-            //             onClose={() => {
-            //                 this.setState({selectedDate: null});
-            //             }}
-            //         />
-            //     );
-            // }
+            // return (
+            //     <EventView
+            //         event = {this.state.selectedEvent}
+            //         defaultVenue = {this.state.selectedVenue}
+            //         defaultDate = {this.state.selectedDate}
+            //         clientList = {this.clients}
+            //         venueList = {this.venues}
+            //         eventList = {this.events}
+            //         onSave = {newEvent => {
+            //             db.addEvent(newEvent).catch(err => console.log(err));
+            //             this.events.push(newEvent);
+            //         }}
+            //         onClose={() => {
+            //         }}
+            //     />
+            // );
+            if (this.state.selectedDate === null) {
+                return (
+                    <MonthView
+                        venues = {genericVenues}
+                        onDateSelect={date => {
+                            this.setState({selectedDate: new Date(date)});
+                        }}
+                    />
+                );
+            } else {
+                return (
+                    <DayView selectedDate={this.state.selectedDate}
+                        events={this.events}
+                        onClose={() => {
+                            this.setState({selectedDate: null});
+                        }}
+                    />
+                );
+            }
         }
     };
 }
