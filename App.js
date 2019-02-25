@@ -46,7 +46,7 @@ export default class App extends React.Component {
             this.setState({
                 loaded: true,
                 selectedVenue: values[2][0],
-                selectedDate: new Date("2019-02-15")
+                //selectedDate: new Date("2019-02-15")
             });
         }).catch(err => console.log(err));
     }

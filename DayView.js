@@ -188,7 +188,6 @@ const DayViewStyles = StyleSheet.create({
         justifyContent: "center"
     },
     eventIconText: {
-        fontSize: 25,
-        color: "#fff"
+        fontSize: 25
     }
 });
