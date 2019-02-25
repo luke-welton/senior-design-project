@@ -4,16 +4,8 @@ export default StyleSheet.create({
     appContainer: {
         display: "flex",
         flexDirection: "column",
+        height: "100%",
         marginTop: Platform.OS === "android" ? 25 : 20
-    },
-    calPicker: {
-
-    },
-    monthView: {
-
-    },
-    dayView: {
-
     },
     infoView: {
         padding: 20
@@ -70,6 +62,5 @@ export default StyleSheet.create({
     buttons: {
         alignSelf: "flex-end",
         marginTop: 5
-    },
-
+    }
 });

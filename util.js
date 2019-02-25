@@ -4,6 +4,8 @@ import {Picker, Platform, Text, TouchableOpacity, View} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import Styles from "./styles";
+import TinyColor from "tinycolor2";
+import RandomColor from "randomcolor";
 
 //handles converting time from UTC to local time zone
 export function toLocalTime(_time) {
@@ -238,4 +240,12 @@ export class TimeInput extends React.Component {
             </View>
         );
     }
+}
+
+export function randomColor(seed) {
+    let color = TinyColor(RandomColor({seed: seed}));
+    return {
+        hex: color.toHexString(),
+        isDark: color.isDark()
+    };
 }

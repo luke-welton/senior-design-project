@@ -6,6 +6,7 @@ import EventView from "./EventView";
 import db from "./database";
 import Styles from "./styles";
 import {Venue} from "./objects";
+import {toDateTime} from "./util";
 
 // Firebase's implementation utilizes long timers,
 // which React Native doesn't like and throws a warning,
@@ -44,7 +45,8 @@ export default class App extends React.Component {
 
             this.setState({
                 loaded: true,
-                selectedVenue: values[2][0]
+                selectedVenue: values[2][0],
+                selectedDate: new Date("2019-02-15")
             });
         }).catch(err => console.log(err));
     }
@@ -79,14 +81,18 @@ export default class App extends React.Component {
                     <MonthView
                         venues = {genericVenues}
                         onDateSelect={date => {
-                            this.setState({selectedDate: new Date(date)});
+                            this.setState({selectedDate: toDateTime({date: date})});
                         }}
                     />
                 );
             } else {
                 return (
-                    <DayView selectedDate={this.state.selectedDate}
+                    <DayView
+                        selectedDate={this.state.selectedDate}
+                        selectedVenue={this.state.selectedVenue}
+                        clients={this.clients}
                         events={this.events}
+                        venues={this.venues}
                         onClose={() => {
                             this.setState({selectedDate: null});
                         }}

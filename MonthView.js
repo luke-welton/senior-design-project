@@ -20,8 +20,8 @@ export default class MonthView extends React.Component {
 
     render() {
         return (
-            <View style={[Styles.appContainer, Styles.monthView]}>
-                <Picker style={Styles.calPicker}
+            <View style={Styles.appContainer}>
+                <Picker
                         selectedValue={this.state.venue.toString()}
                         onValueChange={(value) => {
                             this.setState({venue: parseInt(value)});
@@ -31,7 +31,7 @@ export default class MonthView extends React.Component {
                     <Picker.Item label="Venue B" value="2"/>
                     <Picker.Item label="Venue C" value="3"/>
                 </Picker>
-                <CalendarList style={Styles.monthView}
+                <CalendarList
                     horizontal={Platform.OS === "android"}
                     pagingEnabled={Platform.OS === "android"}
                     hideArrows={Platform.OS !== "android"}
