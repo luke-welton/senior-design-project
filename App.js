@@ -6,7 +6,6 @@ import db from "./database";
 import Styles from "./styles";
 import {Venue} from "./objects";
 import {createStackNavigator, createAppContainer, createSwitchNavigator} from "react-navigation";
-import {withMappedNavigationProps} from "react-navigation-props-mapper";
 import {CalendarList} from "react-native-calendars";
 
 // Firebase's implementation utilizes long timers,
@@ -86,7 +85,8 @@ class MonthView extends React.Component {
 
 const AppStack = createStackNavigator({
     Month: MonthView,
-    Day: DayView
+    Day: DayView,
+    Event: EventView
 }, {
     initialRouteName: "Month",
     headerMode: "none",
