@@ -1,11 +1,12 @@
 import React from 'react';
-import {View, ActivityIndicator} from 'react-native';
-import MonthView from "./MonthView";
+import {View, ActivityIndicator, Picker, Platform} from 'react-native';
 import DayView from "./DayView";
 import EventView from "./EventView";
 import db from "./database";
 import Styles from "./styles";
 import {Venue} from "./objects";
+import {createStackNavigator, createAppContainer, createSwitchNavigator} from "react-navigation";
+import {CalendarList} from "react-native-calendars";
 
 // Firebase's implementation utilizes long timers,
 // which React Native doesn't like and throws a warning,
@@ -18,76 +19,84 @@ const genericVenues = [
     new Venue(2, "Venue C")
 ];
 
-export default class App extends React.Component {
-    constructor(props) {
-        super(props);
+//stores all clients/events/venues loaded from the database, to prevent unnecessary db calls
+let loadedData = {
+    clients: null,
+    events: null,
+    venues: null
+};
 
-        this.clients = [];
-        this.events = [];
-        this.venues = [];
-
-        this.state = {
-            loaded: false,
-            currentVenue: null,
-            selectedDate: null,
-            selectedEvent: null
-        };
-    }
-
-    _initLoad() {
+class LoadingScreen extends React.Component {
+    componentWillMount() {
         let loadVenues = Promise.resolve(genericVenues);
 
         Promise.all([db.getClients(), db.getEvents(), loadVenues]).then(values => {
-            this.clients = values[0];
-            this.events = values[1];
-            this.venues = values[2];
+            loadedData.clients = values[0];
+            loadedData.events = values[1];
+            loadedData.venues = values[2];
 
-            this.setState({loaded: true});
+            this.props.navigation.navigate("App", loadedData).catch(err => console.log(err));
         }).catch(err => console.log(err));
     }
 
     render() {
-        if (!this.state.loaded) {
-            this._initLoad();
-            return (
-                <View style={Styles.appContainer}>
-                    <ActivityIndicator size="large"/>
-                </View>
-            )
-        } else {
-            // return (
-            //     <EventView
-            //         event = {this.state.selectedEvent}
-            //         defaultVenue = {this.state.currentVenue}
-            //         clientList = {this.state.clients}
-            //         venueList = {this.state.venues}
-            //         eventList = {this.state.events}
-            //         onSave = {newEvent => {
-            //             this.state.events.push(newEvent);
-            //
-            //         }}
-            //         onClose={() => {
-            //         }}
-            //     />
-            // );
-            if (this.state.selectedDate === null) {
-                return (
-                    <MonthView
-                        venues = {genericVenues}
-                        onDateSelect={(date) => {
-                            this.setState({selectedDate: date});
-                        }}
-                    />
-                );
-            } else {
-                return (
-                    <DayView selectedDate={this.state.selectedDate}
-                        onClose={() => {
-                            this.setState({selectedDate: null});
-                        }}
-                    />
-                );
-            }
-        }
-    };
+        return(
+            <View style={Styles.appContainer}>
+                <ActivityIndicator size="large"/>
+            </View>
+        );
+    }
 }
+
+class MonthView extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            venue: 1
+        };
+    }
+
+    render() {
+        return (
+            <View style={[Styles.appContainer, Styles.monthView]}>
+                <Picker style={Styles.calPicker}
+                        selectedValue={this.state.venue.toString()}
+                        onValueChange={(value) => {
+                            this.setState({venue: parseInt(value)});
+                        }}
+                >
+                    <Picker.Item label="Venue A" value="1"/>
+                    <Picker.Item label="Venue B" value="2"/>
+                    <Picker.Item label="Venue C" value="3"/>
+                </Picker>
+                <CalendarList style={Styles.monthView}
+                              horizontal={Platform.OS === "android"}
+                              pagingEnabled={Platform.OS === "android"}
+                              hideArrows={Platform.OS !== "android"}
+                              onDayPress={day => {
+                                  this.props.navigation.navigate("Day", {selectedDate: day.dateString});
+                              }}
+                />
+            </View>
+        );
+    }
+}
+
+const AppStack = createStackNavigator({
+    Month: MonthView,
+    Day: DayView,
+    Event: EventView
+}, {
+    initialRouteName: "Month",
+    headerMode: "none",
+    cardOverlayEnabled: true,
+});
+
+export default createAppContainer(createSwitchNavigator({
+    Loading: LoadingScreen,
+    App: AppStack
+}, {
+    initialRouteName: "Loading",
+    headerMode: "none"
+}));
