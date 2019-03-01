@@ -4,18 +4,18 @@ import Styles from "./styles";
 import {Agenda} from "react-native-calendars";
 import React from "react";
 import _ from "lodash";
+import {withMappedNavigationProps} from "react-navigation-props-mapper";
 import {dayInMS, toAMPM, toDateString, toLocalTime, toTimeString, randomColor} from "./util";
 import {Client, Event, Venue} from "./objects";
 
-//DayView
+@withMappedNavigationProps()
 export default class DayView extends React.Component {
     static propTypes = {
         selectedDate: PropTypes.instanceOf(Date).isRequired,
         selectedVenue: PropTypes.instanceOf(Venue).isRequired,
         clients: PropTypes.arrayOf(PropTypes.instanceOf(Client)).isRequired,
         events: PropTypes.arrayOf(PropTypes.instanceOf(Event)).isRequired,
-        venues: PropTypes.arrayOf(PropTypes.instanceOf(Venue)).isRequired,
-        onClose: PropTypes.func.isRequired
+        venues: PropTypes.arrayOf(PropTypes.instanceOf(Venue)).isRequired
     };
 
     constructor(props) {
@@ -73,7 +73,7 @@ export default class DayView extends React.Component {
                         items = {dateEvents.dates}
                         minDate = {dateEvents.min}
                         maxDate = {dateEvents.max}
-                        onCalendarToggled = {this.props.onClose}
+                        //onCalendarToggled = {this.props.onClose}
                         // renderDay = {() => {
                         //     return(<View />);
                         // }}

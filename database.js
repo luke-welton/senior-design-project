@@ -33,6 +33,18 @@ class Database {
     //     })
     // }
 
+    // fixEvents() {
+    //     Promise.all([this.getClients(), this.getEvents()]).then(values => {
+    //         let clients = values[0];
+    //         let events = values[1];
+    //
+    //         events.forEach(event => {
+    //             event.clientID = clients[Math.floor(Math.random() * clients.length)].id;
+    //             this.updateEvent(event);
+    //         });
+    //     });
+    // }
+
     // load information on all clients
     getClients() {
         return new Promise((res, rej) => {
