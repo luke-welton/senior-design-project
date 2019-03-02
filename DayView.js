@@ -5,12 +5,13 @@ import {Agenda} from "react-native-calendars";
 import React from "react";
 import _ from "lodash";
 import {toDateTime, toDateString, dayInMS, toLocalTime} from "./util";
+import {withMappedNavigationProps} from "react-navigation-props-mapper";
 
-//DayView
+@withMappedNavigationProps()
 export default class DayView extends React.Component {
     static propTypes = {
         selectedDate: PropTypes.string.isRequired,
-        onClose: PropTypes.func.isRequired
+        //onClose: PropTypes.func.isRequired
     };
 
     render() {
@@ -28,7 +29,7 @@ export default class DayView extends React.Component {
                 <Agenda style={Styles.dayView}
                         selected={this.props.selectedDate}
                         items = {dateEvents}
-                        onCalendarToggled={this.props.onClose}
+                        //onCalendarToggled={this.props.onClose}
                         renderEmptyDate={() => {
                             return(<View />)
                         }}
