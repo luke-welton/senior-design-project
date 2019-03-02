@@ -10,13 +10,13 @@ import RandomColor from "randomcolor";
 //handles converting time from UTC to local time zone
 export function toLocalTime(_time) {
     let offset = new Date().getTimezoneOffset() / 60;
-    return new Date(_time.getTime() + offset * dayInMS / 24);
+    return new Date(_time.getTime() - offset * dayInMS / 24);
 }
 
 //handles converting time from local time zone to UTC
 export function toUTC(_time) {
     let offset = new Date().getTimezoneOffset() / 60;
-    return new Date(_time.getTime() - offset * dayInMS / 24 );
+    return new Date(_time.getTime() + offset * dayInMS / 24 );
 }
 
 //handles converting a JS Date object into an ISO date string
@@ -103,7 +103,7 @@ export function toDateTime(data) {
         returnDateTime.setHours(0, 0, 0, 0);
     }
 
-    return toUTC(returnDateTime);
+    return returnDateTime;
 }
 
 //handles converting ISO date strings into US date strings
@@ -206,7 +206,6 @@ export class TimeInput extends React.Component {
         let msIn15Mins = 1000 * 60 * 15;
         let now = new Date();
         now.setMilliseconds(Math.ceil(now.getTime() / msIn15Mins) * msIn15Mins);
-        now = toUTC(now);
 
         this.state = {
             value: this.props.value ? toDateTime({time: toMilitaryTime(this.props.value)}) : now,
@@ -220,14 +219,13 @@ export class TimeInput extends React.Component {
                 <TouchableOpacity style={Styles.inputBox}
                                   onPress = {() => this.setState({open: true})}
                 >
-                    <Text>{toAMPM(toTimeString(toLocalTime(this.state.value)))}</Text>
+                    <Text>{toAMPM(toTimeString(this.state.value))}</Text>
                 </TouchableOpacity>
                 <DateTimePicker
                     date = {this.state.value}
                     mode = "time"
                     isVisible={this.state.open}
                     onConfirm = {time => {
-                        time = toUTC(time);
                         this.setState({
                             value: time,
                             open: false

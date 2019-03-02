@@ -2,7 +2,7 @@ import Firebase from 'firebase';
 import auth from "./auth.json";
 import { Client, Event } from "./objects";
 
-class Database {
+export class Database {
     constructor(config) {
         Firebase.initializeApp(config);
 

@@ -5,8 +5,9 @@ import {Agenda} from "react-native-calendars";
 import React from "react";
 import _ from "lodash";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
-import {dayInMS, toAMPM, toDateString, toLocalTime, toTimeString, randomColor} from "./util";
+import {dayInMS, toAMPM, toDateString, toTimeString, randomColor} from "./util";
 import {Client, Event, Venue} from "./objects";
+import {Database} from "./database";
 
 @withMappedNavigationProps()
 export default class DayView extends React.Component {
@@ -15,7 +16,8 @@ export default class DayView extends React.Component {
         selectedVenue: PropTypes.instanceOf(Venue).isRequired,
         clients: PropTypes.arrayOf(PropTypes.instanceOf(Client)).isRequired,
         events: PropTypes.arrayOf(PropTypes.instanceOf(Event)).isRequired,
-        venues: PropTypes.arrayOf(PropTypes.instanceOf(Venue)).isRequired
+        venues: PropTypes.arrayOf(PropTypes.instanceOf(Venue)).isRequired,
+        database: PropTypes.instanceOf(Database).isRequired
     };
 
     constructor(props) {
@@ -69,25 +71,36 @@ export default class DayView extends React.Component {
         return (
             <View style={[Styles.appContainer, DayViewStyles.appContainer]}>
                 <Agenda
-                        selected = {toDateString(toLocalTime(this.props.selectedDate))}
-                        items = {dateEvents.dates}
-                        minDate = {dateEvents.min}
-                        maxDate = {dateEvents.max}
-                        //onCalendarToggled = {this.props.onClose}
-                        // renderDay = {() => {
-                        //     return(<View />);
-                        // }}
-                        rowHasChanged = {(eventA, eventB) => eventA.id !== eventB.id}
-                        renderItem = {(event, first) => {
-                            return(
-                                <EventBox
-                                    event = {event}
-                                    first = {first}
-                                    client = {this.props.clients.find(client => client.id === event.clientID)}
-                                />
-                            )
-                        }}
-                        renderEmptyDate = {() => <View />}
+                    selected = {toDateString(this.props.selectedDate)}
+                    items = {dateEvents.dates}
+                    // minDate = {dateEvents.min}
+                    // maxDate = {dateEvents.max}
+                    onCalendarToggled = {this.props.navigation.goBack}
+                    rowHasChanged = {(eventA, eventB) => eventA.id !== eventB.id}
+                    renderItem = {(event, first) => {
+                        return (
+                            <EventBox
+                                event = {event}
+                                first = {first}
+                                client = {this.props.clients.find(client => client.id === event.clientID)}
+                                onPress = {() => this.props.navigation.navigate("Event", {
+                                    event: event,
+                                    clientList: this.props.clients,
+                                    eventList: this.props.events,
+                                    venueList: this.props.venues,
+                                    onSave: event => {
+                                        this.props.database.updateEvent(event);
+                                        this.forceUpdate();
+                                    },
+                                    onDelete: event => {
+                                        this.props.database.removeEvent(event);
+                                        this.forceUpdate();
+                                    }
+                                })}
+                            />
+                        );
+                    }}
+                    renderEmptyDate = {() => <View />}
                 />
             </View>
         );
@@ -98,6 +111,7 @@ class EventBox extends React.Component {
     static propTypes = {
         event: PropTypes.instanceOf(Event).isRequired,
         client: PropTypes.instanceOf(Client).isRequired,
+        onPress: PropTypes.func.isRequired,
         first: PropTypes.bool
     };
 
@@ -124,9 +138,7 @@ class EventBox extends React.Component {
         return (
             <TouchableOpacity
                 style={[DayViewStyles.eventContainer, this.props.first ? DayViewStyles.firstEventContainer : null]}
-                onPress = {() => {
-
-                }}
+                onPress = {this.props.onPress}
             >
                 <View style={DayViewStyles.eventInfo}>
                     {/* Time */}

@@ -1,4 +1,4 @@
-import {toTimeString, toDateString, toDateTime, dayInMS} from "./util";
+import {toTimeString, toDateString, toDateTime, dayInMS, toLocalTime, toUTC} from "./util";
 
 class Performer {
     constructor(_data) {
@@ -59,21 +59,19 @@ export class Event {
         this.venueID = _data.venue;
         this.price = parseFloat(_data.price || 0);
 
-        this.start = toDateTime({
+        this.start = toLocalTime(toDateTime({
             date: _data.date,
             time: _data.start
-        });
+        }));
 
-        let endTime = toDateTime({
+        this.end = toLocalTime(toDateTime({
             date: _data.date,
             time: _data.end
-        });
+        }));
 
-        if (endTime < this.start) {
-            endTime.setMilliseconds(endTime.getTime() + dayInMS);
+        if (this.end < this.start) {
+            this.end.setTime(this.end.getTime() + dayInMS);
         }
-
-        this.end = endTime;
     }
 
     update(data) {
@@ -107,10 +105,12 @@ export class Event {
 
 
     toData() {
+        let utcStart = toUTC(this.start);
+
         return {
-            date: toDateString(this.start),
-            start: toTimeString(this.start),
-            end: toTimeString(this.end),
+            date: toDateString(utcStart),
+            start: toTimeString(utcStart),
+            end: toTimeString(toUTC(this.end)),
             client: this.clientID || "",
             venue: this.venueID || "",
             price: this.price || 0

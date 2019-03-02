@@ -61,6 +61,7 @@ export default StyleSheet.create({
     },
     buttons: {
         alignSelf: "flex-end",
-        marginTop: 5
+        marginTop: 5,
+        marginBottom: 5
     }
 });

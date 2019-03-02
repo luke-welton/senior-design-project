@@ -6,24 +6,27 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scrollview"
 import { RadioGroup } from "react-native-btr";
 import DateTimePicker from "react-native-modal-datetime-picker"
 import Styles from "./styles"
-import {toTimeString, toAMPM, toDateString, toMilitaryTime, toUS, toLocalTime, toDateTime, toISO,
-        Dropdown, TimeInput} from "./util";
+import {
+    toTimeString, toAMPM, toDateString, toMilitaryTime, toUS, toDateTime,
+    Dropdown, TimeInput
+} from "./util";
+import {withMappedNavigationProps} from "react-navigation-props-mapper";
 
 const defaultTimes = [
     "7:30 PM - 9:00 PM",
     "9:30 PM - 11:00 PM"
 ];
 
+@withMappedNavigationProps()
 export default class EventView extends React.Component {
     static propTypes = {
         event: PropTypes.instanceOf(Event),
-        defaultVenue: PropTypes.instanceOf(Venue).isRequired,
-        defaultDate: PropTypes.instanceOf(Date).isRequired,
+        defaultVenue: PropTypes.instanceOf(Venue),
+        defaultDate: PropTypes.instanceOf(Date),
         clientList: PropTypes.arrayOf(PropTypes.instanceOf(Client)).isRequired,
         venueList: PropTypes.arrayOf(PropTypes.instanceOf(Venue)).isRequired,
         eventList: PropTypes.arrayOf(PropTypes.instanceOf(Event)).isRequired,
         onSave: PropTypes.func.isRequired,
-        onClose: PropTypes.func.isRequired,
         onDelete: PropTypes.func
     };
 
@@ -31,7 +34,6 @@ export default class EventView extends React.Component {
         super(props);
 
         let event = this.props.event || new Event();
-
         this.isNew = !event.id;
 
         this.state = {
@@ -39,8 +41,8 @@ export default class EventView extends React.Component {
             venueID: this.isNew ? this.props.defaultVenue.id : event.venueID,
             price: event.price.toString() || "",
             date: toDateString(event.start),
-            startTime: toTimeString(toLocalTime(event.start)),
-            endTime: toTimeString(toLocalTime(event.end)),
+            startTime: toTimeString(event.start),
+            endTime: toTimeString(event.end),
             customTime: false
         };
 
@@ -66,8 +68,7 @@ export default class EventView extends React.Component {
             }
         ];
 
-        let timeString = [toAMPM(this.state.startTime),
-                          toAMPM(this.state.endTime)].join(" - ");
+        let timeString = [toAMPM(this.state.startTime), toAMPM(this.state.endTime)].join(" - ");
 
         let matchingButton = buttons.find(button => {
             return button.label === timeString;
@@ -134,19 +135,24 @@ export default class EventView extends React.Component {
 
                             if (selected.value === 0 && !this.state.customTime) {
                                 this.setState({customTime: true});
-                            } else if (selected.value !== 0 && this.state.customTime) {
+                            } else {
                                 let splits = selected.label.split("-");
-                                this.setState({
-                                    customTime: false,
+
+                                let newState = {
                                     startTime: toMilitaryTime(splits[0].trim()),
                                     endTime: toMilitaryTime(splits[1].trim())
-                                });
+                                };
+
+                                if (this.state.customTime) {
+                                    newState.customTime = false;
+                                }
+
+                                this.setState(newState);
                             }
                         }}
                     />
                 </View>
                 <View style={this.state.customTime ? Styles.customTimeContainer : Styles.hide}>
-                    {/*<View style={Styles.inputTitle} />*/}
                     <View style={Styles.inputRow}>
                         <Text style={Styles.customTimeTitle}>Start Time</Text>
                         <TimeInput
@@ -156,7 +162,6 @@ export default class EventView extends React.Component {
                     </View>
                 </View>
                 <View style={this.state.customTime ? Styles.customTimeContainer : Styles.hide}>
-                    {/*<View style={Styles.inputTitle} />*/}
                     <View style={Styles.inputRow}>
                         <Text style={Styles.customTimeTitle}>End Time</Text>
                         <TimeInput
@@ -188,9 +193,10 @@ export default class EventView extends React.Component {
                         title = {this.isNew ? "Create Event" : "Save Event"}
                         onPress = {() => {
                             let event = this.props.event || new Event();
-
                             event.update(this.state);
+
                             this.props.onSave(event);
+                            this.props.navigation.goBack();
                         }}
                     />
 
@@ -199,7 +205,10 @@ export default class EventView extends React.Component {
                         <Button style={Styles.buttons}
                             title = "Delete Event"
                             color = "red"
-                            onPress = {this.props.onDelete}
+                            onPress = {() => {
+                                this.props.onDelete(this.props.event);
+                                this.props.navigation.goBack();
+                            }}
                         />
                 }
             </KeyboardAwareScrollView>
@@ -222,23 +231,21 @@ class DateInput extends React.Component {
         super(props);
 
         this.state = {
-            value: toDateTime({date: toISO(this.props.value)}),
+            value: toDateTime({date: this.props.value}),
             open: false
         };
     }
 
     render() {
-        let localTime = toLocalTime(this.state.value);
-
         return (
             <View style={Styles.datetimeContainer}>
                 <TouchableOpacity style={Styles.inputBox}
                     onPress = {() => this.setState({open: true})}
                 >
-                    <Text>{toUS(toDateString(localTime))}</Text>
+                    <Text>{toUS(toDateString(this.state.value))}</Text>
                 </TouchableOpacity>
                 <DateTimePicker
-                    date = {localTime}
+                    date = {this.state.value}
                     mode = "date"
                     isVisible = {this.state.open}
                     onConfirm = {date => {

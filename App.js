@@ -7,6 +7,7 @@ import Styles from "./styles";
 import {Venue} from "./objects";
 import {createStackNavigator, createAppContainer, createSwitchNavigator} from "react-navigation";
 import {CalendarList} from "react-native-calendars";
+import {toDateTime} from "./util";
 
 // Firebase's implementation utilizes long timers,
 // which React Native doesn't like and throws a warning,
@@ -35,7 +36,7 @@ class LoadingScreen extends React.Component {
             loadedData.events = values[1];
             loadedData.venues = values[2];
 
-            this.props.navigation.navigate("App", loadedData).catch(err => console.log(err));
+            this.props.navigation.navigate("App", loadedData);
         }).catch(err => console.log(err));
     }
 
@@ -53,7 +54,7 @@ class MonthView extends React.Component {
         super(props);
 
         this.state = {
-            venue: 1
+            venue: loadedData.venues[0]
         };
     }
 
@@ -61,26 +62,27 @@ class MonthView extends React.Component {
         return (
             <View style={[Styles.appContainer, Styles.monthView]}>
                 <Picker style={Styles.calPicker}
-                        selectedValue={this.state.venue.toString()}
-                        onValueChange={(value) => {
-                            this.setState({venue: parseInt(value)});
-                        }}
+                        selectedValue = {this.state.venue.id}
+                        onValueChange = {value =>
+                            this.setState({venue: loadedData.venues.find(venue => venue.id === value)})
+                        }
                 >
-                    <Picker.Item label="Venue A" value="1"/>
-                    <Picker.Item label="Venue B" value="2"/>
-                    <Picker.Item label="Venue C" value="3"/>
+                    {loadedData.venues.map(venue =>
+                        <Picker.Item label={venue.name} value={venue.id} key={venue.id} />
+                    )}
                 </Picker>
                 <CalendarList style={Styles.monthView}
-                              horizontal={Platform.OS === "android"}
-                              pagingEnabled={Platform.OS === "android"}
-                              hideArrows={Platform.OS !== "android"}
-                              onDayPress={day => {
+                              horizontal = {Platform.OS === "android"}
+                              pagingEnabled = {Platform.OS === "android"}
+                              hideArrows = {Platform.OS !== "android"}
+                              onDayPress = {day => {
                                   this.props.navigation.navigate("Day", {
-                                      selectedDate: day.dateString,
+                                      selectedDate: toDateTime({date: day.dateString}),
                                       selectedVenue: this.state.venue,
                                       clients: loadedData.clients,
                                       events: loadedData.events,
-                                      venues: loadedData.venues
+                                      venues: loadedData.venues,
+                                      database: db
                                   });
                               }}
                 />
