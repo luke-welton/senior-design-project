@@ -45,6 +45,24 @@ class Database {
     //     });
     // }
 
+    // copyClientsAndEvents() {
+    //     Promise.all([this.getClients(), this.getEvents()]).then(values => {
+    //         let clients = values[0];
+    //         let events = values[1];
+    //         let combinedDB = this.db.ref("database/combined");
+    //
+    //         events.forEach(event => {
+    //             let matchingClient = clients.find(client => client.id === event.clientID);
+    //             let eventObj = event.toData();
+    //
+    //             delete eventObj.clientID;
+    //             eventObj.client = matchingClient.toData();
+    //
+    //             combinedDB.push(eventObj);
+    //         });
+    //     });
+    // }
+
     // load information on all clients
     getClients() {
         return new Promise((res, rej) => {
