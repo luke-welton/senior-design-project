@@ -35,8 +35,6 @@ export default class EventView extends React.Component {
         let event = this.props.event || new Event();
         this.isNew = !event.id;
 
-
-
         this.state = {
             clientID:  event.clientID || this.props.clientList[0].id,
             venueID: this.isNew ? this.props.defaultVenue.id : event.venueID,

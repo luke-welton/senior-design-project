@@ -44,7 +44,8 @@ export default class DayView extends React.Component {
         });
 
         //insert events into object
-        this.props.loadedData.events.forEach(event => {
+        let filteredEvents = this.props.loadedData.events.filter(event => event.venueID === this.state.selectedVenue.id);
+        filteredEvents.forEach(event => {
             let eventDate = toDateString(event.start);
             if (dateEvents[eventDate]) {
                 dateEvents[eventDate].push(event);

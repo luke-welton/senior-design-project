@@ -15,9 +15,9 @@ import {AppContainer, toDateTime, toDateString, randomColor} from "./util";
 console.ignoredYellowBox = ['Setting a timer'];
 
 const genericVenues = [
-    new Venue(0, "Venue A"),
-    new Venue(1, "Venue B"),
-    new Venue(2, "Venue C")
+    new Venue("aaa", "Venue A"),
+    new Venue("bbb", "Venue B"),
+    new Venue("ccc", "Venue C")
 ];
 
 //stores all clients/events/venues loaded from the database, to prevent unnecessary db calls
@@ -67,8 +67,9 @@ class MonthView extends React.Component {
             };
         });
 
+        let filteredEvents = loadedData.events.filter(event => event.venueID === this.state.venue.id);
         let markedDates = {};
-        loadedData.events.forEach(event => {
+        filteredEvents.forEach(event => {
             let eventDate = toDateString(event.start);
 
             if (!markedDates[eventDate]) {
