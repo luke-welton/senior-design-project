@@ -1,11 +1,10 @@
-import {StyleSheet, TouchableOpacity, View, Text} from "react-native";
+import {StyleSheet, TouchableOpacity, View, Text, Button} from "react-native";
 import PropTypes from "prop-types";
-import Styles from "./styles";
 import {Agenda} from "react-native-calendars";
 import React from "react";
 import _ from "lodash";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
-import {dayInMS, toAMPM, toDateString, toTimeString, randomColor} from "./util";
+import {dayInMS, toAMPM, toDateString, toTimeString, randomColor, Dropdown, AppContainer} from "./util";
 import {Client, Event, Venue} from "./objects";
 import {Database} from "./database";
 
@@ -14,9 +13,11 @@ export default class DayView extends React.Component {
     static propTypes = {
         selectedDate: PropTypes.instanceOf(Date).isRequired,
         selectedVenue: PropTypes.instanceOf(Venue).isRequired,
-        clients: PropTypes.arrayOf(PropTypes.instanceOf(Client)).isRequired,
-        events: PropTypes.arrayOf(PropTypes.instanceOf(Event)).isRequired,
-        venues: PropTypes.arrayOf(PropTypes.instanceOf(Venue)).isRequired,
+        loadedData: PropTypes.shape({
+            clients: PropTypes.arrayOf(PropTypes.instanceOf(Client)),
+            events: PropTypes.arrayOf(PropTypes.instanceOf(Event)),
+            venues: PropTypes.arrayOf(PropTypes.instanceOf(Venue))
+        }).isRequired,
         database: PropTypes.instanceOf(Database).isRequired
     };
 
@@ -27,74 +28,96 @@ export default class DayView extends React.Component {
         };
     }
 
+    shouldComponentUpdate() {
+        return true;
+    }
+
     _generateDateStorage() {
         let dateEvents = {};
-        let minDate = null;
-        let maxDate = null;
 
+        //initialize date properties for object
         _.range(-13, 16).forEach(mult => {
             let date = new Date(this.props.selectedDate.getTime());
             date.setTime(date.getTime() + mult * dayInMS);
 
-            if (!minDate || date < minDate) {
-                minDate = date;
-            }
-            if (!maxDate || date > maxDate) {
-                maxDate = date;
-            }
-
             dateEvents[toDateString(date)] = [];
         });
 
-        this.props.events.forEach(event => {
+        //insert events into object
+        this.props.loadedData.events.forEach(event => {
             let eventDate = toDateString(event.start);
             if (dateEvents[eventDate]) {
                 dateEvents[eventDate].push(event);
             }
         });
 
+        //sort events within object
         for (let date in dateEvents) {
             if (dateEvents.hasOwnProperty(date)) {
                 dateEvents[date].sort((eventA, eventB) => eventA.start < eventB.start ? -1 : 1);
             }
         }
 
-        return {
-            dates: dateEvents,
-            min: minDate,
-            max: maxDate
-        };
+        return dateEvents;
+    }
+
+    _updateEventInData(event) {
+        let events = this.props.loadedData.events;
+        events = events.filter(_event => _event.id !== event.id);
+        events.push(new Event(event.toData(), event.id));
+        this.props.loadedData.events = events;
+    }
+
+    _removeEventFromData(eventID) {
+        let events = this.props.loadedData.events;
+        events = events.filter(event => event.id !== eventID);
+        this.props.loadedData.events = events;
+    }
+
+    _forceRerender() {
+        this.props.loadedData = Object.assign({}, this.props.loadedData);
+        this.forceUpdate();
     }
 
     render() {
-        let dateEvents = this._generateDateStorage();
         return (
-            <View style={[Styles.appContainer, DayViewStyles.appContainer]}>
+            <AppContainer>
+                <Dropdown
+                    options = {this.props.loadedData.venues.map(venue => {
+                        return {
+                            label: venue.name,
+                            value: venue.id
+                        };
+                    })}
+                    selectedValue = {this.props.selectedVenue.id}
+                    onValueChange = {venueID => this.setState({
+                        selectedVenue: this.props.loadedData.venues.find(venue => venue.id === venueID)
+                    })}
+                />
                 <Agenda
                     selected = {toDateString(this.props.selectedDate)}
-                    items = {dateEvents.dates}
-                    // minDate = {dateEvents.min}
-                    // maxDate = {dateEvents.max}
-                    onCalendarToggled = {this.props.navigation.goBack}
-                    rowHasChanged = {(eventA, eventB) => eventA.id !== eventB.id}
+                    items = {this._generateDateStorage()}
+                    rowHasChanged = {(eventA, eventB) => eventA.isEqual(eventB)}
                     renderItem = {(event, first) => {
                         return (
                             <EventBox
                                 event = {event}
                                 first = {first}
-                                client = {this.props.clients.find(client => client.id === event.clientID)}
+                                client = {this.props.loadedData.clients.find(client => client.id === event.clientID)}
                                 onPress = {() => this.props.navigation.navigate("Event", {
                                     event: event,
-                                    clientList: this.props.clients,
-                                    eventList: this.props.events,
-                                    venueList: this.props.venues,
+                                    clientList: this.props.loadedData.clients,
+                                    eventList: this.props.loadedData.events,
+                                    venueList: this.props.loadedData.venues,
                                     onSave: event => {
                                         this.props.database.updateEvent(event);
-                                        this.forceUpdate();
+                                        this._updateEventInData(event);
+                                        this._forceRerender();
                                     },
                                     onDelete: event => {
                                         this.props.database.removeEvent(event);
-                                        this.forceUpdate();
+                                        this._removeEventFromData(event.id);
+                                        this._forceRerender();
                                     }
                                 })}
                             />
@@ -102,7 +125,25 @@ export default class DayView extends React.Component {
                     }}
                     renderEmptyDate = {() => <View />}
                 />
-            </View>
+                <View style={DayViewStyles.buttonContainer}>
+                    <Button
+                        title = "Add New Event"
+                        color = "green"
+                        onPress = {() => this.props.navigation.navigate("Event", {
+                            clientList: this.props.loadedData.clients,
+                            eventList: this.props.loadedData.events,
+                            venueList: this.props.loadedData.venues,
+                            defaultVenue: this.props.selectedVenue,
+                            defaultDate: this.props.selectedDate,
+                            onSave: event => {
+                                this.props.database.addEvent(event);
+                                this.props.loadedData.events.push(event);
+                                this._forceRerender();
+                            }
+                        })}
+                    />
+                </View>
+            </AppContainer>
         );
     }
 }
@@ -162,9 +203,6 @@ class EventBox extends React.Component {
 }
 
 const DayViewStyles = StyleSheet.create({
-    appContainer: {
-        height: "100%"
-    },
     eventContainer: {
         backgroundColor: "#fff",
         padding: 10,
@@ -201,5 +239,8 @@ const DayViewStyles = StyleSheet.create({
     },
     eventIconText: {
         fontSize: 25
+    },
+    buttonContainer: {
+        padding: 5
     }
 });

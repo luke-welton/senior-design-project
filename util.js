@@ -1,11 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {Picker, Platform, Text, TouchableOpacity, View} from "react-native";
+import {Picker, Platform, Text, TouchableOpacity, View, StatusBar} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import Styles from "./styles";
 import TinyColor from "tinycolor2";
 import RandomColor from "randomcolor";
+import _ from "lodash";
 
 //handles converting time from UTC to local time zone
 export function toLocalTime(_time) {
@@ -150,10 +151,20 @@ export { dayInMS };
 
 export class Dropdown extends React.Component {
     static propTypes = {
-        options: PropTypes.arrayOf(PropTypes.object).isRequired,
+        options: PropTypes.arrayOf(PropTypes.shape({
+            label: PropTypes.string,
+            value: PropTypes.string
+        })).isRequired,
         selectedValue: PropTypes.string,
         onValueChange: PropTypes.func.isRequired,
-        style: PropTypes.object
+        style: PropTypes.oneOfType([
+            PropTypes.object,
+            PropTypes.arrayOf(PropTypes.object)
+        ])
+    };
+
+    static defaultProps = {
+        style: null
     };
 
     constructor(props) {
@@ -246,4 +257,26 @@ export function randomColor(seed) {
         hex: color.toHexString(),
         isDark: color.isDark()
     };
+}
+
+export class AppContainer extends React.Component {
+    static propTypes = {
+        style: PropTypes.oneOfType([
+            PropTypes.object,
+            PropTypes.arrayOf(PropTypes.object)
+        ])
+    };
+
+    static defaultProps = {
+        style: null
+    };
+
+    render() {
+        return(
+            <View style={_.flatten([Styles.appContainer, this.props.style])}>
+                <StatusBar barStyle="light-content" backgroundColor="#fff"/>
+                {this.props.children}
+            </View>
+        );
+    }
 }

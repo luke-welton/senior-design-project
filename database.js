@@ -101,18 +101,14 @@ export class Database {
     updateClient(_client) {
         return new Promise((res, rej) => {
            let clientRef = this.clientDB.child(_client.id);
-           clientRef.update(_client.toData())
-               .then(() => res())
-               .catch(() => rej());
+           clientRef.update(_client.toData()).then(() => res()).catch(() => rej());
         });
     }
 
     removeClient(_client) {
         return new Promise((res, rej) => {
             let clientRef = this.clientDB.child(_client.id);
-            clientRef.remove()
-                .then(() => res())
-                .catch(() => rej());
+            clientRef.remove().then(() => res()).catch(() => rej());
         });
     }
 
@@ -127,18 +123,14 @@ export class Database {
     updateEvent(_event) {
         return new Promise((res, rej) => {
             let eventRef = this.eventDB.child(_event.id);
-            eventRef.update(_event.toData())
-                .then(() => res())
-                .catch(() => rej());
+            eventRef.update(_event.toData()).then(() => res()).catch(() => rej());
         });
     }
 
     removeEvent(_event) {
         return new Promise((res, rej) => {
             let eventRef = this.eventDB.child(_event.id);
-            eventRef.delete()
-                .then(() => res())
-                .catch(() => rej());
+            eventRef.remove().then(() => res()).catch(() => rej());
         });
     }
 }

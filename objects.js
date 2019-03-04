@@ -116,6 +116,14 @@ export class Event {
             price: this.price || 0
         };
     }
+
+    isEqual(other) {
+        return this.id === other.id &&
+               this.clientID === other.clientID &&
+               this.venueID === other.venueID &&
+               this.start.getTime() === other.start.getTime() &&
+               this.end.getTime() === other.start.getTime();
+    }
 }
 
 export class Venue {

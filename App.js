@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, ActivityIndicator, Picker, Platform} from 'react-native';
+import {ActivityIndicator, Picker, Platform} from 'react-native';
 import DayView from "./DayView";
 import EventView from "./EventView";
 import db from "./database";
@@ -7,7 +7,7 @@ import Styles from "./styles";
 import {Venue} from "./objects";
 import {createStackNavigator, createAppContainer, createSwitchNavigator} from "react-navigation";
 import {CalendarList} from "react-native-calendars";
-import {toDateTime} from "./util";
+import {AppContainer, toDateTime, toDateString, randomColor} from "./util";
 
 // Firebase's implementation utilizes long timers,
 // which React Native doesn't like and throws a warning,
@@ -42,9 +42,9 @@ class LoadingScreen extends React.Component {
 
     render() {
         return(
-            <View style={Styles.appContainer}>
+            <AppContainer>
                 <ActivityIndicator size="large"/>
-            </View>
+            </AppContainer>
         );
     }
 }
@@ -58,35 +58,57 @@ class MonthView extends React.Component {
         };
     }
 
+    _generateMarkedDates() {
+        let colors = {};
+        loadedData.clients.forEach(client => {
+            colors[client.id] = {
+                key: client.id,
+                color: randomColor(client.id).hex
+            };
+        });
+
+        let markedDates = {};
+        loadedData.events.forEach(event => {
+            let eventDate = toDateString(event.start);
+
+            if (!markedDates[eventDate]) {
+                markedDates[eventDate] = {dots: []};
+            }
+            markedDates[eventDate].dots.push(colors[event.clientID]);
+        });
+
+        return markedDates;
+    }
+
     render() {
         return (
-            <View style={[Styles.appContainer, Styles.monthView]}>
-                <Picker style={Styles.calPicker}
-                        selectedValue = {this.state.venue.id}
-                        onValueChange = {value =>
-                            this.setState({venue: loadedData.venues.find(venue => venue.id === value)})
-                        }
+            <AppContainer>
+                <Picker
+                    selectedValue = {this.state.venue.id}
+                    onValueChange = {value =>
+                        this.setState({venue: loadedData.venues.find(venue => venue.id === value)})
+                    }
                 >
                     {loadedData.venues.map(venue =>
                         <Picker.Item label={venue.name} value={venue.id} key={venue.id} />
                     )}
                 </Picker>
                 <CalendarList style={Styles.monthView}
-                              horizontal = {Platform.OS === "android"}
-                              pagingEnabled = {Platform.OS === "android"}
-                              hideArrows = {Platform.OS !== "android"}
-                              onDayPress = {day => {
-                                  this.props.navigation.navigate("Day", {
-                                      selectedDate: toDateTime({date: day.dateString}),
-                                      selectedVenue: this.state.venue,
-                                      clients: loadedData.clients,
-                                      events: loadedData.events,
-                                      venues: loadedData.venues,
-                                      database: db
-                                  });
-                              }}
+                    horizontal = {Platform.OS === "android"}
+                    pagingEnabled = {Platform.OS === "android"}
+                    hideArrows = {Platform.OS !== "android"}
+                    markingType = "multi-dot"
+                    markedDates = {this._generateMarkedDates()}
+                    onDayPress = {day => {
+                      this.props.navigation.navigate("Day", {
+                          selectedDate: toDateTime({date: day.dateString}),
+                          selectedVenue: this.state.venue,
+                          loadedData: loadedData,
+                          database: db
+                      });
+                    }}
                 />
-            </View>
+            </AppContainer>
         );
     }
 }
