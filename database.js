@@ -58,10 +58,10 @@ export class Database {
     //             delete eventObj.clientID;
     //             eventObj.client = matchingClient.toData();
     //
-    //             combinedDB.push(eventObj);
+    //             combinedDB.child(event.id).set(eventObj).catch(err => console.log(err));
     //         });
-    //     });
-    // }
+    //     }).catch(err => console.log(err));
+    //}
 
     // load information on all clients
     getClients() {
