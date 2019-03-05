@@ -45,6 +45,24 @@ export class Database {
     //     });
     // }
 
+    // copyClientsAndEvents() {
+    //     Promise.all([this.getClients(), this.getEvents()]).then(values => {
+    //         let clients = values[0];
+    //         let events = values[1];
+    //         let combinedDB = this.db.ref("database/combined");
+    //
+    //         events.forEach(event => {
+    //             let matchingClient = clients.find(client => client.id === event.clientID);
+    //             let eventObj = event.toData();
+    //
+    //             delete eventObj.clientID;
+    //             eventObj.client = matchingClient.toData();
+    //
+    //             combinedDB.push(eventObj);
+    //         });
+    //     });
+    // }
+
     // load information on all clients
     getClients() {
         return new Promise((res, rej) => {
@@ -101,14 +119,14 @@ export class Database {
     updateClient(_client) {
         return new Promise((res, rej) => {
            let clientRef = this.clientDB.child(_client.id);
-           clientRef.update(_client.toData()).then(() => res()).catch(() => rej());
+           clientRef.update(_client.toData()).then(() => res()).catch(err => rej(err));
         });
     }
 
     removeClient(_client) {
         return new Promise((res, rej) => {
             let clientRef = this.clientDB.child(_client.id);
-            clientRef.remove().then(() => res()).catch(() => rej());
+            clientRef.remove().then(() => res()).catch(err => rej(err));
         });
     }
 
@@ -116,21 +134,59 @@ export class Database {
         return new Promise((res, rej) => {
             let eventRef = this.eventDB.push(_event.toData());
             _event.id = eventRef.key;
-            res();
+
+            //add this back in after Cycle 1
+            //res()
+
+            //remove everything below here after Cycle 1
+            this.getClients().then(clients => {
+                let matchingClient = clients.find(client => client.id === _event.clientID);
+                let combinedData = _event.toData();
+                combinedData.client = matchingClient.toData();
+
+                this.db.ref("database/combined").child(_event.id).set(combinedData).then(() => res())
+                    .catch(err => rej(err));
+            }).catch(err => rej(err));
         });
     }
 
     updateEvent(_event) {
         return new Promise((res, rej) => {
             let eventRef = this.eventDB.child(_event.id);
-            eventRef.update(_event.toData()).then(() => res()).catch(() => rej());
+            //add this back in after Cycle 1
+            //eventRef.update(_event.toData()).then(() => res()).catch(err => rej(err));
+
+            //remove everything below here after Cycle 1
+            let combinedRef = this.db.ref("database/combined").child(_event.id);
+
+            let updateEvent = new Promise((res, rej) => {
+                eventRef.update(_event.toData()).then(() => res()).catch(err => rej(err));
+            });
+
+            let updateCombined = new Promise((res, rej) => {
+                this.getClients().then(clients => {
+                    let matchingClient = clients.find(client => client.id === _event.clientID);
+                    let combinedData = _event.toData();
+                    combinedData.client = matchingClient.toData();
+
+                    combinedRef.set(combinedData).then(() => res()).catch(err => rej(err));
+                }).catch(err => rej(err));
+            });
+
+            Promise.all([updateEvent, updateCombined]).then(() => res()).catch(err => rej(err));
         });
     }
 
     removeEvent(_event) {
         return new Promise((res, rej) => {
             let eventRef = this.eventDB.child(_event.id);
-            eventRef.remove().then(() => res()).catch(() => rej());
+            //add this back in after Cycle 1
+            //eventRef.remove().then(() => res()).catch(err => rej(err));
+
+            //remove everything below here after Cycle 1
+            let combinedRef = this.db.ref("database/combined").child(_event.id);
+
+            Promise.all([eventRef.remove(), combinedRef.remove()]).then(() => res()).catch(err => rej(err));
         });
     }
 }
