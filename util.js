@@ -1,18 +1,23 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {Picker, Platform} from "react-native";
+import {Picker, Platform, Text, TouchableOpacity, View, StatusBar} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
+import DateTimePicker from "react-native-modal-datetime-picker";
+import Styles from "./styles";
+import TinyColor from "tinycolor2";
+import RandomColor from "randomcolor";
+import _ from "lodash";
 
 //handles converting time from UTC to local time zone
 export function toLocalTime(_time) {
     let offset = new Date().getTimezoneOffset() / 60;
-    return new Date(_time.getTime() + offset * dayInMS / 24);
+    return new Date(_time.getTime() - offset * dayInMS / 24);
 }
 
 //handles converting time from local time zone to UTC
 export function toUTC(_time) {
     let offset = new Date().getTimezoneOffset() / 60;
-    return new Date(_time.getTime() - offset * dayInMS / 24 );
+    return new Date(_time.getTime() + offset * dayInMS / 24 );
 }
 
 //handles converting a JS Date object into an ISO date string
@@ -65,6 +70,7 @@ export function toMilitaryTime(ampmTime) {
     let ampm = splits[1];
 
     splits = splits[0].split(":");
+
     let hour = parseInt(splits[0]);
 
     if (hour === 12 && ampm === "AM") {
@@ -98,7 +104,7 @@ export function toDateTime(data) {
         returnDateTime.setHours(0, 0, 0, 0);
     }
 
-    return toUTC(returnDateTime);
+    return returnDateTime;
 }
 
 //handles converting ISO date strings into US date strings
@@ -145,10 +151,20 @@ export { dayInMS };
 
 export class Dropdown extends React.Component {
     static propTypes = {
-        options: PropTypes.arrayOf(PropTypes.object).isRequired,
+        options: PropTypes.arrayOf(PropTypes.shape({
+            label: PropTypes.string,
+            value: PropTypes.string
+        })).isRequired,
         selectedValue: PropTypes.string,
         onValueChange: PropTypes.func.isRequired,
-        style: PropTypes.object
+        style: PropTypes.oneOfType([
+            PropTypes.object,
+            PropTypes.arrayOf(PropTypes.object)
+        ])
+    };
+
+    static defaultProps = {
+        style: null
     };
 
     constructor(props) {
@@ -185,5 +201,82 @@ export class Dropdown extends React.Component {
                 />
             );
         }
+    }
+}
+
+//helper class to input time since the timepicker is bizarrely complex
+export class TimeInput extends React.Component {
+    static propTypes = {
+        onValueChange: PropTypes.func.isRequired,
+        value: PropTypes.string
+    };
+
+    constructor(props) {
+        super(props);
+
+        let msIn15Mins = 1000 * 60 * 15;
+        let now = new Date();
+        now.setMilliseconds(Math.ceil(now.getTime() / msIn15Mins) * msIn15Mins);
+
+        this.state = {
+            value: this.props.value ? toDateTime({time: toMilitaryTime(this.props.value)}) : now,
+            open: false
+        };
+    }
+
+    render() {
+        return(
+            <View style={Styles.datetimeContainer}>
+                <TouchableOpacity style={Styles.inputBox}
+                                  onPress = {() => this.setState({open: true})}
+                >
+                    <Text>{toAMPM(toTimeString(this.state.value))}</Text>
+                </TouchableOpacity>
+                <DateTimePicker
+                    date = {this.state.value}
+                    mode = "time"
+                    isVisible={this.state.open}
+                    onConfirm = {time => {
+                        this.setState({
+                            value: time,
+                            open: false
+                        });
+
+                        this.props.onValueChange(toTimeString(time));
+                    }}
+                    onCancel = {() => this.setState({open: false})}
+                />
+            </View>
+        );
+    }
+}
+
+export function randomColor(seed) {
+    let color = TinyColor(RandomColor({seed: seed}));
+    return {
+        hex: color.toHexString(),
+        isDark: color.isDark()
+    };
+}
+
+export class AppContainer extends React.Component {
+    static propTypes = {
+        style: PropTypes.oneOfType([
+            PropTypes.object,
+            PropTypes.arrayOf(PropTypes.object)
+        ])
+    };
+
+    static defaultProps = {
+        style: null
+    };
+
+    render() {
+        return(
+            <View style={_.flatten([Styles.appContainer, this.props.style])}>
+                <StatusBar barStyle="light-content" backgroundColor="#fff"/>
+                {this.props.children}
+            </View>
+        );
     }
 }

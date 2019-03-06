@@ -1,11 +1,12 @@
 import React from 'react';
-import {View, ActivityIndicator, Picker, Platform} from 'react-native';
+import {ActivityIndicator, Picker, Platform} from 'react-native';
 import DayView from "./DayView";
 import EventView from "./EventView";
 import db from "./database";
 import Styles from "./styles";
 import {createStackNavigator, createAppContainer, createSwitchNavigator} from "react-navigation";
 import {CalendarList} from "react-native-calendars";
+import {AppContainer, toDateTime, toDateString, randomColor} from "./util";
 
 // Firebase's implementation utilizes long timers,
 // which React Native doesn't like and throws a warning,
@@ -26,15 +27,15 @@ class LoadingScreen extends React.Component {
             loadedData.events = values[1];
             loadedData.venues = values[2];
 
-            this.props.navigation.navigate("App", loadedData).catch(err => console.log(err));
+            this.props.navigation.navigate("App", loadedData);
         }).catch(err => console.log(err));
     }
 
     render() {
         return(
-            <View style={Styles.appContainer}>
+            <AppContainer>
                 <ActivityIndicator size="large"/>
-            </View>
+            </AppContainer>
         );
     }
 }
@@ -44,32 +45,62 @@ class MonthView extends React.Component {
         super(props);
 
         this.state = {
-            venue: 1
+            venue: loadedData.venues[0]
         };
+    }
+
+    _generateMarkedDates() {
+        let colors = {};
+        loadedData.clients.forEach(client => {
+            colors[client.id] = {
+                key: client.id,
+                color: randomColor(client.id).hex
+            };
+        });
+
+        let filteredEvents = loadedData.events.filter(event => event.venueID === this.state.venue.id);
+        let markedDates = {};
+        filteredEvents.forEach(event => {
+            let eventDate = toDateString(event.start);
+
+            if (!markedDates[eventDate]) {
+                markedDates[eventDate] = {dots: []};
+            }
+            markedDates[eventDate].dots.push(colors[event.clientID]);
+        });
+
+        return markedDates;
     }
 
     render() {
         return (
-            <View style={[Styles.appContainer, Styles.monthView]}>
-                <Picker style={Styles.calPicker}
-                        selectedValue={this.state.venue.toString()}
-                        onValueChange={(value) => {
-                            this.setState({venue: parseInt(value)});
-                        }}
+            <AppContainer>
+                <Picker
+                    selectedValue = {this.state.venue.id}
+                    onValueChange = {value =>
+                        this.setState({venue: loadedData.venues.find(venue => venue.id === value)})
+                    }
                 >
-                    <Picker.Item label="Venue A" value="1"/>
-                    <Picker.Item label="Venue B" value="2"/>
-                    <Picker.Item label="Venue C" value="3"/>
+                    {loadedData.venues.map(venue =>
+                        <Picker.Item label={venue.name} value={venue.id} key={venue.id} />
+                    )}
                 </Picker>
                 <CalendarList style={Styles.monthView}
-                              horizontal={Platform.OS === "android"}
-                              pagingEnabled={Platform.OS === "android"}
-                              hideArrows={Platform.OS !== "android"}
-                              onDayPress={day => {
-                                  this.props.navigation.navigate("Day", {selectedDate: day.dateString});
-                              }}
+                    horizontal = {Platform.OS === "android"}
+                    pagingEnabled = {Platform.OS === "android"}
+                    hideArrows = {Platform.OS !== "android"}
+                    markingType = "multi-dot"
+                    markedDates = {this._generateMarkedDates()}
+                    onDayPress = {day => {
+                      this.props.navigation.navigate("Day", {
+                          selectedDate: toDateTime({date: day.dateString}),
+                          selectedVenue: this.state.venue,
+                          loadedData: loadedData,
+                          database: db
+                      });
+                    }}
                 />
-            </View>
+            </AppContainer>
         );
     }
 }

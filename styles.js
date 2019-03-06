@@ -4,18 +4,13 @@ export default StyleSheet.create({
     appContainer: {
         display: "flex",
         flexDirection: "column",
-        marginTop: Platform.OS === "android" ? 25 : 20
-    },
-    calPicker: {
-
-    },
-    monthView: {
-
-    },
-    dayView: {
-
+        height: "100%",
+        paddingTop: Platform.OS === "android" ? 25 : 0,
     },
     infoView: {
+        justifyContent: "space-between"
+    },
+    contentContainer: {
         padding: 20
     },
     hide: {
@@ -40,7 +35,7 @@ export default StyleSheet.create({
         flexGrow: 4,
         flexBasis: 0,
         fontSize: 15,
-        flexShrink: 1
+        flexShrink: 0
     },
     customTimeContainer: {
         display: "flex",
@@ -56,7 +51,8 @@ export default StyleSheet.create({
     },
     datetimeContainer: {
         flexGrow: 4,
-        flexBasis: 0
+        flexBasis: 0,
+        textAlign: "center"
     },
     pickerBox: {
         display: "flex",
@@ -67,9 +63,11 @@ export default StyleSheet.create({
         flexGrow: 4,
         flexBasis: 0
     },
-    buttons: {
-        alignSelf: "flex-end",
-        marginTop: 5
+    buttonContainer: {
+        padding: 20,
+        width: "100%"
     },
-
+    buttonBuffer: {
+        height: 10
+    }
 });

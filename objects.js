@@ -1,4 +1,4 @@
-import {toTimeString, toDateString, toDateTime, dayInMS} from "./util";
+import {toTimeString, toDateString, toDateTime, dayInMS, toLocalTime, toUTC} from "./util";
 
 class Performer {
     constructor(_data) {
@@ -59,21 +59,19 @@ export class Event {
         this.venueID = _data.venue;
         this.price = parseFloat(_data.price || 0);
 
-        this.start = toDateTime({
+        this.start = toLocalTime(toDateTime({
             date: _data.date,
             time: _data.start
-        });
+        }));
 
-        let endTime = toDateTime({
+        this.end = toLocalTime(toDateTime({
             date: _data.date,
             time: _data.end
-        });
+        }));
 
-        if (endTime < this.start) {
-            endTime.setMilliseconds(endTime.getTime() + dayInMS);
+        if (this.end < this.start) {
+            this.end.setTime(this.end.getTime() + dayInMS);
         }
-
-        this.end = endTime;
     }
 
     update(data) {
@@ -81,7 +79,7 @@ export class Event {
 
         this.clientID = data.clientID || this.clientID;
         this.venueID = data.venueID || this.venueID;
-        this.price = data.price || this.price;
+        this.price = parseInt(data.price || this.price);
 
         if (data.start) this.start = data.start;
         if (data.end) this.end = data.end;
@@ -93,11 +91,11 @@ export class Event {
         }
         if (data.startTime) {
             let splits = data.startTime.split(":");
-            this.start.setMinutes(splits[0], splits[1]);
+            this.start.setHours(splits[0], splits[1]);
         }
         if (data.endTime) {
             let splits = data.endTime.split(":");
-            this.end.setMinutes(splits[0], splits[1]);
+            this.end.setHours(splits[0], splits[1]);
         }
 
         if (this.end < this.start) {
@@ -107,14 +105,24 @@ export class Event {
 
 
     toData() {
+        let utcStart = toUTC(this.start);
+
         return {
-            date: toDateString(this.start),
-            start: toTimeString(this.start),
-            end: toTimeString(this.end),
+            date: toDateString(utcStart),
+            start: toTimeString(utcStart),
+            end: toTimeString(toUTC(this.end)),
             client: this.clientID || "",
             venue: this.venueID || "",
             price: this.price || 0
         };
+    }
+
+    isEqual(other) {
+        return this.id === other.id &&
+               this.clientID === other.clientID &&
+               this.venueID === other.venueID &&
+               this.start.getTime() === other.start.getTime() &&
+               this.end.getTime() === other.start.getTime();
     }
 }
 
