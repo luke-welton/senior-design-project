@@ -13,11 +13,11 @@ import {CalendarList} from "react-native-calendars";
 // so this is here to ignore that.
 console.ignoredYellowBox = ['Setting a timer'];
 
-const genericVenues = [
-    new Venue(0, "Venue A"),
-    new Venue(1, "Venue B"),
-    new Venue(2, "Venue C")
-];
+// const genericVenues = [
+//     new Venue(0, "Venue A"),
+//     new Venue(1, "Venue B"),
+//     new Venue(2, "Venue C")
+// ];
 
 //stores all clients/events/venues loaded from the database, to prevent unnecessary db calls
 let loadedData = {
@@ -28,9 +28,9 @@ let loadedData = {
 
 class LoadingScreen extends React.Component {
     componentWillMount() {
-        let loadVenues = Promise.resolve(genericVenues);
+        //let loadVenues = Promise.resolve(genericVenues);
 
-        Promise.all([db.getClients(), db.getEvents(), loadVenues]).then(values => {
+        Promise.all([db.getClients(), db.getEvents(), db.getVenue()]).then(values => {
             loadedData.clients = values[0];
             loadedData.events = values[1];
             loadedData.venues = values[2];
@@ -86,7 +86,8 @@ class MonthView extends React.Component {
 const AppStack = createStackNavigator({
     Month: MonthView,
     Day: DayView,
-    Event: EventView
+    Event: EventView,
+    //Venue: Venueview
 }, {
     initialRouteName: "Month",
     headerMode: "none",

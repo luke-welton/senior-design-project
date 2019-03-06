@@ -123,4 +123,12 @@ export class Venue {
         this.id = _id.toString();
         this.name = _name;
     }
+
+
+    toData() {
+        return {
+            VenueName: this.name,
+            Venue: this.id
+        };
+    }
 }

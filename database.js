@@ -9,6 +9,7 @@ class Database {
         this.db = Firebase.database();
         this.clientDB = this.db.ref("database/clients");
         this.eventDB = this.db.ref("database/events");
+        this.venueDB = this.db.ref("database/venues")
     }
 
     // moveDB() {
@@ -90,6 +91,24 @@ class Database {
         });
     }
 
+    getVenue() {
+            return new Promise((res, rej) => {
+                this.venueDB.once("value").then(data => {
+                    let _venues = data.val();
+                    let venueList = [];
+
+                    for (let venueID in _venues) {
+                        if (_venues.hasOwnProperty(venueID)) {
+                            let venueObj = new Venue(_venues[venueID], venueID);
+                            venueList.push(eventObj);
+                        }
+                    }
+
+                    res(venueList);
+                }).catch(err => rej(err));
+            });
+        }
+
     addClient(_client) {
         return new Promise((res, rej) => {
            let clientRef = this.clientDB.push(_client.toData());
@@ -141,6 +160,32 @@ class Database {
                 .catch(() => rej());
         });
     }
+    addVenue(_venues) {
+        return new Promise((res, rej) => {
+            let venueRef = this.venueDB.push(_venues.toData());
+            _venues.id = venueRef.key;
+            res();
+        });
+    }
+
+    updateVenue(_venues) {
+        return new Promise((res, rej) => {
+            let venueRef = this.venueDB.child(_venues.id);
+            venueRef.update(_venues.toData())
+                .then(() => res())
+                .catch(() => rej());
+        });
+    }
+
+    removeVenue(_venues) {
+        return new Promise((res, rej) => {
+            let venueRef = this.venueDB.child(_venues.id);
+            venueRef.delete()
+                .then(() => res())
+                .catch(() => rej());
+        });
+    }
+
 }
 
 const firebaseConfig = {
