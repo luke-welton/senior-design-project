@@ -2,7 +2,7 @@ import Firebase from 'firebase';
 import auth from "./auth.json";
 import { Client, Event } from "./objects";
 
-class Database {
+export class Database {
     constructor(config) {
         Firebase.initializeApp(config);
 
@@ -58,10 +58,10 @@ class Database {
     //             delete eventObj.clientID;
     //             eventObj.client = matchingClient.toData();
     //
-    //             combinedDB.push(eventObj);
+    //             combinedDB.child(event.id).set(eventObj).catch(err => console.log(err));
     //         });
-    //     });
-    // }
+    //     }).catch(err => console.log(err));
+    //}
 
     // load information on all clients
     getClients() {
@@ -154,7 +154,7 @@ class Database {
         return new Promise((res, rej) => {
             let eventRef = this.eventDB.child(_event.id);
             //add this back in after Cycle 1
-            // eventRef.update(_event.toData()).then(() => res()).catch(err => rej(err));
+            //eventRef.update(_event.toData()).then(() => res()).catch(err => rej(err));
 
             //remove everything below here after Cycle 1
             let combinedRef = this.db.ref("database/combined").child(_event.id);
@@ -181,7 +181,7 @@ class Database {
         return new Promise((res, rej) => {
             let eventRef = this.eventDB.child(_event.id);
             //add this back in after Cycle 1
-            //eventRef.delete().then(() => res()).catch(err => rej(err));
+            //eventRef.remove().then(() => res()).catch(err => rej(err));
 
             //remove everything below here after Cycle 1
             let combinedRef = this.db.ref("database/combined").child(_event.id);
