@@ -4,7 +4,6 @@ import DayView from "./DayView";
 import EventView from "./EventView";
 import db from "./database";
 import Styles from "./styles";
-import {Venue} from "./objects";
 import {createStackNavigator, createAppContainer, createSwitchNavigator} from "react-navigation";
 import {CalendarList} from "react-native-calendars";
 
@@ -12,12 +11,6 @@ import {CalendarList} from "react-native-calendars";
 // which React Native doesn't like and throws a warning,
 // so this is here to ignore that.
 console.ignoredYellowBox = ['Setting a timer'];
-
-// const genericVenues = [
-//     new Venue(0, "Venue A"),
-//     new Venue(1, "Venue B"),
-//     new Venue(2, "Venue C")
-// ];
 
 //stores all clients/events/venues loaded from the database, to prevent unnecessary db calls
 let loadedData = {
@@ -28,9 +21,7 @@ let loadedData = {
 
 class LoadingScreen extends React.Component {
     componentWillMount() {
-        //let loadVenues = Promise.resolve(genericVenues);
-
-        Promise.all([db.getClients(), db.getEvents(), db.getVenue()]).then(values => {
+        Promise.all([db.getClients(), db.getEvents(), db.getVenues()]).then(values => {
             loadedData.clients = values[0];
             loadedData.events = values[1];
             loadedData.venues = values[2];

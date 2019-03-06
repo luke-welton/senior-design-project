@@ -1,6 +1,6 @@
 import Firebase from 'firebase';
 import auth from "./auth.json";
-import { Client, Event } from "./objects";
+import { Client, Event, Venue } from "./objects";
 
 class Database {
     constructor(config) {
@@ -91,7 +91,7 @@ class Database {
         });
     }
 
-    getVenue() {
+    getVenues() {
             return new Promise((res, rej) => {
                 this.venueDB.once("value").then(data => {
                     let _venues = data.val();
@@ -100,7 +100,7 @@ class Database {
                     for (let venueID in _venues) {
                         if (_venues.hasOwnProperty(venueID)) {
                             let venueObj = new Venue(_venues[venueID], venueID);
-                            venueList.push(eventObj);
+                            venueList.push(venueObj);
                         }
                     }
 
@@ -160,29 +160,26 @@ class Database {
                 .catch(() => rej());
         });
     }
-    addVenue(_venues) {
+
+    addVenue(_venue) {
         return new Promise((res, rej) => {
-            let venueRef = this.venueDB.push(_venues.toData());
-            _venues.id = venueRef.key;
+            let venueRef = this.venueDB.push(_venue.toData());
+            _venue.id = venueRef.key;
             res();
         });
     }
 
-    updateVenue(_venues) {
+    updateVenue(_venue) {
         return new Promise((res, rej) => {
-            let venueRef = this.venueDB.child(_venues.id);
-            venueRef.update(_venues.toData())
-                .then(() => res())
-                .catch(() => rej());
+            let venueRef = this.venueDB.child(_venue.id);
+            venueRef.update(_venue.toData()).then(() => res()).catch(err => rej(err));
         });
     }
 
-    removeVenue(_venues) {
+    removeVenue(_venue) {
         return new Promise((res, rej) => {
-            let venueRef = this.venueDB.child(_venues.id);
-            venueRef.delete()
-                .then(() => res())
-                .catch(() => rej());
+            let venueRef = this.venueDB.child(_venue.id);
+            venueRef.remove().then(() => res()).catch(err => rej(err));
         });
     }
 

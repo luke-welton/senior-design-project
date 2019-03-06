@@ -119,16 +119,17 @@ export class Event {
 }
 
 export class Venue {
-    constructor(_id, _name) {
-        this.id = _id.toString();
-        this.name = _name;
+    constructor(_data, _id) {
+        this.id = _id || null;
+        this.name = _data.name;
+        this.contactEmail = _data.email;
     }
 
 
     toData() {
         return {
-            VenueName: this.name,
-            Venue: this.id
+            name: this.name,
+            email: this.contactEmail
         };
     }
 }
