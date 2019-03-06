@@ -128,11 +128,16 @@ export class Event {
 
 export class Venue {
     constructor(_data, _id) {
+        if (!_data) _data = {};
         this.id = _id || null;
-        this.name = _data.name;
-        this.contactEmail = _data.email;
+        this.name = _data.name || "";
+        this.contactEmail = _data.email || "";
     }
 
+    update(data) {
+        this.name = data.name || this.name;
+        this.contactEmail = data.email || this.contactEmail;
+    }
 
     toData() {
         return {

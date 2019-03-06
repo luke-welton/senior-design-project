@@ -2,11 +2,12 @@ import React from 'react';
 import {ActivityIndicator, Picker, Platform} from 'react-native';
 import DayView from "./DayView";
 import EventView from "./EventView";
+import VenueView from "./VenueView";
 import db from "./database";
 import Styles from "./styles";
 import {createStackNavigator, createAppContainer, createSwitchNavigator} from "react-navigation";
 import {CalendarList} from "react-native-calendars";
-import {AppContainer, toDateTime, toDateString, randomColor} from "./util";
+import {AppContainer, toDateTime, toDateString, randomColor, VenueDropdown} from "./util";
 
 // Firebase's implementation utilizes long timers,
 // which React Native doesn't like and throws a warning,
@@ -45,7 +46,7 @@ class MonthView extends React.Component {
         super(props);
 
         this.state = {
-            venue: loadedData.venues[0]
+            selectedVenue: loadedData.venues[0]
         };
     }
 
@@ -58,7 +59,7 @@ class MonthView extends React.Component {
             };
         });
 
-        let filteredEvents = loadedData.events.filter(event => event.venueID === this.state.venue.id);
+        let filteredEvents = loadedData.events.filter(event => event.venueID === this.state.selectedVenue.id);
         let markedDates = {};
         filteredEvents.forEach(event => {
             let eventDate = toDateString(event.start);
@@ -75,16 +76,11 @@ class MonthView extends React.Component {
     render() {
         return (
             <AppContainer>
-                <Picker
-                    selectedValue = {this.state.venue.id}
-                    onValueChange = {value =>
-                        this.setState({venue: loadedData.venues.find(venue => venue.id === value)})
-                    }
-                >
-                    {loadedData.venues.map(venue =>
-                        <Picker.Item label={venue.name} value={venue.id} key={venue.id} />
-                    )}
-                </Picker>
+                <VenueDropdown
+                    venues = {loadedData.venues}
+                    selectedVenue = {this.state.selectedVenue}
+                    onValueChange = {venue => this.setState({selectedVenue: venue})}
+                />
                 <CalendarList style={Styles.monthView}
                     horizontal = {Platform.OS === "android"}
                     pagingEnabled = {Platform.OS === "android"}
@@ -94,7 +90,7 @@ class MonthView extends React.Component {
                     onDayPress = {day => {
                       this.props.navigation.navigate("Day", {
                           selectedDate: toDateTime({date: day.dateString}),
-                          selectedVenue: this.state.venue,
+                          selectedVenue: this.state.selectedVenue,
                           loadedData: loadedData,
                           database: db
                       });
@@ -109,7 +105,7 @@ const AppStack = createStackNavigator({
     Month: MonthView,
     Day: DayView,
     Event: EventView,
-    //Venue: Venueview
+    Venue: VenueView
 }, {
     initialRouteName: "Month",
     headerMode: "none",

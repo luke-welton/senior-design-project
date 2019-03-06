@@ -7,6 +7,7 @@ import Styles from "./styles";
 import TinyColor from "tinycolor2";
 import RandomColor from "randomcolor";
 import _ from "lodash";
+import {Venue} from "./objects";
 
 //handles converting time from UTC to local time zone
 export function toLocalTime(_time) {
@@ -201,6 +202,48 @@ export class Dropdown extends React.Component {
                 />
             );
         }
+    }
+}
+
+export class VenueDropdown extends React.Component {
+    static propTypes = {
+        venues: PropTypes.arrayOf(PropTypes.instanceOf(Venue)).isRequired,
+        selectedVenue: PropTypes.oneOfType([
+            PropTypes.instanceOf(Venue),
+            PropTypes.string
+        ]),
+        onValueChange: PropTypes.func.isRequired
+    };
+
+    constructor(props) {
+        super(props);
+
+        let venueID = this.props.venues[0].id;
+        if (this.props.selectedVenue) {
+            venueID = this.props.selectedVenue instanceof Venue ? this.props.selectedVenue.id : this.props.selectedVenue
+        }
+
+        this.state = {
+            value: venueID
+        };
+    }
+
+    render() {
+        return (
+            <Dropdown
+                options = {this.props.venues.map(venue => {
+                    return {
+                        label: venue.name,
+                        value: venue.id
+                    };
+                })}
+                selectedValue = {this.state.selectedVenue}
+                onValueChange = {venueID => {
+                    this.setState({value: venueID});
+                    this.props.onValueChange(this.props.venues.find(venue => venue.id === venueID));
+                }}
+            />
+        );
     }
 }
 

@@ -10,6 +10,11 @@ export default StyleSheet.create({
     infoView: {
         justifyContent: "space-between"
     },
+    infoTitle: {
+        fontSize: 25,
+        textAlign: "center",
+        marginBottom: 20
+    },
     contentContainer: {
         padding: 20
     },

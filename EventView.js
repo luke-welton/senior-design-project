@@ -184,7 +184,7 @@ export default class EventView extends React.Component {
                             keyboardType = "numeric"
                             value = {this.state.price}
                             onChangeText = {value => {
-                                if (new RegExp(`^[0-9]*\.?[0-9]{0,2}$`).test(value)) {
+                                if (new RegExp(`^\\d*(\\.\\d{0,2})?$`).test(value)) {
                                     this.setState({price: value});
                                 } else {
                                     alert("Please only enter monetary values.");
@@ -197,7 +197,7 @@ export default class EventView extends React.Component {
 
                 <View style={Styles.buttonContainer}>
                     {/* Create/Update Button */}
-                    <Button style={Styles.buttons}
+                    <Button
                         title = {this.isNew ? "Create Event" : "Save Event"}
                         onPress = {() => {
                             let event = this.props.event || new Event();
@@ -212,7 +212,7 @@ export default class EventView extends React.Component {
 
                     { /* Delete Button */
                         this.isNew ? null :
-                            <Button style={Styles.buttons}
+                            <Button
                                 title = "Delete Event"
                                 color = "red"
                                 onPress = {() => {
