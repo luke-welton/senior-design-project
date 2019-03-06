@@ -134,7 +134,7 @@ export default class DayView extends React.Component {
                             clientList: this.props.loadedData.clients,
                             eventList: this.props.loadedData.events,
                             venueList: this.props.loadedData.venues,
-                            defaultVenue: this.props.selectedVenue,
+                            defaultVenue: this.state.selectedVenue,
                             defaultDate: this.props.selectedDate,
                             onSave: event => {
                                 this.props.database.addEvent(event);

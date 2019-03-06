@@ -79,7 +79,7 @@ export class Event {
 
         this.clientID = data.clientID || this.clientID;
         this.venueID = data.venueID || this.venueID;
-        this.price = parseInt(data.price || this.price);
+        this.price = parseFloat(data.price || this.price);
 
         if (data.start) this.start = data.start;
         if (data.end) this.end = data.end;

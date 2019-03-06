@@ -184,7 +184,7 @@ export default class EventView extends React.Component {
                             keyboardType = "numeric"
                             value = {this.state.price}
                             onChangeText = {value => {
-                                if (new RegExp(`^[0-9]*\.?[0-9]*$`).test(value)) {
+                                if (new RegExp(`^[0-9]*\.?[0-9]{0,2}$`).test(value)) {
                                     this.setState({price: value});
                                 } else {
                                     alert("Please only enter monetary values.");
