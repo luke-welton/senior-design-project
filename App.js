@@ -1,5 +1,5 @@
 import React from 'react';
-import {ActivityIndicator, Picker, Platform} from 'react-native';
+import {ActivityIndicator, Platform, View} from 'react-native';
 import DayView from "./DayView";
 import EventView from "./EventView";
 import {ManageVenues, VenueView} from "./VenueViews";
@@ -7,7 +7,7 @@ import db from "./database";
 import Styles from "./styles";
 import {createStackNavigator, createAppContainer, createSwitchNavigator} from "react-navigation";
 import {CalendarList} from "react-native-calendars";
-import {AppContainer, toDateTime, toDateString, randomColor, Dropdown} from "./util";
+import {AppContainer, toDateTime, toDateString, randomColor, Dropdown, MoreButton} from "./util";
 
 // Firebase's implementation utilizes long timers,
 // which React Native doesn't like and throws a warning,
@@ -45,12 +45,6 @@ class MonthView extends React.Component {
     constructor(props) {
         super(props);
 
-        this.props.navigation.navigate("VenueManage", {
-            venueList: loadedData.venues,
-            database: db,
-            onReturn: () => {}
-        });
-
         this.state = {
             selectedVenue: loadedData.venues[0]
         };
@@ -82,18 +76,29 @@ class MonthView extends React.Component {
     render() {
         return (
             <AppContainer>
-                <Dropdown
-                    options = {loadedData.venues.map(venue => {
-                        return {
-                            label: venue.name,
-                            value: venue.id
-                        };
-                    })}
-                    selectedValue = {this.state.selectedVenue.id}
-                    onValueChange = {venueID =>
-                        this.setState({selectedVenue: loadedData.venues.find(venue => venue.id === venueID)})
-                    }
-                />
+                <View style={Styles.calendarHeader}>
+                    <Dropdown style={Styles.calendarDropdown}
+                        options = {loadedData.venues.map(venue => {
+                            return {
+                                label: venue.name,
+                                value: venue.id
+                            };
+                        })}
+                        selectedValue = {this.state.selectedVenue.id}
+                        onValueChange = {venueID =>
+                            this.setState({selectedVenue: loadedData.venues.find(venue => venue.id === venueID)})
+                        }
+                    />
+                    <MoreButton
+                        onPress={() => this.props.navigation.navigate("VenueManage", {
+                            venueList: loadedData.venues,
+                            database: db,
+                            onReturn: venues => {
+                                console.log(venues);
+                            }
+                        })}
+                    />
+                </View>
                 <CalendarList style={Styles.monthView}
                     horizontal = {Platform.OS === "android"}
                     pagingEnabled = {Platform.OS === "android"}

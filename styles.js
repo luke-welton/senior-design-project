@@ -7,6 +7,15 @@ export default StyleSheet.create({
         height: "100%",
         paddingTop: Platform.OS === "android" ? 25 : 0,
     },
+    calendarHeader: {
+        height: 50,
+        display: "flex",
+        flexDirection: "row"
+    },
+    calendarDropdown: {
+        flexGrow: 15,
+        flexBasis: 0
+    },
     infoView: {
         justifyContent: "space-between"
     },
@@ -74,5 +83,12 @@ export default StyleSheet.create({
     },
     buttonBuffer: {
         height: 10
+    },
+    moreButton: {
+        flexGrow: 1,
+        padding: 15,
+        paddingLeft: 0,
+        paddingRight: 5,
+        flexBasis: 0
     }
 });
