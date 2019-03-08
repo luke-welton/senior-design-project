@@ -79,7 +79,7 @@ export class Event {
 
         this.clientID = data.clientID || this.clientID;
         this.venueID = data.venueID || this.venueID;
-        this.price = parseInt(data.price || this.price);
+        this.price = parseFloat(data.price || this.price);
 
         if (data.start) this.start = data.start;
         if (data.end) this.end = data.end;
@@ -127,8 +127,22 @@ export class Event {
 }
 
 export class Venue {
-    constructor(_id, _name) {
-        this.id = _id.toString();
-        this.name = _name;
+    constructor(_data, _id) {
+        if (!_data) _data = {};
+        this.id = _id || null;
+        this.name = _data.name || "";
+        this.contactEmail = _data.email || "";
+    }
+
+    update(data) {
+        this.name = data.name || this.name;
+        this.contactEmail = data.email || this.contactEmail;
+    }
+
+    toData() {
+        return {
+            name: this.name,
+            email: this.contactEmail
+        };
     }
 }

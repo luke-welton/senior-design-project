@@ -4,9 +4,11 @@ import {Agenda} from "react-native-calendars";
 import React from "react";
 import _ from "lodash";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
-import {dayInMS, toAMPM, toDateString, toTimeString, randomColor, Dropdown, AppContainer} from "./util";
+import {dayInMS, toAMPM, toDateString, toTimeString, randomColor, Dropdown, AppContainer, MoreButton} from "./util";
 import {Client, Event, Venue} from "./objects";
 import {Database} from "./database";
+import Styles from "./styles";
+import db from "./database";
 
 @withMappedNavigationProps()
 export default class DayView extends React.Component {
@@ -83,22 +85,34 @@ export default class DayView extends React.Component {
     render() {
         return (
             <AppContainer>
-                <Dropdown
-                    options = {this.props.loadedData.venues.map(venue => {
-                        return {
-                            label: venue.name,
-                            value: venue.id
-                        };
-                    })}
-                    selectedValue = {this.props.selectedVenue.id}
-                    onValueChange = {venueID => this.setState({
-                        selectedVenue: this.props.loadedData.venues.find(venue => venue.id === venueID)
-                    })}
-                />
+                <View style={Styles.calendarHeader}>
+                    <Dropdown style={Styles.calendarDropdown}
+                              options = {this.props.loadedData.venues.map(venue => {
+                                  return {
+                                      label: venue.name,
+                                      value: venue.id
+                                  };
+                              })}
+                              selectedValue = {this.state.selectedVenue.id}
+                              onValueChange = {venueID =>
+                                  this.setState({selectedVenue: this.props.loadedData.venues.find(venue => venue.id === venueID)})
+                              }
+                    />
+                    <MoreButton
+                        onPress={() => this.props.navigation.navigate("VenueManage", {
+                            venueList: this.props.loadedData.venues,
+                            database: db,
+                            onReturn: venues => {
+                                console.log(venues);
+                            }
+                        })}
+                    />
+                </View>
                 <Agenda
+                    hideKnob = {true}
                     selected = {toDateString(this.props.selectedDate)}
                     items = {this._generateDateStorage()}
-                    rowHasChanged = {(eventA, eventB) => eventA.isEqual(eventB)}
+                    rowHasChanged = {(eventA, eventB) => !eventA.isEqual(eventB)}
                     renderItem = {(event, first) => {
                         return (
                             <EventBox
@@ -134,7 +148,7 @@ export default class DayView extends React.Component {
                             clientList: this.props.loadedData.clients,
                             eventList: this.props.loadedData.events,
                             venueList: this.props.loadedData.venues,
-                            defaultVenue: this.props.selectedVenue,
+                            defaultVenue: this.state.selectedVenue,
                             defaultDate: this.props.selectedDate,
                             onSave: event => {
                                 this.props.database.addEvent(event);

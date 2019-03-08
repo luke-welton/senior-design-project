@@ -7,6 +7,7 @@ import Styles from "./styles";
 import TinyColor from "tinycolor2";
 import RandomColor from "randomcolor";
 import _ from "lodash";
+import {Svg as SVG, Circle} from "react-native-svg";
 
 //handles converting time from UTC to local time zone
 export function toLocalTime(_time) {
@@ -277,6 +278,45 @@ export class AppContainer extends React.Component {
                 <StatusBar barStyle="light-content" backgroundColor="#fff"/>
                 {this.props.children}
             </View>
+        );
+    }
+}
+
+export class MoreButton extends React.Component {
+    static propTypes = {
+        onPress: PropTypes.func.isRequired
+    };
+
+    static generateCircles() {
+        let circles = [];
+
+        for (let i = 0; i < 4; i++) {
+            let position = (i + 1) * 100 - 50;
+            circles.push(
+                <Circle
+                    key={i.toString()}
+                    cx = "50"
+                    cy = {position}
+                    r = "25"
+                    stroke = "#111"
+                    strokeWidth = "1"
+                    fill = "#111"
+                />
+            );
+        }
+
+        return circles
+    }
+
+    render() {
+        return (
+            <TouchableOpacity style={Styles.moreButton}
+                onPress={this.props.onPress}
+            >
+                <SVG height="100%" width = "100%" viewBox = "0 0 100 300">
+                    {MoreButton.generateCircles()}
+                </SVG>
+            </TouchableOpacity>
         );
     }
 }

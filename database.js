@@ -1,6 +1,6 @@
 import Firebase from 'firebase';
 import auth from "./auth.json";
-import { Client, Event } from "./objects";
+import { Client, Event, Venue } from "./objects";
 
 export class Database {
     constructor(config) {
@@ -9,6 +9,7 @@ export class Database {
         this.db = Firebase.database();
         this.clientDB = this.db.ref("database/clients");
         this.eventDB = this.db.ref("database/events");
+        this.venueDB = this.db.ref("database/venues")
     }
 
     // moveDB() {
@@ -108,6 +109,24 @@ export class Database {
         });
     }
 
+    getVenues() {
+            return new Promise((res, rej) => {
+                this.venueDB.once("value").then(data => {
+                    let _venues = data.val();
+                    let venueList = [];
+
+                    for (let venueID in _venues) {
+                        if (_venues.hasOwnProperty(venueID)) {
+                            let venueObj = new Venue(_venues[venueID], venueID);
+                            venueList.push(venueObj);
+                        }
+                    }
+
+                    res(venueList);
+                }).catch(err => rej(err));
+            });
+        }
+
     addClient(_client) {
         return new Promise((res, rej) => {
            let clientRef = this.clientDB.push(_client.toData());
@@ -189,6 +208,29 @@ export class Database {
             Promise.all([eventRef.remove(), combinedRef.remove()]).then(() => res()).catch(err => rej(err));
         });
     }
+
+    addVenue(_venue) {
+        return new Promise((res, rej) => {
+            let venueRef = this.venueDB.push(_venue.toData());
+            _venue.id = venueRef.key;
+            res();
+        });
+    }
+
+    updateVenue(_venue) {
+        return new Promise((res, rej) => {
+            let venueRef = this.venueDB.child(_venue.id);
+            venueRef.update(_venue.toData()).then(() => res()).catch(err => rej(err));
+        });
+    }
+
+    removeVenue(_venue) {
+        return new Promise((res, rej) => {
+            let venueRef = this.venueDB.child(_venue.id);
+            venueRef.remove().then(() => res()).catch(err => rej(err));
+        });
+    }
+
 }
 
 const firebaseConfig = {
