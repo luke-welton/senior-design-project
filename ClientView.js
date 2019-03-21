@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {View, Button, Text, TextInput, StyleSheet, FlatList} from 'react-native';
-import { Venue } from './objects';
+import { Client } from './objects';
 import {Database} from "./database";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
 import {AppContainer} from "./util";
@@ -10,7 +10,7 @@ import Styles from "./styles";
 @withMappedNavigationProps()
 export class ManageClients extends React.Component {
     static propTypes = {
-        clientList: PropTypes.arrayOf(PropTypes.instanceOf(Venue)).isRequired,
+        clientList: PropTypes.arrayOf(PropTypes.instanceOf(Client)).isRequired,
         onReturn: PropTypes.func.isRequired,
         database: PropTypes.instanceOf(Database).isRequired
     };
@@ -97,7 +97,9 @@ export class ClientView extends React.Component {
         this.isNew = !client.id;
 
         this.state = {
-            name: client.name || "",
+            firstName: client.firstName || "",
+            lastName: client.lastName || "",
+            stageName: client.stageName || "",
             email: client.contactEmail || ""
         };
     }
@@ -129,12 +131,30 @@ export class ClientView extends React.Component {
                         {this.isNew ? "Create New Client" : "Update Client"}
                     </Text>
 
-                    {/* Client Name Input */}
+                    {/* Client First Name Input */}
                     <View style={Styles.inputRow}>
                         <Text style={Styles.inputTitle}>Name</Text>
                         <TextInput style={Styles.inputBox}
-                                   value = {this.state.name}
-                                   onChangeText = {value => this.setState({name: value})}
+                                   value = {this.state.firstName}
+                                   onChangeText = {value => this.setState({firstName: value})}
+                        />
+                    </View>
+
+                    {/* Client Last Name Input */}
+                    <View style={Styles.inputRow}>
+                        <Text style={Styles.inputTitle}>Name</Text>
+                        <TextInput style={Styles.inputBox}
+                                   value = {this.state.lastName}
+                                   onChangeText = {value => this.setState({lastName: value})}
+                        />
+                    </View>
+
+                    {/* Client Stage Name Input */}
+                    <View style={Styles.inputRow}>
+                        <Text style={Styles.inputTitle}>Name</Text>
+                        <TextInput style={Styles.inputBox}
+                                   value = {this.state.stageName}
+                                   onChangeText = {value => this.setState({stageName: value})}
                         />
                     </View>
 
