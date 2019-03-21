@@ -133,7 +133,7 @@ export class ClientView extends React.Component {
 
                     {/* Client First Name Input */}
                     <View style={Styles.inputRow}>
-                        <Text style={Styles.inputTitle}>Name</Text>
+                        <Text style={Styles.inputTitle}>First Name</Text>
                         <TextInput style={Styles.inputBox}
                                    value = {this.state.firstName}
                                    onChangeText = {value => this.setState({firstName: value})}
@@ -142,7 +142,7 @@ export class ClientView extends React.Component {
 
                     {/* Client Last Name Input */}
                     <View style={Styles.inputRow}>
-                        <Text style={Styles.inputTitle}>Name</Text>
+                        <Text style={Styles.inputTitle}>Last Name</Text>
                         <TextInput style={Styles.inputBox}
                                    value = {this.state.lastName}
                                    onChangeText = {value => this.setState({lastName: value})}
@@ -151,7 +151,7 @@ export class ClientView extends React.Component {
 
                     {/* Client Stage Name Input */}
                     <View style={Styles.inputRow}>
-                        <Text style={Styles.inputTitle}>Name</Text>
+                        <Text style={Styles.inputTitle}>Stage Name</Text>
                         <TextInput style={Styles.inputBox}
                                    value = {this.state.stageName}
                                    onChangeText = {value => this.setState({stageName: value})}
