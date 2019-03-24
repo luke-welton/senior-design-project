@@ -26,7 +26,7 @@ export class ManageClients extends React.Component {
     _renderClient(client) {
         return(
             <View style={ClientStyles.entryContainer}>
-                <Text style={ClientStyles.entryName}>{client.name}</Text>
+                <Text style={ClientStyles.entryName}>{client.stageName}</Text>
                 <View style={ClientStyles.entryButton}>
                     <Button
                         title = "Manage"
@@ -97,21 +97,41 @@ export class ClientView extends React.Component {
         this.isNew = !client.id;
 
         this.state = {
-            firstName: client.firstName || "",
-            lastName: client.lastName || "",
             stageName: client.stageName || "",
-            email: client.contactEmail || ""
+            email: client.email || "",
+            performers: client.performers || []
         };
     }
 
+    _renderPerformer(performerName) {
+        return (
+            <View style={ClientStyles.entryContainer}>
+                <Text style={[ClientStyles.entryName, ClientStyles.performerName]}>{performerName}</Text>
+                <View style={ClientStyles.entryButton}>
+                    <Button
+                        title="✏️"
+                        color="#fff"
+                        onPress={() => {}}
+                    />
+                </View>
+                <View style={ClientStyles.entryButton}>
+                    <Button
+                        title="❌"
+                        color="#fff"
+                        onPress={() => {}}
+                    />
+                </View>
+            </View>
+        )
+    }
+
     _validateData() {
-        let matchingName = this.props.clientList.find(client => client.name === this.state.name);
         let emailRegex = new RegExp(`^[\\w\.]+@(\\w{2,}\.)+\\w+$`);
 
-        if (matchingName) {
-            alert("There is already a client with that name.");
-        } else if (this.state.name === "") {
-            alert("The client must have a name.");
+        if (this.state.stageName === "") {
+            alert("The client must have a stage name.")
+        } else if (this.state.performers.length === 0) {
+            alert("There must be at least one performer.")
         } else if (this.state.email === "") {
             alert("The client must have an email address.");
         } else if (!emailRegex.test(this.state.email)) {
@@ -131,30 +151,12 @@ export class ClientView extends React.Component {
                         {this.isNew ? "Create New Client" : "Update Client"}
                     </Text>
 
-                    {/* Client First Name Input */}
+                    {/* Client Name Input */}
                     <View style={Styles.inputRow}>
-                        <Text style={Styles.inputTitle}>First Name</Text>
-                        <TextInput style={Styles.inputBox}
-                                   value = {this.state.firstName}
-                                   onChangeText = {value => this.setState({firstName: value})}
-                        />
-                    </View>
-
-                    {/* Client Last Name Input */}
-                    <View style={Styles.inputRow}>
-                        <Text style={Styles.inputTitle}>Last Name</Text>
-                        <TextInput style={Styles.inputBox}
-                                   value = {this.state.lastName}
-                                   onChangeText = {value => this.setState({lastName: value})}
-                        />
-                    </View>
-
-                    {/* Client Stage Name Input */}
-                    <View style={Styles.inputRow}>
-                        <Text style={Styles.inputTitle}>Stage Name</Text>
+                        <Text style={Styles.inputTitle}>Name</Text>
                         <TextInput style={Styles.inputBox}
                                    value = {this.state.stageName}
-                                   onChangeText = {value => this.setState({stageName: value})}
+                                   onChangeText = {value => this.setState({name: value})}
                         />
                     </View>
 
@@ -166,6 +168,18 @@ export class ClientView extends React.Component {
                                    onChangeText = {value => this.setState({email: value})}
                         />
                     </View>
+
+                    {/* Performer Names Input */}
+                    <Text style={ClientStyles.performerTitle}>Performers</Text>
+                    <FlatList
+                        data = {this.state.performers.map((name, i) => {
+                            return {
+                                key: i.toString(),
+                                name: name
+                            };
+                        })}
+                        renderItem = {data => this._renderPerformer(data.item.name)}
+                    />
                 </View>
 
                 <View style={Styles.buttonContainer}>
@@ -200,6 +214,53 @@ export class ClientView extends React.Component {
     }
 }
 
+// export class PerformerView extends React.Component {
+//     static propTypes = {
+//         performer: PropTypes.instanceOf(Performer)
+//     };
+//
+//     constructor(props) {
+//         super(props);
+//
+//         this.isNew = !this.props.performer;
+//         this.state = {
+//             firstName: this.props.performer.firstName || "",
+//             lastName: this.props.performer.lastName || ""
+//         };
+//     }
+//
+//     render() {
+//         return (
+//             <AppContainer>
+//                 <View style={Styles.contentContainer}>
+//                     <Text style={Styles.infoTitle}>"Performer Information"</Text>
+//
+//                     {/* Performer First Name Input */}
+//                     <View style={Styles.inputRow}>
+//                         <Text style={Styles.inputTitle}>First</Text>
+//                         <TextInput style={Styles.inputBox}
+//                                    value = {this.state.name}
+//                                    onChangeText = {value => this.setState({name: value})}
+//                         />
+//                     </View>
+//
+//                     {/* Performer Last Name Input */}
+//                     <View style={Styles.inputRow}>
+//                         <Text style={Styles.inputTitle}>Last</Text>
+//                         <TextInput style={Styles.inputBox}
+//                                    value = {this.state.name}
+//                                    onChangeText = {value => this.setState({name: value})}
+//                         />
+//                     </View>
+//                 </View>
+//                 <View style={Styles.buttonContainer}>
+//
+//                 </View>
+//             </AppContainer>
+//         );
+//     }
+// }
+
 const ClientStyles = StyleSheet.create({
     entryContainer: {
         backgroundColor: "#eee",
@@ -215,8 +276,16 @@ const ClientStyles = StyleSheet.create({
         flexBasis: 0,
         fontSize: 15
     },
+    performerName: {
+        flexGrow: 5
+    },
     entryButton: {
         flexGrow: 1,
-        flexBasis: 0
+        flexBasis: 0,
+        paddingRight: 5
+    },
+    performerTitle: {
+        fontSize: 20,
+        marginBottom: 5
     }
 });

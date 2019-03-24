@@ -121,6 +121,7 @@ export default class DayView extends React.Component {
                                 client = {this.props.loadedData.clients.find(client => client.id === event.clientID)}
                                 onPress = {() => this.props.navigation.navigate("Event", {
                                     event: event,
+                                    database: this.props.database,
                                     clientList: this.props.loadedData.clients,
                                     eventList: this.props.loadedData.events,
                                     venueList: this.props.loadedData.venues,
@@ -145,6 +146,7 @@ export default class DayView extends React.Component {
                         title = "Add New Event"
                         color = "green"
                         onPress = {() => this.props.navigation.navigate("Event", {
+                            database: this.props.database,
                             clientList: this.props.loadedData.clients,
                             eventList: this.props.loadedData.events,
                             venueList: this.props.loadedData.venues,
