@@ -23,7 +23,7 @@ let loadedData = {
 
 class LoadingScreen extends React.Component {
     componentWillMount() {
-        Promise.all([db.getClients(), db.getEvents(), db.getVenues()]).then(values => {
+        Promise.all([db.getClients(), db.getRecentAndUpcomingEvents(), db.getVenues()]).then(values => {
             loadedData.clients = values[0];
             loadedData.events = values[1];
             loadedData.venues = values[2];

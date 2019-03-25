@@ -109,6 +109,119 @@ export class Database {
         });
     }
 
+    // Load an archived day of past events.
+    getArchivedDayEvents(options) {
+        if (!options) {
+            options = Date.now();
+        }
+
+        let archiveDate = new Date(options);
+
+        let year = archiveDate.getFullYear();
+        let month = archiveDate.getMonth() + 1;
+        let day = archiveDate.getDate() + 1;
+
+        //add trailing 0s
+        if (month < 10) {
+            month = "0" + month;
+        }
+        if (day < 10) {
+            day = "0" + day;
+        }
+
+        let archiveDay = [year, month, day].join("-");
+
+        return new Promise((res, rej) => {
+            Firebase.database().ref('database/events').orderByChild('date').equalTo(archiveDay).once("value").then(data => {
+                let _events = data.val()
+                let foundEvents = [];
+                for (let eventID in _events) {
+                    if (_events.hasOwnProperty(eventID)) {
+                        let eventObj = new Event(_events[eventID], eventID);
+                        foundEvents.push(eventObj);
+                    }
+                }
+                res(foundEvents);
+            }).catch(err => rej(err));
+        })
+    }
+
+    // Load information for upcoming events and past events to the specified date.
+    getPastAndUpcomingEvents(options) {
+        if (!options) {
+            options = Date.now();
+        }
+
+        let cutoffTime = options;
+        let cutoffDate = new Date(cutoffTime);
+
+        let year = cutoffDate.getFullYear();
+        let month = cutoffDate.getMonth() + 1;
+        let day = cutoffDate.getDate() + 1;
+
+        //add trailing 0s
+        if (month < 10) {
+            month = "0" + month;
+        }
+        if (day < 10) {
+            day = "0" + day;
+        }
+
+        let cutoffString = [year, month, day].join("-");
+
+        return new Promise((res, rej) => {
+            Firebase.database().ref('database/events').orderByChild('date').startAt(cutoffString).once("value").then(data => {
+                let _events = data.val()
+                let foundEvents = [];
+                for (let eventID in _events) {
+                    if (_events.hasOwnProperty(eventID)) {
+                        let eventObj = new Event(_events[eventID], eventID);
+                        foundEvents.push(eventObj);
+                    }
+                }
+                res(foundEvents);
+            }).catch(err => rej(err));
+        })
+    }
+    // Load information for recent and upcoming events (The previous week and all future events).
+    // Assumption: Limited, since events should not be scheduled more than a few months in advance.
+    getRecentAndUpcomingEvents(options) {
+        if (!options) {
+            options = {}
+        }
+
+        let cutoffTime = Date.now() - (7 * (24 * 60 * 60 * 1000));
+        let cutoffDate = new Date(cutoffTime);
+
+        let year = cutoffDate.getFullYear();
+        let month = cutoffDate.getMonth() + 1;
+        let day = cutoffDate.getDate() + 1;
+
+        //add trailing 0s
+        if (month < 10) {
+            month = "0" + month;
+        }
+        if (day < 10) {
+            day = "0" + day;
+        }
+
+        let cutoffString = [year, month, day].join("-");
+
+        return new Promise((res, rej) => {
+            Firebase.database().ref('database/events').orderByChild('date').startAt(cutoffString).once("value").then(data => {
+                let _events = data.val()
+                let foundEvents = [];
+                for (let eventID in _events) {
+                    if (_events.hasOwnProperty(eventID)) {
+                        let eventObj = new Event(_events[eventID], eventID);
+                        foundEvents.push(eventObj);
+                    }
+                }
+                res(foundEvents);
+            }).catch(err => rej(err));
+        })
+    }
+
     getVenues() {
             return new Promise((res, rej) => {
                 this.venueDB.once("value").then(data => {
