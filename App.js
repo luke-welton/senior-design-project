@@ -130,7 +130,7 @@ const AppStack = createStackNavigator({
     ClientManage: ManageClients
 }, {
     initialRouteName: "Month",
-    //initialRouteName: "ClientManage",
+    //initialRouteName: "Client",
     headerMode: "none",
     cardOverlayEnabled: true,
 });

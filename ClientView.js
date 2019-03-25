@@ -105,7 +105,7 @@ export class ClientView extends React.Component {
 
     _renderPerformer(performerData) {
         let name = performerData.name;
-        let index = performerData.key;
+        let index = parseInt(performerData.key) - 1;
 
         return (
             <PerformerEntry
@@ -117,7 +117,7 @@ export class ClientView extends React.Component {
                 }}
                 onDelete = {() => {
                     let performers = this.state.performers;
-                    delete performers[index];
+                    performers.splice(index, 1);
                     this.setState({performers: performers});
                 }}
             />
@@ -173,11 +173,18 @@ export class ClientView extends React.Component {
                     <FlatList
                         data = {this.state.performers.map((name, i) => {
                             return {
-                                key: i.toString(),
+                                key: (i + 1).toString(),
                                 name: name
                             };
                         })}
                         renderItem = {data => this._renderPerformer(data.item)}
+                    />
+                    <PerformerButton
+                        onSave = {performerName => {
+                            let performers = this.state.performers;
+                            performers.push(performerName);
+                            this.setState({performers: performers});
+                        }}
                     />
                 </View>
 
@@ -220,34 +227,42 @@ class PerformerEntry extends React.Component {
         onDelete: PropTypes.func.isRequired
     };
 
+    static defaultProps = {
+        name: ""
+    };
+
     constructor(props) {
         super(props);
         this.state = {
-            name: this.props.name || "",
+            name: this.props.name,
             isEditing: !this.props.name
         };
-    }
-
-    _submitChanges() {
-        this.setState({isEditing: false});
-        this.props.onSave(this.props.name);
     }
 
     render() {
         if (this.state.isEditing) {
             return (
                 <View style={ClientStyles.entryContainer}>
-                    <TextInput
-                        onChange = {value => {
+                    <TextInput style={ClientStyles.performerInput}
+                        value = {this.state.name}
+                        onChangeText = {value => {
                             this.setState({name: value});
                         }}
-                        onSubmitEditing = {this._submitChanges}
                     />
                     <View style={ClientStyles.entryButton}>
                         <Button
                             title = "✔️"
                             color = "#fff"
-                            onPress = {this._submitChanges}
+                            onPress = {() => {
+                                this.setState({isEditing: false});
+
+                                let name = this.state.name;
+                                if (name.trim() === "") {
+                                    this.props.onDelete();
+                                } else {
+                                    this.props.onSave(this.state.name);
+                                }
+                            }}
                         />
                     </View>
                 </View>
@@ -278,6 +293,40 @@ class PerformerEntry extends React.Component {
     }
 }
 
+class PerformerButton extends React.Component {
+    static propTypes = {
+        onSave: PropTypes.func.isRequired
+    };
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            isOpen: false
+        };
+    }
+
+    render() {
+        if (this.state.isOpen) {
+            return (
+                <PerformerEntry
+                    onSave = { name => {
+                        this.props.onSave(name);
+                        this.setState({isOpen: false});
+                    }}
+                    onDelete = {() => this.setState({isOpen: false})}
+                />
+            );
+        } else {
+            return (
+                <Button
+                    title = "Add Performer"
+                    onPress = {() => this.setState({isOpen: true})}
+                />
+            );
+        }
+    }
+}
+
 const ClientStyles = StyleSheet.create({
     entryContainer: {
         backgroundColor: "#eee",
@@ -296,10 +345,18 @@ const ClientStyles = StyleSheet.create({
     performerName: {
         flexGrow: 5
     },
+    performerInput: {
+        flexGrow: 6,
+        flexBasis: 0,
+        backgroundColor: "#fff",
+        marginRight: 10,
+        paddingLeft: 5
+    },
     entryButton: {
         flexGrow: 1,
         flexBasis: 0,
-        paddingRight: 5
+        flexShrink: 0,
+        marginRight: 5
     },
     performerTitle: {
         fontSize: 20,

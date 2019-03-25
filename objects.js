@@ -28,6 +28,12 @@ export class Client {
         this.email = _data.email;
     }
 
+    update(data) {
+        this.performers = data.performers || this.performers;
+        this.stageName = data.stageName || this.stageName;
+        this.email = data.email || this.email;
+    }
+
     toData() {
         return {
             performers: this.performers || [],
