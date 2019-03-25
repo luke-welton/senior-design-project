@@ -103,26 +103,25 @@ export class ClientView extends React.Component {
         };
     }
 
-    _renderPerformer(performerName) {
+    _renderPerformer(performerData) {
+        let name = performerData.name;
+        let index = performerData.key;
+
         return (
-            <View style={ClientStyles.entryContainer}>
-                <Text style={[ClientStyles.entryName, ClientStyles.performerName]}>{performerName}</Text>
-                <View style={ClientStyles.entryButton}>
-                    <Button
-                        title="✏️"
-                        color="#fff"
-                        onPress={() => {}}
-                    />
-                </View>
-                <View style={ClientStyles.entryButton}>
-                    <Button
-                        title="❌"
-                        color="#fff"
-                        onPress={() => {}}
-                    />
-                </View>
-            </View>
-        )
+            <PerformerEntry
+                name = {name}
+                onSave = {newName => {
+                    let performers = this.state.performers;
+                    performers[index] = newName;
+                    this.setState({performers: performers});
+                }}
+                onDelete = {() => {
+                    let performers = this.state.performers;
+                    delete performers[index];
+                    this.setState({performers: performers});
+                }}
+            />
+        );
     }
 
     _validateData() {
@@ -178,7 +177,7 @@ export class ClientView extends React.Component {
                                 name: name
                             };
                         })}
-                        renderItem = {data => this._renderPerformer(data.item.name)}
+                        renderItem = {data => this._renderPerformer(data.item)}
                     />
                 </View>
 
@@ -214,52 +213,70 @@ export class ClientView extends React.Component {
     }
 }
 
-// export class PerformerView extends React.Component {
-//     static propTypes = {
-//         performer: PropTypes.instanceOf(Performer)
-//     };
-//
-//     constructor(props) {
-//         super(props);
-//
-//         this.isNew = !this.props.performer;
-//         this.state = {
-//             firstName: this.props.performer.firstName || "",
-//             lastName: this.props.performer.lastName || ""
-//         };
-//     }
-//
-//     render() {
-//         return (
-//             <AppContainer>
-//                 <View style={Styles.contentContainer}>
-//                     <Text style={Styles.infoTitle}>"Performer Information"</Text>
-//
-//                     {/* Performer First Name Input */}
-//                     <View style={Styles.inputRow}>
-//                         <Text style={Styles.inputTitle}>First</Text>
-//                         <TextInput style={Styles.inputBox}
-//                                    value = {this.state.name}
-//                                    onChangeText = {value => this.setState({name: value})}
-//                         />
-//                     </View>
-//
-//                     {/* Performer Last Name Input */}
-//                     <View style={Styles.inputRow}>
-//                         <Text style={Styles.inputTitle}>Last</Text>
-//                         <TextInput style={Styles.inputBox}
-//                                    value = {this.state.name}
-//                                    onChangeText = {value => this.setState({name: value})}
-//                         />
-//                     </View>
-//                 </View>
-//                 <View style={Styles.buttonContainer}>
-//
-//                 </View>
-//             </AppContainer>
-//         );
-//     }
-// }
+class PerformerEntry extends React.Component {
+    static propTypes = {
+        name: PropTypes.string,
+        onSave: PropTypes.func.isRequired,
+        onDelete: PropTypes.func.isRequired
+    };
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            name: this.props.name || "",
+            isEditing: !this.props.name
+        };
+    }
+
+    _submitChanges() {
+        this.setState({isEditing: false});
+        this.props.onSave(this.props.name);
+    }
+
+    render() {
+        if (this.state.isEditing) {
+            return (
+                <View style={ClientStyles.entryContainer}>
+                    <TextInput
+                        onChange = {value => {
+                            this.setState({name: value});
+                        }}
+                        onSubmitEditing = {this._submitChanges}
+                    />
+                    <View style={ClientStyles.entryButton}>
+                        <Button
+                            title = "✔️"
+                            color = "#fff"
+                            onPress = {this._submitChanges}
+                        />
+                    </View>
+                </View>
+            );
+        } else {
+            return (
+                <View style={ClientStyles.entryContainer}>
+                    <Text style={[ClientStyles.entryName, ClientStyles.performerName]}>{this.state.name}</Text>
+                    <View style={ClientStyles.entryButton}>
+                        <Button
+                            title = "✏️"
+                            color = "#fff"
+                            onPress = {() => {
+                                this.setState({isEditing: true});
+                            }}
+                        />
+                    </View>
+                    <View style={ClientStyles.entryButton}>
+                        <Button
+                            title = "❌"
+                            color = "#fff"
+                            onPress = {this.props.onDelete}
+                        />
+                    </View>
+                </View>
+            );
+        }
+    }
+}
 
 const ClientStyles = StyleSheet.create({
     entryContainer: {
