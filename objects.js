@@ -129,17 +129,26 @@ export class Venue {
         this.id = _id || null;
         this.name = _data.name || "";
         this.contactEmail = _data.email || "";
+        this.address = _data.address || {};
     }
 
     update(data) {
         this.name = data.name || this.name;
         this.contactEmail = data.email || this.contactEmail;
+        this.address = {
+            street1: data.street1 || this.address.street1,
+            street2: data.street2 || this.address.street2,
+            city: data.city || this.address.city,
+            state: data.state || this.address.state,
+            zip: data.zip || this.address.zip
+        };
     }
 
     toData() {
         return {
             name: this.name,
-            email: this.contactEmail
+            email: this.contactEmail,
+            address: this.address
         };
     }
 }

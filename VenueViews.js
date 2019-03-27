@@ -98,7 +98,12 @@ export class VenueView extends React.Component {
 
         this.state = {
             name: venue.name || "",
-            email: venue.contactEmail || ""
+            email: venue.contactEmail || "",
+            street1: venue.address.street1 || "",
+            street2: venue.address.street2 || "",
+            city: venue.address.city || "",
+            state: venue.address.state || "",
+            zip: venue.address.zip || ""
         };
     }
 
@@ -144,6 +149,51 @@ export class VenueView extends React.Component {
                         <TextInput style={Styles.inputBox}
                                    value = {this.state.email}
                                    onChangeText = {value => this.setState({email: value})}
+                        />
+                    </View>
+
+                    {/* Address Input */}
+                    <View style={Styles.inputRow}>
+                        <Text style={Styles.inputTitle}>Address</Text>
+                        <TextInput style={Styles.inputBox}
+                                   value = {this.state.street1}
+                                   onChangeText = {value => this.setState({street1: value})}
+                        />
+                    </View>
+
+                    {/* Address 2 Input */}
+                    <View style={Styles.inputRow}>
+                        <Text style={Styles.inputTitle}>Pt. 2</Text>
+                        <TextInput style={Styles.inputBox}
+                                   value = {this.state.street2}
+                                   onChangeText = {value => this.setState({street2: value})}
+                        />
+                    </View>
+
+                    {/* City Input */}
+                    <View style={Styles.inputRow}>
+                        <Text style={Styles.inputTitle}>City</Text>
+                        <TextInput style={Styles.inputBox}
+                                   value = {this.state.city}
+                                   onChangeText = {value => this.setState({city: value})}
+                        />
+                    </View>
+
+                    {/* State Input */}
+                    <View style={Styles.inputRow}>
+                        <Text style={Styles.inputTitle}>State</Text>
+                        <TextInput style={Styles.inputBox}
+                                   value = {this.state.state}
+                                   onChangeText = {value => this.setState({state: value})}
+                        />
+                    </View>
+
+                    {/* ZIP Input */}
+                    <View style={Styles.inputRow}>
+                        <Text style={Styles.inputTitle}>ZIP</Text>
+                        <TextInput style={Styles.inputBox}
+                                   value = {this.state.zip}
+                                   onChangeText = {value => this.setState({zip: value})}
                         />
                     </View>
                 </View>
