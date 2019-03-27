@@ -9,8 +9,10 @@
   "dependencies": {
     "expo": "^32.0.0",
     "firebase": "^5.8.0",
+    "fs-extra": "^7.0.1",
     "lodash": "latest",
     "prop-types": "latest",
+    "puppeteer": "^1.13.0",
     "randomcolor": "^0.5.4",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
