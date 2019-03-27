@@ -125,9 +125,125 @@ function generateCalendar(month, year, events) {
             font: "Helvetica"
         }
     });
-    pdf.pipe(fs.createWriteStream("./test.pdf"));
+    pdf.pipe(fs.createWriteStream("./testCal.pdf"));
     pdf.end();
+}
 
+function generateArtistConfirmation(client, event, venue) {
+    let content = [];
+
+    [
+        "Sinclair's East - Montgomery, AL",
+        "Live Performance Contract/Confirmation",
+        "Invoice",
+        "Music Matters Bookings"
+    ].forEach(text => content.push({
+        text: text,
+        style: "formHeader"
+    }));
+
+    content.push({
+        text: [
+            "\u200B\t\t",
+            {text: "Eric Perkins", style: "underlined"},
+            " agree(s) to perform live music at Sinclair's East, 7847 Vaughn Rd, Montgomery, AL, 36116 on the evening of ",
+            {text: "Saturday, October 27, 2018", style: "underlined"},
+            " between the listed hours of ",
+            {text: "8:00 PM to 11:00 PM", style: "underlined"},
+            ". Sinclair's East in Montgomery, AL agrees to pay the above named artists ",
+            {text: "$200.00", style: "underlined"},
+            ", and said payment is to be paid upon completion of this performance."
+        ],
+        style: "formText"
+    });
+
+    content.push({
+        image: "./assets/icon.png",
+        fit: [300, 300],
+        style: "logo"
+    });
+
+    let printer = new PDFMake(fonts);
+    let pdf = printer.createPdfKitDocument({
+        content: content,
+        styles: pdfStyles,
+        defaultStyle: {
+            font: "Times"
+        }
+    });
+
+    pdf.pipe(fs.createWriteStream("./testAC.pdf"));
+    pdf.end();
+}
+
+function generateInvoice(client, event, venue) {
+    let content = [];
+
+    [
+        "Sinclair's East - Montgomery, AL",
+        "Live Performance Contract/Confirmation",
+        "Music Matters Bookings"
+    ].forEach(text => content.push({
+        text: text,
+        style: "formHeader"
+    }));
+
+    content.push({
+        text: [
+            "\u200B\t\t",
+            {text: "Eric Perkins", style: "underlined"},
+            " agree(s) to perform live music at Sinclair's East, 7847 Vaughn Rd, Montgomery, AL, 36116 on the evening of ",
+            {text: "Saturday, October 27, 2018", style: "underlined"},
+            " between the listed hours of ",
+            {text: "8:00 PM to 11:00 PM", style: "underlined"},
+            ". Sinclair's East in Montgomery, AL agrees to pay the above named artists ",
+            {text: "$200.00", style: "underlined"},
+            ", and said payment is to be paid upon completion of this performance."
+        ],
+        style: "formText"
+    });
+
+    content.push({
+        text: [
+            "\u200B\t\t",
+            {text: "$40", style: "underlined"},
+            " booking fee due to ",
+            {text: "Music Matters Bookings", style: "underlined"},
+            " on the evening of this performance."
+        ],
+        style: "formText"
+    });
+
+
+    content.push({
+        text: [
+            "\u200B\t\t",
+            "If for reasons beyond your control you are unable to make your scheduled confirmed performance date and time, ",
+            "it is our expectation that you will contact Mike Moody at ",
+            {text: "619-307-5866", style: "underlined"},
+            ". This should be done at the earliest possible time, but no later than four hours prior to your set. ",
+            "Thank you in advance for complying with this request."
+        ],
+        style: "formText"
+    });
+
+    content.push({
+        image: "./assets/icon.png",
+        fit: [300, 300],
+        style: "logo"
+    });
+
+    let printer = new PDFMake(fonts);
+    let pdf = printer.createPdfKitDocument({
+        content: content,
+        styles: pdfStyles,
+        defaultStyle: {
+            font: "Times"
+        }
+    });
+
+    pdf.pipe(fs.createWriteStream("./testInvoice.pdf"));
+    pdf.end();
 }
 
 const fonts = {
@@ -136,7 +252,13 @@ const fonts = {
         bold: 'Helvetica-Bold',
         italics: 'Helvetica-Oblique',
         bolditalics: 'Helvetica-BoldOblique'
-    }
+    },
+    Times: {
+        normal: 'Times-Roman',
+        bold: 'Times-Bold',
+        italics: 'Times-Italic',
+        bolditalics: 'Times-BoldItalic'
+    },
 };
 
 const pdfStyles = {
@@ -153,9 +275,24 @@ const pdfStyles = {
         bold: true,
         alignment: "center"
     },
-    // emptyDate: {
-    //     fillColor: "e6e6e6"
-    // }
+    underlined: {
+        decoration: "underline"
+    },
+    formHeader: {
+        fontSize: 25,
+        alignment: "center",
+        margin: [0, 0, 0, 25]
+    },
+    formText: {
+        fontSize: 15,
+        lineHeight: 1.25,
+        margin: [0, 0, 0, 15]
+    },
+    logo: {
+        alignment: "center",
+        margin: [0, 50, 0, 0]
+    }
 };
 
-generateCalendar(2, 2019);
+generateInvoice();
+
