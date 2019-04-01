@@ -4,11 +4,10 @@ import {Agenda} from "react-native-calendars";
 import React from "react";
 import _ from "lodash";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
-import {dayInMS, toAMPM, toDateString, toTimeString, randomColor, Dropdown, AppContainer, MoreButton} from "./util";
-import {Client, Event, Venue} from "./objects";
-import {Database} from "./database";
-import Styles from "./styles";
-import db from "./database";
+import {dayInMS, toAMPM, toDateString, toTimeString, randomColor, Dropdown, AppContainer, MoreButton} from "../util";
+import {Client, Event, Venue} from "../objects";
+import Database from "../Database";
+import Styles from "../styles";
 
 @withMappedNavigationProps()
 export default class DayView extends React.Component {

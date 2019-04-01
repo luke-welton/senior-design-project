@@ -25,7 +25,8 @@ export default StyleSheet.create({
         marginBottom: 20
     },
     contentContainer: {
-        padding: 20
+        padding: 20,
+        alignItems: "center"
     },
     hide: {
         display: "none"
