@@ -3,7 +3,7 @@ import {ActivityIndicator, Platform, View} from 'react-native';
 import DayView from "./views/DayView";
 import EventView from "./views/EventView";
 import {ManageVenues, VenueView} from "./views/VenueViews";
-import {ManageClients, ClientView} from "./views/ClientView";
+import {ManageClients, ClientView} from "./views/ClientViews";
 import Database from "./Database";
 import Styles from "./styles";
 import {createStackNavigator, createAppContainer, createSwitchNavigator} from "react-navigation";
