@@ -108,10 +108,16 @@ export class VenueView extends React.Component {
     }
 
     _validateData() {
-        let matchingName = this.props.venueList.find(venue => venue.name === this.state.name);
+        let matchingVenue = this.props.venueList.find(venue => {
+            if (this.isNew) {
+                return venue.name === this.state.name;
+            } else {
+                return venue.name === this.state.name && this.props.venue.id !== venue.id;
+            }
+        });
         let emailRegex = new RegExp(`^[\\w\.]+@(\\w{2,}\.)+\\w+$`);
 
-        if (matchingName) {
+        if (matchingVenue) {
             alert("There is already a venue with that name.");
         } else if (this.state.name === "") {
             alert("The venue must have a name.");
@@ -154,7 +160,7 @@ export class VenueView extends React.Component {
 
                     {/* Address Input */}
                     <View style={Styles.inputRow}>
-                        <Text style={Styles.inputTitle}>Address</Text>
+                        <Text style={Styles.inputTitle}>Street</Text>
                         <TextInput style={Styles.inputBox}
                                    value = {this.state.street1}
                                    onChangeText = {value => this.setState({street1: value})}
@@ -163,7 +169,7 @@ export class VenueView extends React.Component {
 
                     {/* Address 2 Input */}
                     <View style={Styles.inputRow}>
-                        <Text style={Styles.inputTitle}>Pt. 2</Text>
+                        <Text style={Styles.inputTitle}>Line 2</Text>
                         <TextInput style={Styles.inputBox}
                                    value = {this.state.street2}
                                    onChangeText = {value => this.setState({street2: value})}
@@ -179,22 +185,24 @@ export class VenueView extends React.Component {
                         />
                     </View>
 
-                    {/* State Input */}
                     <View style={Styles.inputRow}>
-                        <Text style={Styles.inputTitle}>State</Text>
-                        <TextInput style={Styles.inputBox}
-                                   value = {this.state.state}
-                                   onChangeText = {value => this.setState({state: value})}
-                        />
-                    </View>
+                        {/* State Input */}
+                        <View style={[Styles.inputRow, VenueStyles.stateContainer]}>
+                            <Text style={[Styles.inputTitle, VenueStyles.stateTitle]}>State</Text>
+                            <TextInput style={[Styles.inputBox, VenueStyles.stateInput]}
+                                       value = {this.state.state}
+                                       onChangeText = {value => this.setState({state: value})}
+                            />
+                        </View>
 
-                    {/* ZIP Input */}
-                    <View style={Styles.inputRow}>
-                        <Text style={Styles.inputTitle}>ZIP</Text>
-                        <TextInput style={Styles.inputBox}
-                                   value = {this.state.zip}
-                                   onChangeText = {value => this.setState({zip: value})}
-                        />
+                        {/* ZIP Input */}
+                        <View style={[Styles.inputRow, VenueStyles.zipContainer]}>
+                            <Text style={Styles.inputTitle}>ZIP</Text>
+                            <TextInput style={Styles.inputBox}
+                                       value = {this.state.zip}
+                                       onChangeText = {value => this.setState({zip: value})}
+                            />
+                        </View>
                     </View>
                 </View>
 
@@ -247,6 +255,21 @@ const VenueStyles = StyleSheet.create({
     },
     entryButton: {
         flexGrow: 1,
+        flexBasis: 0
+    },
+    stateContainer: {
+        flexGrow: 1,
+        flexBasis: 0,
+        marginRight: 10
+    },
+    stateTitle: {
+        flexGrow: 2
+    },
+    stateInput: {
+        flexGrow: 1
+    },
+    zipContainer: {
+        flexGrow: 2,
         flexBasis: 0
     }
 });

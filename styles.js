@@ -25,7 +25,10 @@ export default StyleSheet.create({
         marginBottom: 20
     },
     contentContainer: {
-        padding: 20
+        padding: 20,
+        width: "100%",
+        display: "flex",
+        flexDirection: "column"
     },
     hide: {
         display: "none"
@@ -34,7 +37,9 @@ export default StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         marginBottom: 10,
-        alignItems: "center"
+        alignItems: "center",
+        flexShrink: 1,
+        flexGrow: 1
     },
     inputTitle: {
         marginRight: 5,
@@ -49,7 +54,6 @@ export default StyleSheet.create({
         flexGrow: 4,
         flexBasis: 0,
         fontSize: 15,
-        flexShrink: 0
     },
     customTimeContainer: {
         display: "flex",

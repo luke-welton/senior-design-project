@@ -140,7 +140,7 @@ export class Venue {
             street2: data.street2 || this.address.street2,
             city: data.city || this.address.city,
             state: data.state || this.address.state,
-            zip: data.zip || this.address.zip
+            zip: (data.zip || this.address.zip).toString()
         };
     }
 
