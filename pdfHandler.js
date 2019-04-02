@@ -294,5 +294,5 @@ const pdfStyles = {
     }
 };
 
-generateInvoice();
+generateCalendar(1, 2019);
 
