@@ -1,5 +1,5 @@
 import React from 'react';
-import {ActivityIndicator, Platform, View} from 'react-native';
+import {ActivityIndicator, View, Button} from 'react-native';
 import DayView from "./views/DayView";
 import EventView from "./views/EventView";
 import {ManageVenues, VenueView} from "./views/VenueViews";
@@ -11,6 +11,7 @@ import {CalendarList} from "react-native-calendars";
 import {AppContainer, toDateTime, toDateString, randomColor, Dropdown, MoreButton} from "./util";
 import LoginView from "./views/LoginView";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
+import {generateBookingList, generateInvoice, generateArtistConfirmation} from "./pdfHandler";
 
 // Firebase's implementation utilizes long timers,
 // which React Native doesn't like and throws a warning,
@@ -53,8 +54,12 @@ class MonthView extends React.Component {
     constructor(props) {
         super(props);
 
+        let currentDate = new Date();
+
         this.state = {
-            selectedVenue: loadedData.venues[0]
+            selectedVenue: loadedData.venues[0],
+            selectedMonth: currentDate.getMonth(),
+            selectedYear: currentDate.getFullYear()
         };
     }
 
@@ -79,6 +84,26 @@ class MonthView extends React.Component {
         });
 
         return markedDates;
+    }
+
+    _generateForms() {
+        let matchingEvents = loadedData.events.filter(event =>
+            event.start.getFullYear() === this.state.selectedYear &&
+            event.start.getMonth() === this.state.selectedMonth
+        );
+
+        let bookingList = generateBookingList(this.state.selectedYear, this.state.selectedMonth, matchingEvents);
+        //send email of booking list
+
+        matchingEvents.forEach(event => {
+            let matchingClient = loadedData.clients.find(client => client.id === event.clientID);
+            let matchingVenue = loadedData.venues.find(venue => venue.id === event.venueID);
+
+            let invoice = generateInvoice(matchingClient, event, matchingVenue);
+            let artistConfirmation = generateArtistConfirmation(matchingClient, event, matchingVenue);
+
+            //send email for invoice & artist confirmation
+        });
     }
 
     render() {
@@ -108,9 +133,9 @@ class MonthView extends React.Component {
                     />
                 </View>
                 <CalendarList style={Styles.monthView}
-                    horizontal = {Platform.OS === "android"}
-                    pagingEnabled = {Platform.OS === "android"}
-                    hideArrows = {Platform.OS !== "android"}
+                    horizontal = {true}
+                    pagingEnabled = {true}
+                    hideArrows = {true}
                     markingType = "multi-dot"
                     markedDates = {this._generateMarkedDates()}
                     onDayPress = {day => {
@@ -122,6 +147,12 @@ class MonthView extends React.Component {
                       });
                     }}
                 />
+                <View style={Styles.buttonContainer}>
+                    <Button
+                        title = "Generate Forms"
+                        onPress = {() => this._generateForms()}
+                    />
+                </View>
             </AppContainer>
         );
     }

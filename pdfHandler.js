@@ -1,6 +1,6 @@
-//import Printer from "pdfmake";
-const PDFMake = require("pdfmake");
-const fs = require("fs");
+import PDFMake from "pdfmake";
+// const PDFMake = require("pdfmake");
+// const fs = require("fs");
 
 const CAL_BLUE = "#2b4574";
 const CAL_GREY = "#e6e6e6";
@@ -86,7 +86,7 @@ function getMonthEnd(monthStart) {
     return monthEnd;
 }
 
-function generateCalendar(month, year, events) {
+export function generateBookingList(month, year, events) {
     let monthStart = new Date(year, month, 1);
     let monthEnd = getMonthEnd(monthStart);
 
@@ -125,11 +125,14 @@ function generateCalendar(month, year, events) {
             font: "Helvetica"
         }
     });
-    pdf.pipe(fs.createWriteStream("./testCal.pdf"));
+
+    //pdf.pipe(fs.createWriteStream("./testCal.pdf"));
     pdf.end();
+
+    return pdf;
 }
 
-function generateArtistConfirmation(client, event, venue) {
+export function generateArtistConfirmation(client, event, venue) {
     let content = [];
 
     [
@@ -172,11 +175,13 @@ function generateArtistConfirmation(client, event, venue) {
         }
     });
 
-    pdf.pipe(fs.createWriteStream("./testAC.pdf"));
+    //pdf.pipe(fs.createWriteStream("./testAC.pdf"));
     pdf.end();
+
+    return pdf;
 }
 
-function generateInvoice(client, event, venue) {
+export function generateInvoice(client, event, venue) {
     let content = [];
 
     [
@@ -242,8 +247,10 @@ function generateInvoice(client, event, venue) {
         }
     });
 
-    pdf.pipe(fs.createWriteStream("./testInvoice.pdf"));
+    //pdf.pipe(fs.createWriteStream("./testInvoice.pdf"));
     pdf.end();
+
+    return pdf;
 }
 
 const fonts = {
@@ -294,5 +301,5 @@ const pdfStyles = {
     }
 };
 
-generateCalendar(1, 2019);
+generateBookingList(1, 2019);
 
