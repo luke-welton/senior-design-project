@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {View, Button, Text, TextInput, StyleSheet, FlatList} from 'react-native';
-import { Venue } from './objects';
-import {Database} from "./database";
+import { Venue } from '../objects';
+import Database from "../Database";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
-import {AppContainer} from "./util";
-import Styles from "./styles";
+import {AppContainer} from "../util";
+import Styles from "../styles";
 
 @withMappedNavigationProps()
 export class ManageVenues extends React.Component {

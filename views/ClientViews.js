@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {View, Button, Text, TextInput, StyleSheet, FlatList} from 'react-native';
-import { Client } from './objects';
-import {Database} from "./database";
+import { Client } from '../objects';
+import {Database} from "../Database";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
-import {AppContainer} from "./util";
-import Styles from "./styles";
+import {AppContainer} from "../util";
+import Styles from "../styles";
 
 @withMappedNavigationProps()
 export class ManageClients extends React.Component {

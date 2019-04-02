@@ -28,7 +28,8 @@ export default StyleSheet.create({
         padding: 20,
         width: "100%",
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
+        alignItems: "center"
     },
     hide: {
         display: "none"
