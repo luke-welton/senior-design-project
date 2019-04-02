@@ -1,15 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Event, Client, Venue } from "./objects";
+import { Event, Client, Venue } from "../objects";
 import { View, TextInput, Text, TouchableOpacity, Button, StyleSheet } from "react-native";
 import { RadioGroup } from "react-native-btr";
-import DateTimePicker from "react-native-modal-datetime-picker";
-import Styles from "./styles";
+import DateTimePicker from "react-native-modal-datetime-picker/src/index";
+import Styles from "../styles";
 import {
     toTimeString, toAMPM, toDateString, toMilitaryTime, toUS, toDateTime,
     Dropdown, TimeInput, AppContainer, MoreButton
-} from "./util";
-import {Database} from "./database";
+} from "../util";
+import Database from "../Database";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
 
 const defaultTimes = [
