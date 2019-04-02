@@ -1,5 +1,5 @@
 import React from 'react';
-import {ActivityIndicator, Platform, View} from 'react-native';
+import {ActivityIndicator, Platform, View, Button} from 'react-native';
 import DayView from "./DayView";
 import EventView from "./EventView";
 import {ManageVenues, VenueView} from "./VenueViews";
@@ -114,6 +114,18 @@ class MonthView extends React.Component {
                       });
                     }}
                 />
+                <View style={Styles.buttonContainer}>
+                    {/* Load Archived Events Button */}
+                    <Button
+                        title = "Load Archived Events"
+                        onPress = {() => {
+                            Promise.all([db.getEvents()]).then(values => {
+                                loadedData.events = values[0];
+                                this.forceUpdate()
+                            }).catch(err => console.log(err));
+                        }}
+                    />
+                </View>
             </AppContainer>
         );
     }

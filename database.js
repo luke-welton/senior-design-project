@@ -1,6 +1,7 @@
 import Firebase from 'firebase';
 import auth from "./auth.json";
 import { Client, Event, Venue } from "./objects";
+import {toDateString, toMonthString, dayInMS} from "./util"
 
 export class Database {
     constructor(config) {
@@ -117,19 +118,7 @@ export class Database {
 
         let archiveDate = new Date(options);
 
-        let year = archiveDate.getFullYear();
-        let month = archiveDate.getMonth() + 1;
-        let day = archiveDate.getDate() + 1;
-
-        //add trailing 0s
-        if (month < 10) {
-            month = "0" + month;
-        }
-        if (day < 10) {
-            day = "0" + day;
-        }
-
-        let archiveDay = [year, month, day].join("-");
+        let archiveDay = toDateString(archiveDate);
 
         return new Promise((res, rej) => {
             Firebase.database().ref('database/events').orderByChild('date').equalTo(archiveDay).once("value").then(data => {
@@ -155,19 +144,7 @@ export class Database {
         let cutoffTime = options;
         let cutoffDate = new Date(cutoffTime);
 
-        let year = cutoffDate.getFullYear();
-        let month = cutoffDate.getMonth() + 1;
-        let day = cutoffDate.getDate() + 1;
-
-        //add trailing 0s
-        if (month < 10) {
-            month = "0" + month;
-        }
-        if (day < 10) {
-            day = "0" + day;
-        }
-
-        let cutoffString = [year, month, day].join("-");
+        let cutoffString = toDateString(cutoffDate);
 
         return new Promise((res, rej) => {
             Firebase.database().ref('database/events').orderByChild('date').startAt(cutoffString).once("value").then(data => {
@@ -193,19 +170,7 @@ export class Database {
         let cutoffTime = Date.now() - (7 * (24 * 60 * 60 * 1000));
         let cutoffDate = new Date(cutoffTime);
 
-        let year = cutoffDate.getFullYear();
-        let month = cutoffDate.getMonth() + 1;
-        let day = cutoffDate.getDate() + 1;
-
-        //add trailing 0s
-        if (month < 10) {
-            month = "0" + month;
-        }
-        if (day < 10) {
-            day = "0" + day;
-        }
-
-        let cutoffString = [year, month, day].join("-");
+        let cutoffString = toDateString(cutoffDate);
 
         return new Promise((res, rej) => {
             Firebase.database().ref('database/events').orderByChild('date').startAt(cutoffString).once("value").then(data => {
