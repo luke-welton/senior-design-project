@@ -3,6 +3,7 @@ import {ActivityIndicator, Platform, View} from 'react-native';
 import DayView from "./DayView";
 import EventView from "./EventView";
 import {ManageVenues, VenueView} from "./VenueViews";
+import {ManageClients, ClientView} from "./ClientViews";
 import db from "./database";
 import Styles from "./styles";
 import {createStackNavigator, createAppContainer, createSwitchNavigator} from "react-navigation";
@@ -124,10 +125,12 @@ const AppStack = createStackNavigator({
     Day: DayView,
     Event: EventView,
     Venue: VenueView,
-    VenueManage: ManageVenues
+    VenueManage: ManageVenues,
+    Client: ClientView,
+    ClientManage: ManageClients
 }, {
     initialRouteName: "Month",
-    //initialRouteName: "VenueManage",
+    //initialRouteName: "Client",
     headerMode: "none",
     cardOverlayEnabled: true,
 });
