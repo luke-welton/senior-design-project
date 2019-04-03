@@ -54,7 +54,7 @@ export class ManageClients extends React.Component {
         return (
             <AppContainer style={Styles.infoView}>
                 <View style={Styles.contentContainer}>
-                    <FlatList
+                    <FlatList style={Styles.listContainer}
                         data={this.state.clientList.map(client => { return {
                             key: client.id,
                             data: client
@@ -170,7 +170,7 @@ export class ClientView extends React.Component {
 
                     {/* Performer Names Input */}
                     <Text style={ClientStyles.performerTitle}>Performers</Text>
-                    <FlatList
+                    <FlatList style={Styles.listContainer}
                         data = {this.state.performers.map((name, i) => {
                             return {
                                 key: (i + 1).toString(),
