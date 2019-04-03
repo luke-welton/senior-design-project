@@ -1,6 +1,5 @@
-import PDFMake from "pdfmake";
-// const PDFMake = require("pdfmake");
-// const fs = require("fs");
+//import PDFMake from "pdfmake";
+const PDFMake = require("pdfmake");
 
 const CAL_BLUE = "#2b4574";
 const CAL_GREY = "#e6e6e6";
@@ -86,7 +85,7 @@ function getMonthEnd(monthStart) {
     return monthEnd;
 }
 
-export function generateBookingList(month, year, events) {
+exports.generateBookingList = function (month, year, events) {
     let monthStart = new Date(year, month, 1);
     let monthEnd = getMonthEnd(monthStart);
 
@@ -130,9 +129,9 @@ export function generateBookingList(month, year, events) {
     pdf.end();
 
     return pdf;
-}
+};
 
-export function generateArtistConfirmation(client, event, venue) {
+exports.generateArtistConfirmation = function (client, event, venue) {
     let content = [];
 
     [
@@ -179,9 +178,9 @@ export function generateArtistConfirmation(client, event, venue) {
     pdf.end();
 
     return pdf;
-}
+};
 
-export function generateInvoice(client, event, venue) {
+exports.generateInvoice = function (client, event, venue) {
     let content = [];
 
     [
@@ -251,7 +250,7 @@ export function generateInvoice(client, event, venue) {
     pdf.end();
 
     return pdf;
-}
+};
 
 const fonts = {
     Helvetica: {
@@ -300,6 +299,4 @@ const pdfStyles = {
         margin: [0, 50, 0, 0]
     }
 };
-
-generateBookingList(1, 2019);
 
