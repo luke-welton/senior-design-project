@@ -1,5 +1,5 @@
 import React from 'react';
-import {ActivityIndicator, Platform, View} from 'react-native';
+import {ActivityIndicator, Platform, View, Button} from 'react-native';
 import DayView from "./views/DayView";
 import EventView from "./views/EventView";
 import {ManageVenues, VenueView} from "./views/VenueViews";
@@ -31,7 +31,7 @@ class LoadingScreen extends React.Component {
     componentWillMount() {
         db = new Database();
 
-        Promise.all([db.getClients(), db.getEvents(), db.getVenues()]).then(values => {
+        Promise.all([db.getClients(), db.getRecentAndUpcomingEvents(), db.getVenues()]).then(values => {
             loadedData.clients = values[0];
             loadedData.events = values[1];
             loadedData.venues = values[2];
@@ -122,6 +122,18 @@ class MonthView extends React.Component {
                       });
                     }}
                 />
+                <View style={Styles.buttonContainer}>
+                    {/* Load Archived Events Button */}
+                    <Button
+                        title = "Load Archived Events"
+                        onPress = {() => {
+                            Promise.all([db.getEvents()]).then(values => {
+                                loadedData.events = values[0];
+                                this.forceUpdate()
+                            }).catch(err => console.log(err));
+                        }}
+                    />
+                </View>
             </AppContainer>
         );
     }
