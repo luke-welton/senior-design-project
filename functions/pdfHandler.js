@@ -1,25 +1,8 @@
-//import PDFMake from "pdfmake";
 const PDFMake = require("pdfmake");
+const Util = require("./util.js");
 
 const CAL_BLUE = "#2b4574";
 const CAL_GREY = "#e6e6e6";
-
-function monthEnum(monthNum) {
-    switch (monthNum) {
-        case 0: return "January";
-        case 1: return "February";
-        case 2: return "March";
-        case 3: return "April";
-        case 4: return "May";
-        case 5: return "June";
-        case 6: return "July";
-        case 7: return "August";
-        case 8: return "September";
-        case 9: return "October";
-        case 10: return "November";
-        case 11: return "December";
-    }
-}
 
 function generateCalendarTable(startDate, events) {
     let calendarTable = [];
@@ -91,7 +74,7 @@ exports.generateBookingList = function (month, year, events) {
 
     let content = [];
     content.push({
-        text: [monthEnum(month), year].join(" "),
+        text: [Util.monthEnum(month), year].join(" "),
         style: "calMonth"
     });
     content.push({
@@ -124,18 +107,33 @@ exports.generateBookingList = function (month, year, events) {
             font: "Helvetica"
         }
     });
-
-    //pdf.pipe(fs.createWriteStream("./testCal.pdf"));
     pdf.end();
 
     return pdf;
+};
+
+let stringifyNames = function (performerNames) {
+    if (performerNames.length === 1) {
+        return performerNames[0];
+    } else if (performerNames.length === 2) {
+        return performerNames.join(" and ");
+    } else {
+        let returnString = "";
+
+        for (let i = 0; i < performerNames.length - 1; i++) {
+            returnString += performerNames[i] + ", ";
+        }
+
+        returnString += " and " + performerNames[performerNames.length - 1];
+        return returnString;
+    }
 };
 
 exports.generateArtistConfirmation = function (client, event, venue) {
     let content = [];
 
     [
-        "Sinclair's East - Montgomery, AL",
+        venue.name + " - " + venue.address.city + ", " + venue.address.state,
         "Live Performance Contract/Confirmation",
         "Invoice",
         "Music Matters Bookings"
@@ -144,16 +142,25 @@ exports.generateArtistConfirmation = function (client, event, venue) {
         style: "formHeader"
     }));
 
+    let eventDate = new Date(event.date);
+
     content.push({
         text: [
             "\u200B\t\t",
-            {text: "Eric Perkins", style: "underlined"},
-            " agree(s) to perform live music at Sinclair's East, 7847 Vaughn Rd, Montgomery, AL, 36116 on the evening of ",
-            {text: "Saturday, October 27, 2018", style: "underlined"},
+            {text: stringifyNames(client.performers), style: "underlined"},
+            " agree(s) to perform live music at " + venue.name + ", " +
+                venue.address.street1 + venue.address.street2 + ", " +
+                venue.address.city + ", " + venue.address.state + ", " + venue.address.zip + " on the evening of ",
+            {
+                text: Util.dayEnum(eventDate.getDay()) + ", " +
+                        Util.monthEnum(eventDate.getMonth()) + " " +
+                        eventDate.getDate() + ", " + eventDate.getFullYear(),
+                style: "underlined"
+            },
             " between the listed hours of ",
-            {text: "8:00 PM to 11:00 PM", style: "underlined"},
-            ". Sinclair's East in Montgomery, AL agrees to pay the above named artists ",
-            {text: "$200.00", style: "underlined"},
+            {text: Util.toAMPM(event.start) + " to " + Util.toAMPM(event.end), style: "underlined"},
+            ". " + venue.name + " in " + venue.address.city + ", " + venue.address.state + " agrees to pay the above named artists ",
+            {text: "$" + parseFloat(event.price).toFixed(2), style: "underlined"},
             ", and said payment is to be paid upon completion of this performance."
         ],
         style: "formText"
@@ -173,8 +180,6 @@ exports.generateArtistConfirmation = function (client, event, venue) {
             font: "Times"
         }
     });
-
-    //pdf.pipe(fs.createWriteStream("./testAC.pdf"));
     pdf.end();
 
     return pdf;
@@ -245,8 +250,6 @@ exports.generateInvoice = function (client, event, venue) {
             font: "Times"
         }
     });
-
-    //pdf.pipe(fs.createWriteStream("./testInvoice.pdf"));
     pdf.end();
 
     return pdf;
