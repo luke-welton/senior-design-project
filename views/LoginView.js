@@ -93,8 +93,8 @@ export default class LoginView extends React.Component {
 
 const LoginViewStyles = StyleSheet.create({
     icon: {
-        height: 300,
-        width: 300,
+        height: 200,
+        width: 200,
         marginBottom: 50,
         marginTop: 30
     },
