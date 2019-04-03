@@ -1,13 +1,16 @@
 import React from 'react';
 import {ActivityIndicator, Platform, View, Button} from 'react-native';
-import DayView from "./DayView";
-import EventView from "./EventView";
-import {ManageVenues, VenueView} from "./VenueViews";
-import db from "./database";
+import DayView from "./views/DayView";
+import EventView from "./views/EventView";
+import {ManageVenues, VenueView} from "./views/VenueViews";
+import {ManageClients, ClientView} from "./views/ClientViews";
+import Database from "./Database";
 import Styles from "./styles";
 import {createStackNavigator, createAppContainer, createSwitchNavigator} from "react-navigation";
 import {CalendarList} from "react-native-calendars";
 import {AppContainer, toDateTime, toDateString, randomColor, Dropdown, MoreButton} from "./util";
+import LoginView from "./views/LoginView";
+import {withMappedNavigationProps} from "react-navigation-props-mapper";
 
 // Firebase's implementation utilizes long timers,
 // which React Native doesn't like and throws a warning,
@@ -21,14 +24,19 @@ let loadedData = {
     venues: null
 };
 
+let db = null;
+
+@withMappedNavigationProps()
 class LoadingScreen extends React.Component {
     componentWillMount() {
+        db = new Database();
+
         Promise.all([db.getClients(), db.getRecentAndUpcomingEvents(), db.getVenues()]).then(values => {
             loadedData.clients = values[0];
             loadedData.events = values[1];
             loadedData.venues = values[2];
 
-            this.props.navigation.navigate("App", loadedData);
+            this.props.navigation.navigate("App");
         }).catch(err => console.log(err));
     }
 
@@ -136,18 +144,21 @@ const AppStack = createStackNavigator({
     Day: DayView,
     Event: EventView,
     Venue: VenueView,
-    VenueManage: ManageVenues
+    VenueManage: ManageVenues,
+    Client: ClientView,
+    ClientManage: ManageClients
 }, {
     initialRouteName: "Month",
-    //initialRouteName: "VenueManage",
+    //initialRouteName: "Client",
     headerMode: "none",
     cardOverlayEnabled: true,
 });
 
 export default createAppContainer(createSwitchNavigator({
+    Login: LoginView,
     Loading: LoadingScreen,
     App: AppStack
 }, {
-    initialRouteName: "Loading",
+    initialRouteName: "Login",
     headerMode: "none"
 }));

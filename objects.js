@@ -1,20 +1,20 @@
 import {toTimeString, toDateString, toDateTime, dayInMS, toLocalTime, toUTC} from "./util";
 
-class Performer {
-    constructor(_data) {
-        this.firstName = _data.first;
-        this.lastName = _data.last;
-        this.middleInitial = _data.middle;
-    }
-
-    toData() {
-        return {
-            first: this.firstName || "",
-            last: this.lastName || "",
-            middle: this.middleInitial || ""
-        };
-    };
-}
+// class Performer {
+//     constructor(_data) {
+//         this.firstName = _data.first;
+//         this.lastName = _data.last;
+//         this.middleInitial = _data.middle;
+//     }
+//
+//     toData() {
+//         return {
+//             first: this.firstName || "",
+//             last: this.lastName || "",
+//             middle: this.middleInitial || ""
+//         };
+//     };
+// }
 
 export class Client {
     constructor(_data, _id) {
@@ -23,23 +23,20 @@ export class Client {
 
         this.id = _id;
 
-        this.performers = [];
-        _data.performers.forEach(data => {
-            this.performers.push(new Performer(data))
-        });
-
+        this.performers = _data.performers;
         this.stageName = _data.stage;
         this.email = _data.email;
     }
 
-    toData() {
-        let performers = [];
-        this.performers.forEach(performer => {
-            performers.push(performer.toData());
-        });
+    update(data) {
+        this.performers = data.performers || this.performers;
+        this.stageName = data.stageName || this.stageName;
+        this.email = data.email || this.email;
+    }
 
+    toData() {
         return {
-            performers: performers,
+            performers: this.performers || [],
             stage: this.stageName || "",
             email: this.email || ""
         };
@@ -132,17 +129,26 @@ export class Venue {
         this.id = _id || null;
         this.name = _data.name || "";
         this.contactEmail = _data.email || "";
+        this.address = _data.address || {};
     }
 
     update(data) {
         this.name = data.name || this.name;
         this.contactEmail = data.email || this.contactEmail;
+        this.address = {
+            street1: data.street1 || this.address.street1,
+            street2: data.street2 || this.address.street2,
+            city: data.city || this.address.city,
+            state: data.state || this.address.state,
+            zip: (data.zip || this.address.zip).toString()
+        };
     }
 
     toData() {
         return {
             name: this.name,
-            email: this.contactEmail
+            email: this.contactEmail,
+            address: this.address
         };
     }
 }

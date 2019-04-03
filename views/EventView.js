@@ -1,14 +1,15 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { Event, Client, Venue } from "./objects"
-import { View, TextInput, Text, TouchableOpacity, Button } from "react-native"
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Event, Client, Venue } from "../objects";
+import { View, TextInput, Text, TouchableOpacity, Button, StyleSheet } from "react-native";
 import { RadioGroup } from "react-native-btr";
-import DateTimePicker from "react-native-modal-datetime-picker"
-import Styles from "./styles"
+import DateTimePicker from "react-native-modal-datetime-picker/src/index";
+import Styles from "../styles";
 import {
     toTimeString, toAMPM, toDateString, toMilitaryTime, toUS, toDateTime,
-    Dropdown, TimeInput, AppContainer
-} from "./util";
+    Dropdown, TimeInput, AppContainer, MoreButton
+} from "../util";
+import Database from "../Database";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
 
 const defaultTimes = [
@@ -26,7 +27,8 @@ export default class EventView extends React.Component {
         venueList: PropTypes.arrayOf(PropTypes.instanceOf(Venue)).isRequired,
         eventList: PropTypes.arrayOf(PropTypes.instanceOf(Event)).isRequired,
         onSave: PropTypes.func.isRequired,
-        onDelete: PropTypes.func
+        onDelete: PropTypes.func,
+        database: PropTypes.instanceOf(Database)
     };
 
     constructor(props) {
@@ -104,6 +106,17 @@ export default class EventView extends React.Component {
                             selectedValue = {this.state.clientID}
                             onValueChange = {value => this.setState({clientID: value})}
                         />
+                        <View style={EventStyles.moreContainer}>
+                            <MoreButton
+                                onPress = {() => {this.props.navigation.navigate("ClientManage", {
+                                    clientList: this.props.clientList,
+                                    database: this.props.database,
+                                    onReturn: () => {
+                                        // force rerender
+                                    }
+                                })}}
+                            />
+                        </View>
                     </View>
 
                     {/* Venue Selector */}
@@ -272,4 +285,10 @@ class DateInput extends React.Component {
         );
     }
 }
+
+const EventStyles = StyleSheet.create({
+    moreContainer: {
+        width: "10%"
+    }
+});
 

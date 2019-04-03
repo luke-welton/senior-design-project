@@ -1,69 +1,14 @@
 import Firebase from 'firebase';
-import auth from "./auth.json";
 import { Client, Event, Venue } from "./objects";
 import {toDateString, toMonthString, dayInMS} from "./util"
 
-export class Database {
-    constructor(config) {
-        Firebase.initializeApp(config);
-
+export default class Database {
+    constructor() {
         this.db = Firebase.database();
         this.clientDB = this.db.ref("database/clients");
         this.eventDB = this.db.ref("database/events");
         this.venueDB = this.db.ref("database/venues")
     }
-
-    // moveDB() {
-    //     let newDB = this.db.ref("database");
-    //     let newClientDB = newDB.child("clients");
-    //     let newEventDB = newDB.child("events");
-    //
-    //     this.getClients().then(clients => {
-    //         clients.forEach(client => {
-    //             newClientDB.push(client.toData()).then(() => {
-    //
-    //             });
-    //         });
-    //     });
-    //
-    //     this.getEvents().then(events => {
-    //         events.forEach(event => {
-    //             newEventDB.push(event.toData()).then(() => {
-    //
-    //             });
-    //         });
-    //     })
-    // }
-
-    // fixEvents() {
-    //     Promise.all([this.getClients(), this.getEvents()]).then(values => {
-    //         let clients = values[0];
-    //         let events = values[1];
-    //
-    //         events.forEach(event => {
-    //             event.clientID = clients[Math.floor(Math.random() * clients.length)].id;
-    //             this.updateEvent(event);
-    //         });
-    //     });
-    // }
-
-    // copyClientsAndEvents() {
-    //     Promise.all([this.getClients(), this.getEvents()]).then(values => {
-    //         let clients = values[0];
-    //         let events = values[1];
-    //         let combinedDB = this.db.ref("database/combined");
-    //
-    //         events.forEach(event => {
-    //             let matchingClient = clients.find(client => client.id === event.clientID);
-    //             let eventObj = event.toData();
-    //
-    //             delete eventObj.clientID;
-    //             eventObj.client = matchingClient.toData();
-    //
-    //             combinedDB.child(event.id).set(eventObj).catch(err => console.log(err));
-    //         });
-    //     }).catch(err => console.log(err));
-    //}
 
     // load information on all clients
     getClients() {
@@ -310,11 +255,3 @@ export class Database {
     }
 
 }
-
-const firebaseConfig = {
-    apiKey: auth.apiKey,
-    authDomain: "music-matters-229420.firebaseapp.com",
-    databaseURL: "https://music-matters-229420.firebaseio.com",
-    storageBucket: "music-matters-229420.appspot.com"
-};
-export default new Database(firebaseConfig);
