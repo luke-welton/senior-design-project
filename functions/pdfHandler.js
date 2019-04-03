@@ -167,7 +167,7 @@ exports.generateArtistConfirmation = function (client, event, venue) {
     });
 
     content.push({
-        image: "./assets/icon.png",
+        image: "../assets/icon.png",
         fit: [300, 300],
         style: "logo"
     });
@@ -237,7 +237,7 @@ exports.generateInvoice = function (client, event, venue) {
     });
 
     content.push({
-        image: "./assets/icon.png",
+        image: "../assets/icon.png",
         fit: [300, 300],
         style: "logo"
     });

@@ -8,6 +8,7 @@ Admin.initializeApp();
 
 exports.emailTest = Functions.https.onRequest((req, res) => {
     return Email.sendEmail({
+        to: "lmoowelton@gmail.com",
         subject: "Test Email",
         text: "Hey Luke!\n\nThis is the new email!\n\nThanks,\nLuke Welton"
     }).then(() => res.send("Email successfully sent!")).catch(err => console.error(err));
@@ -46,7 +47,7 @@ exports.sendArtistConfirmation = Functions.https.onRequest((req, res) => {
                     text: emailBody,
                     attachments: [
                         {
-                            filename: "Confirmation " + Util.toUS(event.date) + ".pdf",
+                            filename: "Confirmation " + event.date + ".pdf",
                             content: acPDF
                         }
                     ]
