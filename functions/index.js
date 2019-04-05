@@ -40,7 +40,8 @@ exports.sendEmail = Functions.https.onRequest((req, res) => {
                     let calendarPDF = PDF.generateCalendar(data.month, data.year, data.events);
                     Email.sendCalendar(data.month, data.year, data.venue, calendarPDF).then(() => {
                         res.send(JSON.stringify({
-                            response: "Email successfully sent!"
+                            response: "Email successfully sent!",
+                            events: data.events
                         }));
                     }).catch(handleError);
                 }
@@ -92,7 +93,7 @@ const processBookingListAndCalendar = function (args) {
 
                     let filteredEvents = eventArray.filter(event => {
                         let eventDate = new Date(event.date);
-                        return eventDate.getMonth() === month - 1 && eventDate.getFullYear() === year && event.venue === venue.id;
+                        return eventDate.getMonth() === month - 1 && eventDate.getFullYear() === year && event.venue === venueID;
                     });
 
                     let getExtraInfo = attachClientData;

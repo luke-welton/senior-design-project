@@ -64,11 +64,11 @@ exports.sendInvoice = function (client, event, venue, invoicePDF) {
 };
 
 exports.sendCalendar = function (month, year, venue, calendarPDF) {
-    let monthText = Util.monthEnum(month);
+    let monthText = Util.monthEnum(month - 1);
 
     let emailSubject = "Booking Calendar for " + monthText + " " + year;
     let emailBody = "To whom it may concern,\n\n" +
-        "Attached is the booking calendar for " + month + " " + year + ". " +
+        "Attached is the booking calendar for " + monthText + " " + year + ". " +
         "Please don't hesitate to reply back to this email if you have any questions.";
 
     return sendEmail({
