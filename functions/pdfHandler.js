@@ -35,10 +35,25 @@ function generateCalendarTable(startDate, events) {
             calendarTable.push([]);
         }
 
-        //add new date box to most recent week added
-        calendarTable[calendarTable.length - 1].push({
+        let cellArray = [];
+        cellArray.push({
             text: currentDate.getDate()
         });
+
+        let matchingEvents = events.filter(event => {
+            let eventDate = new Date(Util.toUS(event.date));
+            return eventDate.getTime() === currentDate.getTime();
+        });
+
+        matchingEvents.forEach(event => {
+            cellArray.push({
+                text: [Util.toAMPM(event.start), Util.toAMPM(event.end)].join("-"),
+                style: "dateTimeslot"
+            });
+        });
+
+        //add new date box to most recent week added
+        calendarTable[calendarTable.length - 1].push(cellArray);
 
         //go to next day
         currentDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000);
@@ -69,6 +84,9 @@ function getMonthEnd(monthStart) {
 }
 
 exports.generateCalendar = function (month, year, events) {
+    //months begin at 0, not 1
+    month -= 1;
+
     let monthStart = new Date(year, month, 1);
     let monthEnd = getMonthEnd(monthStart);
 
@@ -142,7 +160,7 @@ exports.generateInvoice = function (client, event, venue) {
         style: "formHeader"
     }));
 
-    let eventDate = new Date(event.date);
+    let eventDate = new Date(Util.toUS(event.date));
 
     content.push({
         text: [
@@ -197,7 +215,7 @@ exports.generateArtistConfirmation = function (client, event, venue) {
         style: "formHeader"
     }));
 
-    let eventDate = new Date(event.date);
+    let eventDate = new Date(Util.toUS(event.date));
 
     content.push({
         text: [
@@ -305,6 +323,11 @@ const pdfStyles = {
         fontSize: 15,
         lineHeight: 1.25,
         margin: [0, 0, 0, 15]
+    },
+    dateTimeslot: {
+        fontSize: 11.5,
+        bold: true,
+        margin: [0, 10, 0, 0]
     }
 };
 

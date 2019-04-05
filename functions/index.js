@@ -92,7 +92,7 @@ const processBookingListAndCalendar = function (args) {
                     let eventArray = Util.objectToArray(data.val());
 
                     let filteredEvents = eventArray.filter(event => {
-                        let eventDate = new Date(event.date);
+                        let eventDate = new Date(Util.toUS(event.date));
                         return eventDate.getMonth() === month - 1 && eventDate.getFullYear() === year && event.venue === venueID;
                     });
 
