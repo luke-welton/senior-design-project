@@ -20,7 +20,6 @@ exports.toAMPM = function (militaryTime) {
     return [splits.join(":"), ampm].join(" ");
 };
 
-
 exports.toUS = function (isoDate) {
     let splits = isoDate.split("-");
 
@@ -37,6 +36,17 @@ exports.toUS = function (isoDate) {
     }
 
     return [month, date, year].join("/");
+};
+
+exports.toUSText = function (isoDate) {
+    let splits = isoDate.split("-");
+    let year = splits[0];
+    let month = parseInt(splits[1]);
+    let date = splits[2];
+
+    let monthText = exports.monthEnum(month - 1);
+
+    return monthText + " " + date + ", " + year;
 };
 
 exports.monthEnum = function (monthNum) {

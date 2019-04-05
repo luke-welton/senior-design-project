@@ -19,7 +19,7 @@ const eventDB = db.ref("database/events");
 const clientDB = db.ref("database/clients");
 const venueDB = db.ref("database/venues");
 
-const validEmailTypes = ["booking_list", "invoice", "artist_confirmation"];
+const validEmailTypes = ["booking_list", "invoice", "artist_confirmation", "calendar"];
 exports.sendEmail = Functions.https.onRequest((req, res) => {
     const handleError = function (errorMessage) {
         res.send(JSON.stringify({
@@ -39,11 +39,17 @@ exports.sendEmail = Functions.https.onRequest((req, res) => {
             processInvoiceAndArtistConfirmation(req.query).then(data => {
                 if (emailType === "invoice") {
                     let invoicePDF = PDF.generateInvoice(data.client, data.event, data.venue);
-                    //send invoice email
+                    Email.sendInvoice(data.client, data.event, data.venue, invoicePDF).then(() => {
+                        res.send(JSON.stringify({
+                            response: "Email successfully sent!"
+                        }));
+                    }).catch(handleError);
                 } else {
                     let artistConfirmationPDF = PDF.generateArtistConfirmation(data.client, data.event, data.venue);
                     Email.sendArtistConfirmation(data.client, data.event, data.venue, artistConfirmationPDF).then(() => {
-                        res.send("Email successfully sent!");
+                        res.send(JSON.stringify({
+                            response: "Email successfully sent!"
+                        }));
                     }).catch(handleError);
                 }
             }).catch(handleError);

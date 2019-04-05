@@ -68,7 +68,7 @@ function getMonthEnd(monthStart) {
     return monthEnd;
 }
 
-exports.generateBookingList = function (month, year, events) {
+exports.generateCalendar = function (month, year, events) {
     let monthStart = new Date(year, month, 1);
     let monthEnd = getMonthEnd(monthStart);
 

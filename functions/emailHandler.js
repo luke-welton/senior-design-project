@@ -18,7 +18,7 @@ const sendEmail = function (info) {
         }
 
         let messageOptions = Object.assign({}, info);
-        messageOptions.from = `"Luke Welton" <luke.welton97@gmail.com>`;
+        messageOptions.from = "Music Matters Bookings";
 
         gmail.sendMail(messageOptions).then(() => res());
     });
@@ -29,12 +29,10 @@ exports.sendArtistConfirmation = function (client, event, venue, acPDF) {
         let emailSubject = venue.name + " - Artist Confirmation";
         let emailBody = "Hello!\n\n" +
             "Attached is your confirmation for your performance" + " at " + venue.name + " at " + Util.toAMPM(event.start) + "\n" +
-            "Please don't hesitate to reply back to this email if you have any questions.\n\n";
+            "Please don't hesitate to reply back to this email if you have any questions.";
 
         sendEmail({
-            to: "law0047@auburn.edu",
-            cc: "lmoowelton@gmail.com",
-            bcc: "lawelton42@yahoo.com",
+            to: "lmoowelton@gmail.com",
             subject: emailSubject,
             text: emailBody,
             attachments: [
@@ -43,7 +41,28 @@ exports.sendArtistConfirmation = function (client, event, venue, acPDF) {
                     content: acPDF
                 }
             ]
-        }).then(() => res).catch(err => rej(err));
+        }).then(res).catch(rej);
+    });
+};
+
+exports.sendInvoice = function (client, event, venue, invoicePDF) {
+    return new Promise((res, rej) => {
+        let emailSubject = client.stage + " - Invoice - " + Util.toUS(event.date);
+        let emailBody = "To whom it may concern,\n\n" +
+            "Attached is the invoice for " + client.stage + ", who is performing at your venue on " + Util.toUSText(event.date) + ". " +
+            "Please don't hesitate to reply back to this email if you have any questions.";
+
+        sendEmail({
+            to: "lmoowelton@gmail.com",
+            subject: emailSubject,
+            text: emailBody,
+            attachments: [
+                {
+                    filename: "Invoice " + client.stage + " " + event.date + ".pdf",
+                    content: invoicePDF
+                }
+            ]
+        }).then(res).catch(rej);
     });
 };
 
