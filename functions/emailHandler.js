@@ -20,50 +20,66 @@ const sendEmail = function (info) {
         let messageOptions = Object.assign({}, info);
         messageOptions.from = "Music Matters Bookings";
 
-        gmail.sendMail(messageOptions).then(() => res());
+        gmail.sendMail(messageOptions).then(res).catch(rej);
     });
 };
+exports.sendEmail = sendEmail;
 
 exports.sendArtistConfirmation = function (client, event, venue, acPDF) {
-    return new Promise ((res, rej) => {
-        let emailSubject = venue.name + " - Artist Confirmation";
-        let emailBody = "Hello!\n\n" +
-            "Attached is your confirmation for your performance" + " at " + venue.name + " at " + Util.toAMPM(event.start) + "\n" +
-            "Please don't hesitate to reply back to this email if you have any questions.";
+    let emailSubject = venue.name + " - Artist Confirmation";
+    let emailBody = "Hello!\n\n" +
+        "Attached is your confirmation for your performance" + " at " + venue.name + " at " + Util.toAMPM(event.start) + "\n" +
+        "Please don't hesitate to reply back to this email if you have any questions.";
 
-        sendEmail({
-            to: "lmoowelton@gmail.com",
-            subject: emailSubject,
-            text: emailBody,
-            attachments: [
-                {
-                    filename: "Confirmation " + event.date + ".pdf",
-                    content: acPDF
-                }
-            ]
-        }).then(res).catch(rej);
+    return sendEmail({
+        to: "lmoowelton@gmail.com",
+        subject: emailSubject,
+        text: emailBody,
+        attachments: [
+            {
+                filename: "Confirmation " + event.date + ".pdf",
+                content: acPDF
+            }
+        ]
     });
 };
 
 exports.sendInvoice = function (client, event, venue, invoicePDF) {
-    return new Promise((res, rej) => {
-        let emailSubject = client.stage + " - Invoice - " + Util.toUS(event.date);
-        let emailBody = "To whom it may concern,\n\n" +
-            "Attached is the invoice for " + client.stage + ", who is performing at your venue on " + Util.toUSText(event.date) + ". " +
-            "Please don't hesitate to reply back to this email if you have any questions.";
+    let emailSubject = client.stage + " - Invoice - " + Util.toUS(event.date);
+    let emailBody = "To whom it may concern,\n\n" +
+        "Attached is the invoice for " + client.stage + ", who is performing at your venue on " + Util.toUSText(event.date) + ". " +
+        "Please don't hesitate to reply back to this email if you have any questions.";
 
-        sendEmail({
-            to: "lmoowelton@gmail.com",
-            subject: emailSubject,
-            text: emailBody,
-            attachments: [
-                {
-                    filename: "Invoice " + client.stage + " " + event.date + ".pdf",
-                    content: invoicePDF
-                }
-            ]
-        }).then(res).catch(rej);
+    return sendEmail({
+        to: "lmoowelton@gmail.com",
+        subject: emailSubject,
+        text: emailBody,
+        attachments: [
+            {
+                filename: "Invoice " + client.stage + " " + event.date + ".pdf",
+                content: invoicePDF
+            }
+        ]
     });
 };
 
-exports.sendEmail = sendEmail;
+exports.sendCalendar = function (month, year, venue, calendarPDF) {
+    let monthText = Util.monthEnum(month);
+
+    let emailSubject = "Booking Calendar for " + monthText + " " + year;
+    let emailBody = "To whom it may concern,\n\n" +
+        "Attached is the booking calendar for " + month + " " + year + ". " +
+        "Please don't hesitate to reply back to this email if you have any questions.";
+
+    return sendEmail({
+        to: "lmoowelton@gmail.com",
+        subject: emailSubject,
+        text: emailBody,
+        attachments: [
+            {
+                filename: "Booking Calendar " + monthText + " " + year + ".pdf",
+                content: calendarPDF
+            }
+        ]
+    })
+};

@@ -2,6 +2,7 @@ const Functions = require('firebase-functions');
 const Admin = require("firebase-admin");
 const Email = require("./emailHandler.js");
 const PDF = require("./pdfHandler.js");
+const Util = require("./util.js");
 
 exports.emailTest = Functions.https.onRequest((req, res) => {
     return Email.sendEmail({
@@ -33,8 +34,17 @@ exports.sendEmail = Functions.https.onRequest((req, res) => {
     } else if (!validEmailTypes.includes(emailType)) {
         handleError("The email type provided is invalid.");
     } else {
-        if (emailType === "booking_list") {
-            processBookingList(req.query);
+        if (emailType === "booking_list" || emailType === "calendar") {
+            processBookingListAndCalendar(req.query).then(data => {
+                if (emailType === "calendar") {
+                    let calendarPDF = PDF.generateCalendar(data.month, data.year, data.events);
+                    Email.sendCalendar(data.month, data.year, data.venue, calendarPDF).then(() => {
+                        res.send(JSON.stringify({
+                            response: "Email successfully sent!"
+                        }));
+                    }).catch(handleError);
+                }
+            }).catch(handleError);
         } else {
             processInvoiceAndArtistConfirmation(req.query).then(data => {
                 if (emailType === "invoice") {
@@ -57,7 +67,68 @@ exports.sendEmail = Functions.https.onRequest((req, res) => {
     }
 });
 
-const processBookingList = function (args) {
+const processBookingListAndCalendar = function (args) {
+    return new Promise((res, rej) => {
+        let month = parseInt(args.month);
+        let year = parseInt(args.year);
+        let venueID = args.venue;
+
+        if (!venueID) {
+            rej("no venue ID was provided.");
+        } else if (isNaN(month)) {
+            rej("invalid month");
+        } else if (year < 2000) {
+            rej("invalid year");
+        }
+
+        venueDB.child(venueID).once("value").then(data => {
+            if (!data.exists()) {
+                rej("No venue was found with the given ID.")
+            } else {
+                let venue = data.val();
+
+                eventDB.once("value").then(data => {
+                    let eventArray = Util.objectToArray(data.val());
+
+                    let filteredEvents = eventArray.filter(event => {
+                        let eventDate = new Date(event.date);
+                        return eventDate.getMonth() === month - 1 && eventDate.getFullYear() === year && event.venue === venue.id;
+                    });
+
+                    let getExtraInfo = attachClientData;
+                    if (args.type === "calendar") {
+                        getExtraInfo = events => Promise.resolve(events);
+                    }
+
+                    getExtraInfo(filteredEvents).then(events => {
+                        res({
+                            month: month,
+                            year: year,
+                            venue: venue,
+                            events: events.sort(Util.eventSort)
+                        });
+                    }).catch(rej);
+                }).catch(rej);
+            }
+        }).catch(rej);
+    });
+};
+
+const attachClientData = function (events) {
+    return new Promise((res, rej) => {
+        let clientFetches = events.map(event => {
+            let clientID = event.client;
+
+            return new Promise((res, rej) => {
+                clientDB.child(clientID).once("value").then(data => {
+                    event.client = data.val();
+                    res(event);
+                }).catch(rej);
+            });
+        });
+
+        Promise.all(clientFetches).then(res).catch(rej);
+    });
 };
 
 const processInvoiceAndArtistConfirmation = function (args) {

@@ -77,3 +77,35 @@ exports.dayEnum = function (dayNum) {
         case 6: return "Saturday";
     }
 };
+
+let updateDateTime = function (date, timestring) {
+    let timeSplit = timestring.split(":");
+    date.setHours(timeSplit[0]);
+    date.setMinutes(timeSplit[1]);
+};
+
+exports.eventSort = function (eventA, eventB) {
+    let dateA = new Date(eventA.date);
+    let dateB = new Date(eventB.date);
+
+    if (dateA.getTime() === dateB.getTime()) {
+        updateDateTime(dateA, eventA.start);
+        updateDateTime(dateB, eventB.start);
+    }
+
+    return dateA.getTime() - dateB.getTime();
+};
+
+exports.objectToArray = function (object) {
+    let returnArray = [];
+
+    for (let key in object) {
+        if (object.hasOwnProperty(key)) {
+            let toAdd = object[key];
+            toAdd.id = key;
+            returnArray.push(toAdd);
+        }
+    }
+
+    return returnArray;
+};
