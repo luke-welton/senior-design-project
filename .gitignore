@@ -7,3 +7,4 @@ npm-debug.*
 *.mobileprovision
 .idea/
 auth.json
+functions/.runtimeconfig.json

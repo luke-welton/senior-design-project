@@ -129,7 +129,7 @@ let stringifyNames = function (performerNames) {
     }
 };
 
-exports.generateArtistConfirmation = function (client, event, venue) {
+exports.generateInvoice = function (client, event, venue) {
     let content = [];
 
     [
@@ -165,12 +165,12 @@ exports.generateArtistConfirmation = function (client, event, venue) {
         ],
         style: "formText"
     });
-
-    content.push({
-        image: "../assets/icon.png",
-        fit: [300, 300],
-        style: "logo"
-    });
+    //
+    // content.push({
+    //     image: "../assets/icon.png",
+    //     fit: [300, 300],
+    //     style: "logo"
+    // });
 
     let printer = new PDFMake(fonts);
     let pdf = printer.createPdfKitDocument({
@@ -185,11 +185,11 @@ exports.generateArtistConfirmation = function (client, event, venue) {
     return pdf;
 };
 
-exports.generateInvoice = function (client, event, venue) {
+exports.generateArtistConfirmation = function (client, event, venue) {
     let content = [];
 
     [
-        "Sinclair's East - Montgomery, AL",
+        venue.name + " - " + venue.address.city + ", " + venue.address.state,
         "Live Performance Contract/Confirmation",
         "Music Matters Bookings"
     ].forEach(text => content.push({
@@ -197,16 +197,25 @@ exports.generateInvoice = function (client, event, venue) {
         style: "formHeader"
     }));
 
+    let eventDate = new Date(event.date);
+
     content.push({
         text: [
             "\u200B\t\t",
-            {text: "Eric Perkins", style: "underlined"},
-            " agree(s) to perform live music at Sinclair's East, 7847 Vaughn Rd, Montgomery, AL, 36116 on the evening of ",
-            {text: "Saturday, October 27, 2018", style: "underlined"},
+            {text: stringifyNames(client.performers), style: "underlined"},
+            " agree(s) to perform live music at " + venue.name + ", " +
+            venue.address.street1 + venue.address.street2 + ", " +
+            venue.address.city + ", " + venue.address.state + ", " + venue.address.zip + " on the evening of ",
+            {
+                text: Util.dayEnum(eventDate.getDay()) + ", " +
+                    Util.monthEnum(eventDate.getMonth()) + " " +
+                    eventDate.getDate() + ", " + eventDate.getFullYear(),
+                style: "underlined"
+            },
             " between the listed hours of ",
-            {text: "8:00 PM to 11:00 PM", style: "underlined"},
-            ". Sinclair's East in Montgomery, AL agrees to pay the above named artists ",
-            {text: "$200.00", style: "underlined"},
+            {text: Util.toAMPM(event.start) + " to " + Util.toAMPM(event.end), style: "underlined"},
+            ". " + venue.name + " in " + venue.address.city + ", " + venue.address.state + " agrees to pay the above named artists ",
+            {text: "$" + parseFloat(event.price).toFixed(2), style: "underlined"},
             ", and said payment is to be paid upon completion of this performance."
         ],
         style: "formText"
@@ -235,12 +244,12 @@ exports.generateInvoice = function (client, event, venue) {
         ],
         style: "formText"
     });
-
-    content.push({
-        image: "../assets/icon.png",
-        fit: [300, 300],
-        style: "logo"
-    });
+    //
+    // content.push({
+    //     image: "../assets/icon.png",
+    //     fit: [300, 300],
+    //     style: "logo"
+    // });
 
     let printer = new PDFMake(fonts);
     let pdf = printer.createPdfKitDocument({
@@ -296,10 +305,6 @@ const pdfStyles = {
         fontSize: 15,
         lineHeight: 1.25,
         margin: [0, 0, 0, 15]
-    },
-    logo: {
-        alignment: "center",
-        margin: [0, 50, 0, 0]
     }
 };
 
