@@ -38,6 +38,19 @@ export function toDateString(_date) {
     return [year, month, date].join("-");
 }
 
+//handles converting a JS Date object into a "YYYY-MM" string
+export function toMonthString(_date) {
+    let year = _date.getFullYear();
+    let month = _date.getMonth() + 1;
+
+    //add trailing 0s
+    if (month < 10) {
+        month = "0" + month;
+    }
+
+    return [year, month].join("-");
+}
+
 //handles converting a JS date object into a time string
 export function toTimeString(time) {
     let minutes = time.getMinutes();

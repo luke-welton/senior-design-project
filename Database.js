@@ -80,6 +80,31 @@ export default class Database {
         })
     }
 
+    // Load all of the events for a given month.
+    getMonthEvents(options) {
+        if (!options) {
+            options = Date.now();
+        }
+
+        let archiveDate = new Date(options);
+
+        let archiveMonth = toMonthString(archiveDate);
+
+        return new Promise((res, rej) => {
+            Firebase.database().ref('database/events').orderByChild('month').equalTo(archiveMonth).once("value").then(data => {
+                let _events = data.val()
+                let foundEvents = [];
+                for (let eventID in _events) {
+                    if (_events.hasOwnProperty(eventID)) {
+                        let eventObj = new Event(_events[eventID], eventID);
+                        foundEvents.push(eventObj);
+                    }
+                }
+                res(foundEvents);
+            }).catch(err => rej(err));
+        })
+    }
+
     // Load information for upcoming events and past events to the specified date.
     getPastAndUpcomingEvents(options) {
         if (!options) {
