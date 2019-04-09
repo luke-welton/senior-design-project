@@ -8,7 +8,7 @@ import Database from "./Database";
 import Styles from "./styles";
 import {createStackNavigator, createAppContainer, createSwitchNavigator} from "react-navigation";
 import {CalendarList} from "react-native-calendars";
-import {AppContainer, toDateTime, toDateString, randomColor, Dropdown, MoreButton} from "./util";
+import {AppContainer, toDateTime, toDateString, toMonthString, toLocalTime, randomColor, Dropdown, MoreButton} from "./util";
 import LoginView from "./views/LoginView";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
 
@@ -21,7 +21,8 @@ console.ignoredYellowBox = ['Setting a timer'];
 let loadedData = {
     clients: null,
     events: null,
-    venues: null
+    venues: null,
+    viewedMonths: null
 };
 
 let db = null;
@@ -31,10 +32,12 @@ class LoadingScreen extends React.Component {
     componentWillMount() {
         db = new Database();
 
-        Promise.all([db.getClients(), db.getMonthEvents(), db.getVenues()]).then(values => {
+        Promise.all([db.getClients(), db.getCurrentMonthAndUpcomingEvents(), db.getVenues()]).then(values => {
             loadedData.clients = values[0];
             loadedData.events = values[1];
             loadedData.venues = values[2];
+
+            loadedData.viewedMonths = [toMonthString(toLocalTime(new Date()))];
 
             this.props.navigation.navigate("App");
         }).catch(err => console.log(err));
@@ -113,12 +116,16 @@ class MonthView extends React.Component {
                     hideArrows = {Platform.OS !== "android"}
                     markingType = "multi-dot"
                     markedDates = {this._generateMarkedDates()}
-                    onVisibleMonthsChange = {(month) => {
-                        let monthString = month[0].dateString;
-                        Promise.all([db.getMonthEvents(monthString)]).then(values => {
-                            loadedData.events = values[0];
-                            this.forceUpdate();
-                        }).catch(err => console.log(err));
+                    onVisibleMonthsChange = {(date) => {
+                        let fullDate = date[0].dateString;
+                        let monthString = fullDate.substring(0, 7);
+                        if(!(loadedData.viewedMonths.includes(monthString)) && !(monthString > loadedData.viewedMonths[0])) {
+                            loadedData.viewedMonths.push(monthString);
+                            Promise.all([db.getMonthEvents(fullDate)]).then(values => {
+                                loadedData.events = loadedData.events.concat(values[0]);
+                                this.forceUpdate();
+                            }).catch(err => console.log(err));
+                        }
                     }}
                     onDayPress = {day => {
                         this.props.navigation.navigate("Day", {
@@ -129,18 +136,6 @@ class MonthView extends React.Component {
                         });
                     }}
                 />
-                <View style={Styles.buttonContainer}>
-                    {/* Load Archived Events Button */}
-                    <Button
-                        title = "Load Archived Events"
-                        onPress = {() => {
-                            Promise.all([db.getEvents()]).then(values => {
-                                loadedData.events = values[0];
-                                this.forceUpdate()
-                            }).catch(err => console.log(err));
-                        }}
-                    />
-                </View>
             </AppContainer>
         );
     }
