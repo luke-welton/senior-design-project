@@ -31,7 +31,7 @@ class LoadingScreen extends React.Component {
     componentWillMount() {
         db = new Database();
 
-        Promise.all([db.getClients(), db.getRecentAndUpcomingEvents(), db.getVenues()]).then(values => {
+        Promise.all([db.getClients(), db.getMonthEvents(), db.getVenues()]).then(values => {
             loadedData.clients = values[0];
             loadedData.events = values[1];
             loadedData.venues = values[2];
@@ -108,18 +108,25 @@ class MonthView extends React.Component {
                     />
                 </View>
                 <CalendarList style={Styles.monthView}
-                    horizontal = {Platform.OS === "android"}
-                    pagingEnabled = {Platform.OS === "android"}
+                    horizontal = {Platform.OS === "android" || Platform.OS === "ios"}
+                    pagingEnabled = {Platform.OS === "android" || Platform.OS === "ios"}
                     hideArrows = {Platform.OS !== "android"}
                     markingType = "multi-dot"
                     markedDates = {this._generateMarkedDates()}
+                    onVisibleMonthsChange = {(month) => {
+                        let monthString = month[0].dateString;
+                        Promise.all([db.getMonthEvents(monthString)]).then(values => {
+                            loadedData.events = values[0];
+                            this.forceUpdate();
+                        }).catch(err => console.log(err));
+                    }}
                     onDayPress = {day => {
-                      this.props.navigation.navigate("Day", {
-                          selectedDate: toDateTime({date: day.dateString}),
-                          selectedVenue: this.state.selectedVenue,
-                          loadedData: loadedData,
-                          database: db
-                      });
+                        this.props.navigation.navigate("Day", {
+                            selectedDate: toDateTime({date: day.dateString}),
+                            selectedVenue: this.state.selectedVenue,
+                            loadedData: loadedData,
+                            database: db
+                        });
                     }}
                 />
                 <View style={Styles.buttonContainer}>
