@@ -109,3 +109,39 @@ exports.objectToArray = function (object) {
 
     return returnArray;
 };
+
+exports.toMonthString = function (month, year) {
+    if (month < 10) {
+        month = "0" + month;
+    }
+
+    return [month, year].join("-");
+};
+
+/**
+ * This is primarily used for the sendAll function,
+ * as Gmail throws an error if you send too many emails in a short enough timeframe.
+ * I've still included it here in case it could be useful in other scenarios.
+ *
+ * @param {Array<Promise>} promises - the promises to stagger
+ * @param {Number} timing - how many ms apart each promise should be staggered
+ * @returns {Promise} - Resolves when all promises are completed, rejects if any fail
+ */
+exports.staggerPromises = function (promises, timing) {
+    return new Promise((res, rej) => {
+        let shouldRes = true;
+
+        promises.forEach(async promise => {
+            if (shouldRes) {
+                await promise().then(() => {
+                    setTimeout(() => Promise.resolve(), timing);
+                }).catch(err => {
+                    shouldRes = false;
+                    rej(err);
+                });
+            }
+        });
+
+        if (shouldRes) res();
+    });
+};

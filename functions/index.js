@@ -68,6 +68,39 @@ exports.sendEmail = Functions.https.onRequest((req, res) => {
     }
 });
 
+exports.sendAll = Functions.https.onRequest((req, res) => {
+    const handleError = function (errorMessage) {
+        res.send(JSON.stringify({
+            error: errorMessage
+        }));
+    };
+
+    processBookingListAndCalendar(req.query).then(data => {
+        let sendAllEmails = [];
+        sendAllEmails.push(() => new Promise((res, rej) => {
+            let calendarPDF = PDF.generateCalendar(data.month, data.year, data.events);
+            Email.sendCalendar(data.month, data.year, data.venue, calendarPDF).then(res).catch(rej);
+        }));
+
+        data.events.forEach(event => {
+            sendAllEmails.push(() => new Promise((res, rej) => {
+                let invoicePDF = PDF.generateInvoice(event.client, event, data.venue);
+                Email.sendInvoice(event.client, event, data.venue, invoicePDF).then(res).catch(rej);
+            }));
+            sendAllEmails.push(() => new Promise((res, rej) => {
+                let artistConfirmationPDF = PDF.generateArtistConfirmation(event.client, event, data.venue);
+                Email.sendArtistConfirmation(event.client, event, data.venue, artistConfirmationPDF).then(res).catch(rej);
+            }));
+        });
+
+        Util.staggerPromises(sendAllEmails, 100).then(() => {
+            res.send(JSON.stringify({
+                response: "Emails successfully sent!"
+            }));
+        }).catch(handleError)
+    }).catch(handleError);
+});
+
 const processBookingListAndCalendar = function (args) {
     return new Promise((res, rej) => {
         let month = parseInt(args.month);
@@ -82,26 +115,28 @@ const processBookingListAndCalendar = function (args) {
             rej("invalid year");
         }
 
+
         venueDB.child(venueID).once("value").then(data => {
             if (!data.exists()) {
                 rej("No venue was found with the given ID.")
             } else {
                 let venue = data.val();
 
-                eventDB.once("value").then(data => {
+                eventDB.orderByChild("month").startAt(Util.toMonthString(month, year)).once("value").then(data => {
                     let eventArray = Util.objectToArray(data.val());
 
-                    let filteredEvents = eventArray.filter(event => {
-                        let eventDate = new Date(Util.toUS(event.date));
-                        return eventDate.getMonth() === month - 1 && eventDate.getFullYear() === year && event.venue === venueID;
-                    });
+                    // let filteredEvents = eventArray.filter(event => {
+                    //     let eventDate = new Date(Util.toUS(event.date));
+                    //     return eventDate.getMonth() === month - 1 && eventDate.getFullYear() === year && event.venue === venueID;
+                    // });
 
                     let getExtraInfo = attachClientData;
                     if (args.type === "calendar") {
                         getExtraInfo = events => Promise.resolve(events);
                     }
 
-                    getExtraInfo(filteredEvents).then(events => {
+                    // getExtraInfo(filteredEvents).then(events => {
+                    getExtraInfo(eventArray).then(events => {
                         res({
                             month: month,
                             year: year,
