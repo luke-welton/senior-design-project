@@ -54,7 +54,7 @@ export class ManageVenues extends React.Component {
         return (
             <AppContainer style={Styles.infoView}>
                 <View style={Styles.contentContainer}>
-                    <FlatList
+                    <FlatList style={Styles.listContainer}
                         data={this.state.venueList.map(venue => { return {
                             key: venue.id,
                             data: venue
@@ -240,6 +240,7 @@ export class VenueView extends React.Component {
 
 const VenueStyles = StyleSheet.create({
     entryContainer: {
+        width: "100%",
         backgroundColor: "#eee",
         display: "flex",
         flexDirection: "row",

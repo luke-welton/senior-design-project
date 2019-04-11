@@ -6,6 +6,8 @@ export default StyleSheet.create({
         flexDirection: "column",
         height: "100%",
         paddingTop: Platform.OS === "android" ? 25 : 0,
+        backgroundColor: "#fff",
+        zIndex: 2
     },
     calendarHeader: {
         height: 50,
@@ -95,5 +97,10 @@ export default StyleSheet.create({
         paddingLeft: 0,
         paddingRight: 5,
         flexBasis: 0
+    },
+    listContainer: {
+        flexGrow: 1,
+        flexShrink: 0,
+        width: "100%"
     }
 });

@@ -1,4 +1,4 @@
-import {toTimeString, toDateString, toDateTime, dayInMS, toLocalTime, toUTC} from "./util";
+import {toTimeString, toDateString, toDateTime, dayInMS, toLocalTime, toUTC, toMonthString} from "./util";
 
 // class Performer {
 //     constructor(_data) {
@@ -48,7 +48,8 @@ export class Event {
         if (!_id) _id = null;
         if (!_data) _data = {
             price: 0.00,
-            date: toDateString(new Date())
+            date: toDateString(new Date()),
+            month: toMonthString(toLocalTime(new Date()))
         };
 
         this.id = _id;
@@ -82,6 +83,7 @@ export class Event {
         if (data.end) this.end = data.end;
 
         if (data.date) {
+            this.month = toMonthString(toLocalTime(toDateTime(data.date)));
             let splits = data.date.split("-");
             this.start.setFullYear(splits[0], splits[1] -1, splits[2]);
             this.end.setFullYear(splits[0], splits[1] - 1, splits[2]);
@@ -106,6 +108,7 @@ export class Event {
 
         return {
             date: toDateString(utcStart),
+            month: toMonthString(this.start),
             start: toTimeString(utcStart),
             end: toTimeString(toUTC(this.end)),
             client: this.clientID || "",
