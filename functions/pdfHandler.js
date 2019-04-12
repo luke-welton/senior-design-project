@@ -45,11 +45,17 @@ function generateCalendarTable(startDate, events) {
             return eventDate.getTime() === currentDate.getTime();
         });
 
-        matchingEvents.forEach(event => {
-            cellArray.push({
-                text: [Util.toAMPM(event.start), Util.toAMPM(event.end)].join("-"),
-                style: "dateTimeslot"
-            });
+        matchingEvents.forEach((event, i) => {
+            if (i < 2) {
+                cellArray.push({
+                    text: [Util.toAMPM(event.start), Util.toAMPM(event.end)].join("-"),
+                    style: "dateTimeslot"
+                });
+                cellArray.push({
+                    text: event.client.stage,
+                    style: "dateClient"
+                });
+            }
         });
 
         //add new date box to most recent week added
@@ -325,9 +331,12 @@ const pdfStyles = {
         margin: [0, 0, 0, 15]
     },
     dateTimeslot: {
-        fontSize: 11.5,
+        fontSize: 11,
         bold: true,
         margin: [0, 10, 0, 0]
+    },
+    dateClient: {
+        fontSize: 10
     }
 };
 
