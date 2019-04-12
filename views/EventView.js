@@ -13,8 +13,10 @@ import Database from "../Database";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
 
 const defaultTimes = [
-    "7:30 PM - 9:00 PM",
-    "9:30 PM - 11:00 PM"
+    "5:00 PM - 7:30 PM",
+    "7:30 PM - 10:00 PM",
+    "5:00 PM - 8:00 PM",
+    "8:00 PM - 11:00 PM"
 ];
 
 @withMappedNavigationProps()
@@ -60,20 +62,42 @@ export default class EventView extends React.Component {
     }
 
     _generateRadioButtons() {
-        let buttons = [
-            {
-                label: defaultTimes[0],
-                value: 1
-            },
-            {
-                label: defaultTimes[1],
-                value: 2
-            },
-            {
-                label: "Custom",
-                value: 0
-            }
-        ];
+        let date = new Date(this.props.defaultDate);
+        let day = date.getDay();
+        let buttons = [];
+        if(day === 5 || day === 6) {
+            buttons = [
+                {
+                    label: defaultTimes[2],
+                    value: 1
+                },
+                {
+                    label: defaultTimes[3],
+                    value: 2
+                },
+                {
+                    label: "Custom",
+                    value: 0
+                }
+            ];
+        }
+        else{
+             buttons = [
+                {
+                    label: defaultTimes[0],
+                    value: 1
+                },
+                {
+                    label: defaultTimes[1],
+                    value: 2
+                },
+                {
+                    label: "Custom",
+                    value: 0
+                }
+            ];
+        }
+
 
         let timeString = [toAMPM(this.state.startTime), toAMPM(this.state.endTime)].join(" - ");
 
