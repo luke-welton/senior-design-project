@@ -115,7 +115,7 @@ exports.toMonthString = function (month, year) {
         month = "0" + month;
     }
 
-    return [month, year].join("-");
+    return [year, month].join("-");
 };
 
 /**
@@ -125,23 +125,35 @@ exports.toMonthString = function (month, year) {
  *
  * @param {Array<Promise>} promises - the promises to stagger
  * @param {Number} timing - how many ms apart each promise should be staggered
+ * @param {Number} [concurrent=1] - limits number of concurrent promises
  * @returns {Promise} - Resolves when all promises are completed, rejects if any fail
  */
-exports.staggerPromises = function (promises, timing) {
-    return new Promise((res, rej) => {
-        let shouldRes = true;
+exports.staggerPromises = function (promises, timing, concurrent) {
+    concurrent = concurrent || 1;
 
-        promises.forEach(async promise => {
-            if (shouldRes) {
-                await promise().then(() => {
-                    setTimeout(() => Promise.resolve(), timing);
-                }).catch(err => {
-                    shouldRes = false;
-                    rej(err);
-                });
-            }
+    let delay = () => {
+        return new Promise(res => {
+            setTimeout(res(), timing);
         });
+    };
 
-        if (shouldRes) res();
-    });
+    let runPromises = function (index) {
+        if (index < promises.length) {
+            let promisesToRun = [];
+            for (let i = 0; i < concurrent; i++) {
+                if (index + i < promises.length) {
+                    console.log("Running " + (index + i) + " of " + (promises.length - 1));
+
+                    let getPromise = promises[index + i];
+                    promisesToRun.push(getPromise());
+                }
+            }
+
+            return Promise.all(promisesToRun).then(delay).then(() => runPromises(index + concurrent));
+        } else {
+            return Promise.resolve();
+        }
+    };
+
+    return Promise.resolve().then(() => runPromises(0));
 };

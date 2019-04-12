@@ -5,6 +5,7 @@ const Util = require("./util.js");
 const env = Functions.config();
 const gmail = NodeMailer.createTransport({
     service: "gmail",
+    pool: true,
     auth: {
         user: env.gmail.email,
         //user: env.myGmail.email,
@@ -22,7 +23,9 @@ const sendEmail = function (info) {
         let messageOptions = Object.assign({}, info);
         messageOptions.from = "Music Matters Bookings";
 
-        gmail.sendMail(messageOptions).then(res).catch(rej);
+        gmail.sendMail(messageOptions).then(() => {
+            res();
+        }).catch(rej);
     });
 };
 exports.sendEmail = sendEmail;
