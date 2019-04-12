@@ -45,6 +45,15 @@ const venueDB = db.ref("database/venues");
 //                         }));
 //                     }).catch(handleError);
 //                 }
+//                 if (emailType === "booking_list") {
+//                     let calendarPDF = PDF.generateBookingList(data.month, data.year, data.events, data.venue);
+//                     Email.sendBookingList(data.month, data.year, data.venue, calendarPDF).then(() => {
+//                         res.send(JSON.stringify({
+//                             response: "Email successfully sent!",
+//                             events: data.events
+//                         }));
+//                     }).catch(handleError);
+//                 }
 //             }).catch(handleError);
 //         } else {
 //             processInvoiceAndArtistConfirmation(req.query).then(data => {
@@ -77,23 +86,27 @@ exports.sendAll = Functions.https.onRequest((req, res) => {
 
     processBookingListAndCalendar(req.query).then(data => {
         let sendAllEmails = [];
-        sendAllEmails.push(() =>  {
+        sendAllEmails.push(() => new Promise((res, rej) => {
             let calendarPDF = PDF.generateCalendar(data.month, data.year, data.events);
-            return Email.sendCalendar(data.month, data.year, data.venue, calendarPDF);
-        });
+            Email.sendCalendar(data.month, data.year, data.venue, calendarPDF).then(res).catch(rej);
+        }));
+        sendAllEmails.push(() => new Promise((res, rej) => {
+            let bookingListPDF = PDF.generateBookingList(data.month, data.year, data.events, data.venue);
+            Email.sendBookingList(data.month, data.year, data.events, data.venue, bookingListPDF).then(res).catch(rej);
+        }));
 
         data.events.forEach(event => {
-            sendAllEmails.push(() => {
+            sendAllEmails.push(() => new Promise((res, rej) => {
                 let invoicePDF = PDF.generateInvoice(event.client, event, data.venue);
-                return Email.sendInvoice(event.client, event, data.venue, invoicePDF);
-            });
-            sendAllEmails.push(() => {
+                Email.sendInvoice(event.client, event, data.venue, invoicePDF).then(res).catch(rej);
+            }));
+            sendAllEmails.push(() => new Promise((res, rej) => {
                 let artistConfirmationPDF = PDF.generateArtistConfirmation(event.client, event, data.venue);
-                return Email.sendArtistConfirmation(event.client, event, data.venue, artistConfirmationPDF);
-            });
+                Email.sendArtistConfirmation(event.client, event, data.venue, artistConfirmationPDF).then(res).catch(rej);
+            }));
         });
 
-        Util.staggerPromises(sendAllEmails, 0, 10).then(() => {
+        Util.staggerPromises(sendAllEmails, 100).then(() => {
             res.send(JSON.stringify({
                 response: "Emails successfully sent!"
             }));
@@ -115,18 +128,28 @@ const processBookingListAndCalendar = function (args) {
             rej("invalid year");
         }
 
+
         venueDB.child(venueID).once("value").then(data => {
             if (!data.exists()) {
                 rej("No venue was found with the given ID.")
             } else {
                 let venue = data.val();
 
-                eventDB.orderByChild("month").equalTo(Util.toMonthString(month, year)).once("value").then(data => {
+                eventDB.orderByChild("month").startAt(Util.toMonthString(month, year)).once("value").then(data => {
                     let eventArray = Util.objectToArray(data.val());
-                    //let filteredEvents = eventArray.filter(event => event.venue === venueID);
 
-                    //attachClientData(filteredEvents).then(events => {
-                    attachClientData(eventArray).then(events => {
+                    // let filteredEvents = eventArray.filter(event => {
+                    //     let eventDate = new Date(Util.toUS(event.date));
+                    //     return eventDate.getMonth() === month - 1 && eventDate.getFullYear() === year && event.venue === venueID;
+                    // });
+
+                    let getExtraInfo = attachClientData;
+                    if (args.type === "calendar") {
+                        getExtraInfo = events => Promise.resolve(events);
+                    }
+
+                    // getExtraInfo(filteredEvents).then(events => {
+                    getExtraInfo(eventArray).then(events => {
                         res({
                             month: month,
                             year: year,

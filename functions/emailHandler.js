@@ -88,3 +88,24 @@ exports.sendCalendar = function (month, year, venue, calendarPDF) {
         ]
     })
 };
+
+exports.sendBookingList = function(month, year, venue, bookingListPDF) {
+    let monthText = Util.monthEnum(month - 1);
+
+    let emailSubject = "Booking List for " + monthText + " " + year;
+    let emailBody = "To whom it may concern,\n\n" +
+        "Attached is the booking list for " + monthText + " " + year + ". " +
+        "Please don't hesitate to reply back to this email if you have any questions.";
+
+    return sendEmail({
+        to: "lmoowelton@gmail.com",
+        subject: emailSubject,
+        text: emailBody,
+        attachments: [
+            {
+                filename: "Booking List " + monthText + " " + year + ".pdf",
+                content: bookingListPDF
+            }
+        ]
+    })
+};
