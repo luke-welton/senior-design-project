@@ -20,25 +20,27 @@ export class Client {
     constructor(_data, _id) {
         if (!_id) _id = null;
         if (!_data) _data = {};
-
         this.id = _id;
 
         this.performers = _data.performers;
         this.stageName = _data.stage;
         this.email = _data.email;
+        this.splitCheck  = data.splitCheck;
     }
 
     update(data) {
         this.performers = data.performers || this.performers;
         this.stageName = data.stageName || this.stageName;
         this.email = data.email || this.email;
+        this.splitCheck  = data.splitCheck || this.splitCheck;
     }
 
     toData() {
         return {
             performers: this.performers || [],
             stage: this.stageName || "",
-            email: this.email || ""
+            email: this.email || "",
+            splitCheck: this.splitCheck
         };
     }
 }
