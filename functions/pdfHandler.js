@@ -289,115 +289,68 @@ exports.generateArtistConfirmation = function (client, event, venue) {
 };
 
 exports.generateBookingList = function (month, year, events, venue) {
-    let names = [];
-    let times = [];
-    let comp = [];
+    //months begin at 0, not 1
+    month -= 1;
+
     let content = [];
 
-
     [
-        venue.name + " Music Bookings " ,
-        "by Date",
-        month + " " + year
+        venue.name + " Music Bookings by Date",
+        Util.monthEnum(month) + " " + year
     ].forEach(text => content.push({
         text: text,
         style: "formHeader"
     }));
 
-    let matchingEvents = events.filter(event => {
-        let eventDate = new Date(Util.toUS(event.date));
-        return eventDate.getTime() === currentDate.getTime();
-    });
+    let bookingListTable = [];
+    bookingListTable.push(["Artist", "Gig Time", "Compensation"].map(headerName => {
+        return {
+            text: headerName,
+            style: "columnHeader"
+        };
+    }));
 
-    // get each name, gig time, and compensation
-    matchingEvents.forEach((event, i) => {
-        if (i < 2) {
-            names.push(event.client.stageName);
-            times.push([Util.toAMPM(event.start), Util.toAMPM(event.end)].join(" to "));
-            comp.push(event.price)
-        }
-    });
+    let firstDate = new Date(year, month, 1);
+    let currentDate = new Date(firstDate.getTime());
+
+    while (currentDate.getMonth() === firstDate.getMonth()) {
+        let matchingEvents = events.filter(event => {
+            let eventDate = new Date(Util.toUS(event.date));
+            return eventDate.getTime() === currentDate.getTime();
+        });
+
+        // get each name, gig time, and compensation
+        matchingEvents.forEach((event, i) => {
+            if (i < 2) {
+                let name = [currentDate.getDate(), event.client.stage].join(" - ");
+                let time = [Util.toAMPM(event.start), Util.toAMPM(event.end)].join(" to ");
+                let price = "$" + parseFloat(event.price).toFixed(2);
+
+                bookingListTable.push([name,
+                    {
+                        text: time,
+                        style: "centerText"
+                    },
+                    {
+                        text: price,
+                        style: "centerText"
+                    }
+                ]);
+            }
+        });
+
+        currentDate.setTime(currentDate.getTime() + 24 * 60 * 60 * 1000);
+    }
 
     content.push({
         style: 'tableExample',
         table: {
             headerRows: 1,
-            widths: ["*", "*", "*", "*", "*", "*", "*"],
-            body: [
-                [{text: 'Artist', style: 'columnHeader'}, {text: 'Gig Time', style: 'tableHeader'}, {text: 'Compensation', style: 'columnHeader'}],
-                ['1- ' + names[0], times[0], comp[0]],
-                ['1- ' + names[1], times[1], comp[1]],
-                ['2- ' + names[2], times[2], comp[2]],
-                ['2- ' + names[3], times[3], comp[3]],
-                ['3- ' + names[4], times[4], comp[4]],
-                ['3- ' + names[5], times[5], comp[5]],
-                ['4- ' + names[6], times[6], comp[6]],
-                ['4- ' + names[7], times[7], comp[7]],
-                ['5- ' + names[8], times[8], comp[8]],
-                ['5- ' + names[9], times[9], comp[9]],
-                ['6- ' + names[10], times[10], comp[10]],
-                ['6- ' + names[11], times[11], comp[11]],
-                ['7- ' + names[12], times[12], comp[12]],
-                ['7- ' + names[12], times[12], comp[12]],
-                ['8- ' + names[13], times[13], comp[13]],
-                ['8- ' + names[14], times[14], comp[14]],
-                ['9- ' + names[15], times[15], comp[15]],
-                ['9- ' + names[16], times[16], comp[16]],
-                ['10- ' + names[17], times[17], comp[17]],
-                ['10- ' + names[18], times[18], comp[18]],
-                ['11- ' + names[19], times[19], comp[19]],
-                ['11- ' + names[20], times[20], comp[20]],
-                ['12- ' + names[21], times[21], comp[21]],
-                ['12- ' + names[21], times[21], comp[21]],
-                ['13- ' + names[22], times[22], comp[22]],
-                ['13- ' + names[23], times[23], comp[23]],
-                ['14- ' + names[24], times[24], comp[24]],
-                ['14- ' + names[25], times[25], comp[25]],
-                ['15- ' + names[26], times[26], comp[26]],
-                ['15- ' + names[27], times[27], comp[27]],
-                ['16- ' + names[28], times[28], comp[28]],
-                ['16- ' + names[29], times[29], comp[29]],
-                ['17- ' + names[30], times[30], comp[30]],
-                ['17- ' + names[31], times[31], comp[31]],
-                ['18- ' + names[32], times[32], comp[32]],
-                ['18- ' + names[33], times[33], comp[33]],
-                ['19- ' + names[34], times[34], comp[34]],
-                ['19- ' + names[35], times[35], comp[35]],
-                ['20- ' + names[36], times[36], comp[36]],
-                ['20- ' + names[37], times[37], comp[37]],
-                ['21- ' + names[38], times[38], comp[38]],
-                ['21- ' + names[39], times[39], comp[39]],
-                ['22- ' + names[40], times[40], comp[40]],
-                ['22- ' + names[41], times[41], comp[41]],
-                ['23- ' + names[42], times[42], comp[42]],
-                ['23- ' + names[43], times[43], comp[43]],
-                ['24- ' + names[44], times[44], comp[44]],
-                ['24- ' + names[45], times[45], comp[45]],
-                ['25- ' + names[46], times[46], comp[46]],
-                ['25- ' + names[47], times[47], comp[47]],
-                ['26- ' + names[48], times[48], comp[48]],
-                ['26- ' + names[49], times[49], comp[49]],
-                ['27- ' + names[50], times[50], comp[50]],
-                ['27- ' + names[51], times[51], comp[51]],
-                ['28- ' + names[52], times[52], comp[52]],
-                ['28- ' + names[53], times[53], comp[53]],
-                ['29- ' + names[54], times[54], comp[54]],
-                ['29- ' + names[55], times[55], comp[55]],
-                ['30- ' + names[56], times[56], comp[56]],
-                ['30- ' + names[57], times[57], comp[57]],
-                ['31- ' + names[58], times[58], comp[58]],
-                ['31- ' + names[59], times[59], comp[59]],
-            ]
+            widths: ["*", "*", "*"],
+            body: bookingListTable
         },
         layout: 'noBorders'
     });
-
-    //
-    // content.push({
-    //     image: "../assets/icon.png",
-    //     fit: [300, 300],
-    //     style: "logo"
-    // });
 
     let printer = new PDFMake(fonts);
     let pdf = printer.createPdfKitDocument({
@@ -465,6 +418,9 @@ const pdfStyles = {
     columnHeader: {
         fontSize: 22,
         bold: true,
+        alignment: "center"
+    },
+    centerText: {
         alignment: "center"
     }
 };
