@@ -291,7 +291,7 @@ exports.generateArtistConfirmation = function (client, event, venue) {
 exports.generateBookingList = function (month, year, events, venue) {
     let names = [];
     let times = [];
-    let comp = []
+    let comp = [];
     let content = [];
 
 
@@ -312,8 +312,8 @@ exports.generateBookingList = function (month, year, events, venue) {
     // get each name, gig time, and compensation
     matchingEvents.forEach((event, i) => {
         if (i < 2) {
-            names.push(event.client.stageName)
-            times.push([Util.toAMPM(event.start), Util.toAMPM(event.end)].join(" to "))
+            names.push(event.client.stageName);
+            times.push([Util.toAMPM(event.start), Util.toAMPM(event.end)].join(" to "));
             comp.push(event.price)
         }
     });
@@ -458,6 +458,9 @@ const pdfStyles = {
         fontSize: 11,
         bold: true,
         margin: [0, 10, 0, 0]
+    },
+    dateClient: {
+        fontSize: 10
     },
     columnHeader: {
         fontSize: 22,
