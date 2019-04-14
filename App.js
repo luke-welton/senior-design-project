@@ -11,7 +11,6 @@ import {CalendarList} from "react-native-calendars";
 import {AppContainer, toDateTime, toDateString, toMonthString, toLocalTime, randomColor, Dropdown, MoreButton} from "./util";
 import LoginView from "./views/LoginView";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
-import {generateBookingList, generateInvoice, generateArtistConfirmation} from "./pdfHandler";
 
 // Firebase's implementation utilizes long timers,
 // which React Native doesn't like and throws a warning,
@@ -89,26 +88,6 @@ class MonthView extends React.Component {
         return markedDates;
     }
 
-    _generateForms() {
-        let matchingEvents = loadedData.events.filter(event =>
-            event.start.getFullYear() === this.state.selectedYear &&
-            event.start.getMonth() === this.state.selectedMonth
-        );
-
-        let bookingList = generateBookingList(this.state.selectedYear, this.state.selectedMonth, matchingEvents);
-        //send email of booking list
-
-        matchingEvents.forEach(event => {
-            let matchingClient = loadedData.clients.find(client => client.id === event.clientID);
-            let matchingVenue = loadedData.venues.find(venue => venue.id === event.venueID);
-
-            let invoice = generateInvoice(matchingClient, event, matchingVenue);
-            let artistConfirmation = generateArtistConfirmation(matchingClient, event, matchingVenue);
-
-            //send email for invoice & artist confirmation
-        });
-    }
-
     render() {
         return (
             <AppContainer>
@@ -164,7 +143,14 @@ class MonthView extends React.Component {
                 <View style={Styles.buttonContainer}>
                     <Button
                         title = "Generate Forms"
-                        onPress = {() => this._generateForms()}
+                        onPress = {() => {
+                            let formDate = new Date(this.state.selectedYear, this.state.selectedMonth, 1);
+                            db.sendForms(this.state.selectedVenue, formDate).then(() => {
+                                alert("Emails successfully sent!");
+                            }).catch(err => {
+                                alert("An error occurred while sending the emails.\n" + err);
+                            });
+                        }}
                     />
                 </View>
             </AppContainer>
