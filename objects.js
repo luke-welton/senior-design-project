@@ -25,14 +25,14 @@ export class Client {
         this.performers = _data.performers;
         this.stageName = _data.stage;
         this.email = _data.email;
-        this.splitCheck  = data.splitCheck;
+        this.splitCheck = _data.splitCheck;
     }
 
     update(data) {
         this.performers = data.performers || this.performers;
         this.stageName = data.stageName || this.stageName;
         this.email = data.email || this.email;
-        this.splitCheck  = data.splitCheck || this.splitCheck;
+        this.splitCheck = data.splitCheck || false;
     }
 
     toData() {
@@ -40,7 +40,7 @@ export class Client {
             performers: this.performers || [],
             stage: this.stageName || "",
             email: this.email || "",
-            splitCheck: this.splitCheck
+            splitCheck: this.splitCheck || false
         };
     }
 }
