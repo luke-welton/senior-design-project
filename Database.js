@@ -1,6 +1,8 @@
 import Firebase from 'firebase';
 import { Client, Event, Venue } from "./objects";
-import {toMonthString} from "./util"
+import {toMonthString} from "./util";
+
+require("firebase/functions");
 
 export default class Database {
     constructor() {
@@ -11,7 +13,7 @@ export default class Database {
         this.eventDB = this.db.ref("database/events");
         this.venueDB = this.db.ref("database/venues");
 
-        this.generateAllForms = this.func.httpsCallable("sendAll");
+        this.sendAllForms = this.func.httpsCallable("sendAll");
     }
 
     // load information on all clients
@@ -180,10 +182,10 @@ export default class Database {
         return venueRef.remove();
     }
 
-    sendForms(venueID, date) {
+    sendForms(venue, date) {
         return new Promise((res, rej) => {
-            this.generateAllForms({
-                venue: venueID,
+            this.sendAllForms({
+                venue: venue.id,
                 month: date.getMonth() + 1,
                 year: date.getFullYear()
             }).then(response => {
@@ -192,7 +194,9 @@ export default class Database {
                 } else {
                     res();
                 }
-            }).catch(err => rej(err.message));
+            }).catch(err =>  {
+                rej(err.message)
+            });
         });
     }
 }

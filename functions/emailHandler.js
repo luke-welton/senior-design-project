@@ -8,8 +8,8 @@ const gmail = NodeMailer.createTransport({
     pool: true,
     auth: {
         user: env.gmail.email,
-        //user: env.myGmail.email,
         pass: env.gmail.password
+        //user: env.myGmail.email,
         //pass: env.myGmail.password
     }
 });
@@ -21,7 +21,7 @@ const sendEmail = function (info) {
         }
 
         let messageOptions = Object.assign({}, info);
-        messageOptions.from = "Music Matters Bookings";
+        messageOptions.from = `musicmattersbookings@gmail.com <"Music Matters Bookings">`;
 
         gmail.sendMail(messageOptions).then(() => {
             res();
@@ -37,7 +37,7 @@ exports.sendArtistConfirmation = function (client, event, venue, acPDF) {
         "Please don't hesitate to reply back to this email if you have any questions.";
 
     return sendEmail({
-        to: "lmoowelton@gmail.com",
+        to: client.email,
         subject: emailSubject,
         text: emailBody,
         attachments: [
@@ -56,7 +56,7 @@ exports.sendInvoice = function (client, event, venue, invoicePDF) {
         "Please don't hesitate to reply back to this email if you have any questions.";
 
     return sendEmail({
-        to: "lmoowelton@gmail.com",
+        to: venue.email,
         subject: emailSubject,
         text: emailBody,
         attachments: [
@@ -77,7 +77,7 @@ exports.sendCalendar = function (month, year, venue, calendarPDF) {
         "Please don't hesitate to reply back to this email if you have any questions.";
 
     return sendEmail({
-        to: "lmoowelton@gmail.com",
+        to: venue.email,
         subject: emailSubject,
         text: emailBody,
         attachments: [
@@ -98,7 +98,7 @@ exports.sendBookingList = function(month, year, venue, bookingListPDF) {
         "Please don't hesitate to reply back to this email if you have any questions.";
 
     return sendEmail({
-        to: "lmoowelton@gmail.com",
+        to: venue.email,
         subject: emailSubject,
         text: emailBody,
         attachments: [

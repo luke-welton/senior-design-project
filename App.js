@@ -1,5 +1,5 @@
 import React from 'react';
-import {ActivityIndicator, View, Button} from 'react-native';
+import {ActivityIndicator, View, Button, YellowBox} from 'react-native';
 import DayView from "./views/DayView";
 import EventView from "./views/EventView";
 import {ManageVenues, VenueView} from "./views/VenueViews";
@@ -15,7 +15,7 @@ import {withMappedNavigationProps} from "react-navigation-props-mapper";
 // Firebase's implementation utilizes long timers,
 // which React Native doesn't like and throws a warning,
 // so this is here to ignore that.
-console.ignoredYellowBox = ['Setting a timer'];
+YellowBox.ignoreWarnings(['Setting a timer']);
 
 //stores all clients/events/venues loaded from the database, to prevent unnecessary db calls
 let loadedData = {
@@ -146,7 +146,8 @@ class MonthView extends React.Component {
                         onPress = {() => {
                             let formDate = new Date(this.state.selectedYear, this.state.selectedMonth, 1);
                             db.sendForms(this.state.selectedVenue, formDate).then(() => {
-                                alert("Emails successfully sent!");
+                                alert("Successfully began sending emails! " +
+                                    "Please note that it may take up to a minute for all emails to send.");
                             }).catch(err => {
                                 alert("An error occurred while sending the emails.\n" + err);
                             });

@@ -7,7 +7,7 @@ const Util = require("./util.js");
 // process.env = require("./.runtimeconfig.json");
 // throw new Error(JSON.stringify(process.env.FIREBASE_CONFIG));
 
-Admin.initializeApp(process.env.FIREBASE_CONFIG);
+Admin.initializeApp();
 const db = Admin.database();
 const eventDB = db.ref("database/events");
 const clientDB = db.ref("database/clients");
@@ -70,42 +70,43 @@ const venueDB = db.ref("database/venues");
 //     }
 // });
 
-exports.sendAll = Functions.https.onRequest((req, res) => {
-    const handleError = function (errorMessage) {
-        res.send(JSON.stringify({
-            error: errorMessage
-        }));
-    };
-
-    processBookingListAndCalendar(req.query).then(data => {
-        let sendAllEmails = [];
-        sendAllEmails.push(() => {
-            let calendarPDF = PDF.generateCalendar(data.month, data.year, data.events);
-            return Email.sendCalendar(data.month, data.year, data.venue, calendarPDF);
-        });
-
-        sendAllEmails.push(() => {
-            let bookingListPDF = PDF.generateBookingList(data.month, data.year, data.events, data.venue);
-            return Email.sendBookingList(data.month, data.year, data.venue, bookingListPDF);
-        });
-
-        data.events.forEach(event => {
-            sendAllEmails.push(() => {
-                let invoicePDF = PDF.generateInvoice(event.client, event, data.venue);
-                return Email.sendInvoice(event.client, event, data.venue, invoicePDF);
+exports.sendAll = Functions.https.onCall((data) => {
+    return new Promise((res, rej) => {
+        let handleError = function (errorMessage) {
+            rej({
+                error: errorMessage
             });
-            sendAllEmails.push(() => {
-                let artistConfirmationPDF = PDF.generateArtistConfirmation(event.client, event, data.venue);
-                return Email.sendArtistConfirmation(event.client, event, data.venue, artistConfirmationPDF);
-            });
-        });
+        };
 
-        Util.staggerPromises(sendAllEmails, 0, 10).then(() => {
-            res.send(JSON.stringify({
-                response: "Emails successfully sent!"
-            }));
+        processBookingListAndCalendar(data).then(processedData => {
+            let sendAllEmails = [];
+            sendAllEmails.push(() => {
+                let calendarPDF = PDF.generateCalendar(processedData.month, processedData.year, processedData.events);
+                return Email.sendCalendar(processedData.month, processedData.year, processedData.venue, calendarPDF);
+            });
+
+            sendAllEmails.push(() => {
+                let bookingListPDF = PDF.generateBookingList(processedData.month, processedData.year, processedData.events, processedData.venue);
+                return Email.sendBookingList(processedData.month, processedData.year, processedData.venue, bookingListPDF);
+            });
+
+            processedData.events.forEach(event => {
+                sendAllEmails.push(() => {
+                    let invoicePDF = PDF.generateInvoice(event.client, event, processedData.venue);
+                    return Email.sendInvoice(event.client, event, processedData.venue, invoicePDF);
+                });
+                sendAllEmails.push(() => {
+                    let artistConfirmationPDF = PDF.generateArtistConfirmation(event.client, event, processedData.venue);
+                    return Email.sendArtistConfirmation(event.client, event, processedData.venue, artistConfirmationPDF);
+                });
+            });
+
+            Util.staggerPromises(sendAllEmails, 0, 10).catch(handleError);
+            res({
+                success: true
+            });
         }).catch(handleError);
-    }).catch(handleError);
+    });
 });
 
 const processBookingListAndCalendar = function (args) {
