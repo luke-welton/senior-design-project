@@ -4,7 +4,7 @@ import {Agenda} from "react-native-calendars";
 import React from "react";
 import _ from "lodash";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
-import {dayInMS, toAMPM, toDateString, toTimeString, randomColor, Dropdown, AppContainer, MoreButton} from "../util";
+import {dayInMS, toAMPM, toDateTime, toDateString, toTimeString, randomColor, Dropdown, AppContainer, MoreButton} from "../util";
 import {Client, Event, Venue} from "../objects";
 import Database from "../Database";
 import Styles from "../styles";
@@ -25,7 +25,8 @@ export default class DayView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedVenue: this.props.selectedVenue
+            selectedVenue: this.props.selectedVenue,
+            selectedDate: this.props.selectedDate
         };
     }
 
@@ -93,14 +94,16 @@ export default class DayView extends React.Component {
                                   };
                               })}
                               selectedValue = {this.state.selectedVenue.id}
-                              onValueChange = {venueID =>
-                                  this.setState({selectedVenue: this.props.loadedData.venues.find(venue => venue.id === venueID)})
-                              }
+                              onValueChange = {venueID => {
+                                  if (venueID !== null) {
+                                      this.setState({selectedVenue: this.props.loadedData.venues.find(venue => venue.id === venueID)})
+                                  }
+                              }}
                     />
                     <MoreButton
                         onPress={() => this.props.navigation.navigate("VenueManage", {
                             venueList: this.props.loadedData.venues,
-                            database: db,
+                            database: this.props.database,
                             onReturn: venues => {
                                 console.log(venues);
                             }
@@ -110,6 +113,14 @@ export default class DayView extends React.Component {
                 <Agenda
                     hideKnob = {true}
                     selected = {toDateString(this.props.selectedDate)}
+                    onDayPress = {day => {
+                        console.log(day)
+                        this.setState({selectedDate: toDateTime({date: day.dateString})})
+                    }}
+                    onDaychange = {day => {
+                        console.log(day)
+                        this.setState({selectedDate: toDateTime({date: day.dateString})})
+                    }}
                     items = {this._generateDateStorage()}
                     rowHasChanged = {(eventA, eventB) => !eventA.isEqual(eventB)}
                     renderItem = {(event, first) => {
@@ -150,7 +161,7 @@ export default class DayView extends React.Component {
                             eventList: this.props.loadedData.events,
                             venueList: this.props.loadedData.venues,
                             defaultVenue: this.state.selectedVenue,
-                            defaultDate: this.props.selectedDate,
+                            defaultDate: this.state.selectedDate,
                             onSave: event => {
                                 this.props.database.addEvent(event);
                                 this.props.loadedData.events.push(event);

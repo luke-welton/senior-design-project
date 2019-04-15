@@ -308,8 +308,8 @@ export class MoreButton extends React.Component {
             circles.push(
                 <Circle
                     key={i.toString()}
-                    cx = "50"
-                    cy = {position}
+                    cx = {position}
+                    cy = "50"
                     r = "25"
                     stroke = "#111"
                     strokeWidth = "1"

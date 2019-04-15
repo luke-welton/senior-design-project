@@ -5,14 +5,15 @@ export default StyleSheet.create({
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        paddingTop: Platform.OS === "android" ? 25 : 0,
-        backgroundColor: "#fff",
+        paddingTop: Platform.OS === "android" ? 25 : 30,
+        backgroundColor: Platform.OS === "android" ? "#fff" : "#add8e6aa",
         zIndex: 2
     },
     calendarHeader: {
-        height: 50,
+        height: Platform.OS == "android" ? 50 : 30,
         display: "flex",
-        flexDirection: "row"
+        flexDirection: "row",
+        paddingLeft: Platform.OS === "android" ? 0 : 10
     },
     calendarDropdown: {
         flexGrow: 15,
@@ -93,14 +94,21 @@ export default StyleSheet.create({
     },
     moreButton: {
         flexGrow: 1,
-        padding: 15,
-        paddingLeft: 0,
-        paddingRight: 5,
+        padding: 5,
         flexBasis: 0
     },
     listContainer: {
         flexGrow: 1,
         flexShrink: 0,
         width: "100%"
+    },
+    dateContainer: {
+        display: "flex",
+        flexDirection: "row",
+        height: 35,
+        marginBottom: 10,
+        alignItems: "center",
+        flexShrink: 1,
+        flexGrow: 1
     }
 });
