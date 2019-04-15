@@ -114,11 +114,6 @@ export default class DayView extends React.Component {
                     hideKnob = {true}
                     selected = {toDateString(this.props.selectedDate)}
                     onDayPress = {day => {
-                        console.log(day)
-                        this.setState({selectedDate: toDateTime({date: day.dateString})})
-                    }}
-                    onDaychange = {day => {
-                        console.log(day)
                         this.setState({selectedDate: toDateTime({date: day.dateString})})
                     }}
                     items = {this._generateDateStorage()}
