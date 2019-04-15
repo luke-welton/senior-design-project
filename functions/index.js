@@ -4,17 +4,10 @@ const Email = require("./emailHandler.js");
 const PDF = require("./pdfHandler.js");
 const Util = require("./util.js");
 
-exports.emailTest = Functions.https.onRequest((req, res) => {
-    return Email.sendEmail({
-        to: "lmoowelton@gmail.com",
-        subject: "Test Email",
-        text: "Hey Luke!\n\nThis is the new email!\n\nThanks,\nLuke Welton"
-    })
-        .then(() => res.send("Email successfully sent!"))
-        .catch(err => handleError(err, res));
-});
+// process.env = require("./.runtimeconfig.json");
+// throw new Error(JSON.stringify(process.env.FIREBASE_CONFIG));
 
-Admin.initializeApp();
+Admin.initializeApp(process.env.FIREBASE_CONFIG);
 const db = Admin.database();
 const eventDB = db.ref("database/events");
 const clientDB = db.ref("database/clients");
@@ -86,13 +79,14 @@ exports.sendAll = Functions.https.onRequest((req, res) => {
 
     processBookingListAndCalendar(req.query).then(data => {
         let sendAllEmails = [];
-        sendAllEmails.push(() =>  {
+        sendAllEmails.push(() => {
             let calendarPDF = PDF.generateCalendar(data.month, data.year, data.events);
             return Email.sendCalendar(data.month, data.year, data.venue, calendarPDF);
         });
+
         sendAllEmails.push(() => {
             let bookingListPDF = PDF.generateBookingList(data.month, data.year, data.events, data.venue);
-            return Email.sendBookingList(data.month, data.year, data.events, data.venue, bookingListPDF).then(res).catch(rej);
+            return Email.sendBookingList(data.month, data.year, data.venue, bookingListPDF);
         });
 
         data.events.forEach(event => {
@@ -139,7 +133,6 @@ const processBookingListAndCalendar = function (args) {
                     let filteredEvents = eventArray.filter(event => event.venue === venueID);
 
                     attachClientData(filteredEvents).then(events => {
-                    //attachClientData(eventArray).then(events => {
                         res({
                             month: month,
                             year: year,
@@ -154,20 +147,18 @@ const processBookingListAndCalendar = function (args) {
 };
 
 const attachClientData = function (events) {
-    return new Promise((res, rej) => {
-        let clientFetches = events.map(event => {
-            let clientID = event.client;
+    let clientFetches = events.map(event => {
+        let clientID = event.client;
 
-            return new Promise((res, rej) => {
-                clientDB.child(clientID).once("value").then(data => {
-                    event.client = data.val();
-                    res(event);
-                }).catch(rej);
-            });
+        return new Promise((res, rej) => {
+            clientDB.child(clientID).once("value").then(data => {
+                event.client = data.val();
+                res(event);
+            }).catch(rej);
         });
-
-        Promise.all(clientFetches).then(res).catch(rej);
     });
+
+    return Promise.all(clientFetches);
 };
 
 // const processInvoiceAndArtistConfirmation = function (args) {
