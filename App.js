@@ -61,7 +61,8 @@ class MonthView extends React.Component {
         this.state = {
             selectedVenue: loadedData.venues[0],
             selectedMonth: currentDate.getMonth(),
-            selectedYear: currentDate.getFullYear()
+            selectedYear: currentDate.getFullYear(),
+            disableSendingEmails: false
         };
     }
 
@@ -143,13 +144,25 @@ class MonthView extends React.Component {
                 <View style={Styles.buttonContainer}>
                     <Button
                         title = "Generate Forms"
+                        disabled = {this.state.disableSendingEmails}
                         onPress = {() => {
                             let formDate = new Date(this.state.selectedYear, this.state.selectedMonth, 1);
                             db.sendForms(this.state.selectedVenue, formDate).then(() => {
-                                alert("Successfully began sending emails! " +
-                                    "Please note that it may take up to a minute for all emails to send.");
+                                alert("Emails successfully sent!")
                             }).catch(err => {
                                 alert("An error occurred while sending the emails.\n" + err);
+                                console.error(err);
+                            }).finally(() => {
+                                this.setState({
+                                    disableSendingEmails: false
+                                })
+                            });
+
+                            alert("Emails have now begun sending." +
+                                " Please wait until all emails have been sent before requesting more." +
+                                " This may take up to a minute to complete.");
+                            this.setState({
+                                disableSendingEmails: true
                             });
                         }}
                     />
