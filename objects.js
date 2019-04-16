@@ -1,21 +1,5 @@
 import {toTimeString, toDateString, toDateTime, dayInMS, toLocalTime, toUTC, toMonthString} from "./util";
 
-// class Performer {
-//     constructor(_data) {
-//         this.firstName = _data.first;
-//         this.lastName = _data.last;
-//         this.middleInitial = _data.middle;
-//     }
-//
-//     toData() {
-//         return {
-//             first: this.firstName || "",
-//             last: this.lastName || "",
-//             middle: this.middleInitial || ""
-//         };
-//     };
-// }
-
 export class Client {
     constructor(_data, _id) {
         if (!_id) _id = null;
