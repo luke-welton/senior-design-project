@@ -104,7 +104,7 @@ exports.sendAll = Functions.https.onCall((data) => {
                 Util.staggerPromises(emailArray, 0, 10),
                 Util.staggerPromises(driveArray, 0, 1)
             ]).then(() => {
-                res.send({success: true});
+                res({success: true});
             }).catch(handleError);
         }).catch(handleError);
     });

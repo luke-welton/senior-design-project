@@ -1,7 +1,6 @@
 import Firebase from 'firebase';
 import { Client, Event, Venue } from "./objects";
 import {toMonthString} from "./util";
-
 require("firebase/functions");
 
 export default class Database {
@@ -34,30 +33,6 @@ export default class Database {
             }).catch(err => rej(err));
         });
     }
-
-    // // load information for all events
-    // // this probably should not be used too much bc there will presumably be a lot of these
-    // getEvents(options) {
-    //     if (!options) {
-    //         options = {}
-    //     }
-    //
-    //     return new Promise((res, rej) => {
-    //         this.eventDB.once("value").then(data => {
-    //             let _events = data.val();
-    //             let foundEvents = [];
-    //
-    //             for (let eventID in _events) {
-    //                 if (_events.hasOwnProperty(eventID)) {
-    //                     let eventObj = new Event(_events[eventID], eventID);
-    //                     foundEvents.push(eventObj);
-    //                 }
-    //             }
-    //
-    //             res(foundEvents);
-    //         }).catch(err => rej(err));
-    //     });
-    // }
 
     // Load all events for the current month and onwards.
     // Assumption: Limited, since events should not be scheduled more than a few months in advance.
