@@ -20,7 +20,8 @@ export default class LoginView extends React.Component {
             apiKey: auth.apiKey,
             authDomain: "music-matters-229420.firebaseapp.com",
             databaseURL: "https://music-matters-229420.firebaseio.com",
-            storageBucket: "music-matters-229420.appspot.com"
+            storageBucket: "music-matters-229420.appspot.com",
+            projectId: "music-matters-229420"
         });
     }
 
