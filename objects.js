@@ -1,44 +1,30 @@
 import {toTimeString, toDateString, toDateTime, dayInMS, toLocalTime, toUTC, toMonthString} from "./util";
 
-// class Performer {
-//     constructor(_data) {
-//         this.firstName = _data.first;
-//         this.lastName = _data.last;
-//         this.middleInitial = _data.middle;
-//     }
-//
-//     toData() {
-//         return {
-//             first: this.firstName || "",
-//             last: this.lastName || "",
-//             middle: this.middleInitial || ""
-//         };
-//     };
-// }
-
 export class Client {
     constructor(_data, _id) {
         if (!_id) _id = null;
         if (!_data) _data = {};
-
         this.id = _id;
 
         this.performers = _data.performers;
         this.stageName = _data.stage;
         this.email = _data.email;
+        this.splitCheck = _data.splitCheck;
     }
 
     update(data) {
         this.performers = data.performers || this.performers;
         this.stageName = data.stageName || this.stageName;
         this.email = data.email || this.email;
+        this.splitCheck = data.splitCheck || false;
     }
 
     toData() {
         return {
             performers: this.performers || [],
             stage: this.stageName || "",
-            email: this.email || ""
+            email: this.email || "",
+            splitCheck: this.splitCheck || false
         };
     }
 }

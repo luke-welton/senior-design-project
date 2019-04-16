@@ -101,9 +101,11 @@ class MonthView extends React.Component {
                             };
                         })}
                         selectedValue = {this.state.selectedVenue.id}
-                        onValueChange = {venueID =>
-                            this.setState({selectedVenue: loadedData.venues.find(venue => venue.id === venueID)})
-                        }
+                        onValueChange = {venueID => {
+                            if (venueID !== null) {
+                                this.setState({selectedVenue: loadedData.venues.find(venue => venue.id === venueID)})
+                            }
+                        }}
                     />
                     <MoreButton
                         onPress={() => this.props.navigation.navigate("VenueManage", {

@@ -172,6 +172,15 @@ exports.generateInvoice = function (client, event, venue) {
         eventAddress += " " + venue.address.street2;
     }
 
+    let priceString = "$" + parseFloat(event.price).toFixed(2);
+    if (client.performers.length > 1) {
+        if (client.splitCheck) {
+            priceString += ", split evenly between each member"
+        } else {
+            priceString += ", one check, made out to " + client.performers[0]
+        }
+    }
+
     content.push({
         text: [
             "\u200B\t\t",
@@ -187,8 +196,8 @@ exports.generateInvoice = function (client, event, venue) {
             },
             " between the listed hours of ",
             {text: Util.toAMPM(event.start) + " to " + Util.toAMPM(event.end), style: "underlined"},
-            ". " + venue.name + " in " + venue.address.city + ", " + venue.address.state + " agrees to pay the above named artists ",
-            {text: "$" + parseFloat(event.price).toFixed(2), style: "underlined"},
+            ". " + venue.name + " in " + venue.address.city + ", " + venue.address.state + " agrees to pay the above named artist(s) ",
+            {text: priceString, style: "underlined"},
             ", and said payment is to be paid upon completion of this performance."
         ],
         style: "formText"
@@ -231,6 +240,15 @@ exports.generateArtistConfirmation = function (client, event, venue) {
         eventAddress += " " + venue.address.street2;
     }
 
+    let priceString = "$" + parseFloat(event.price).toFixed(2);
+    if (client.performers.length > 1) {
+        if (client.splitCheck) {
+            priceString += ", split evenly between each member"
+        } else {
+            priceString += " as one check, made out to " + client.performers[0]
+        }
+    }
+
     content.push({
         text: [
             "\u200B\t\t",
@@ -246,8 +264,8 @@ exports.generateArtistConfirmation = function (client, event, venue) {
             },
             " between the listed hours of ",
             {text: Util.toAMPM(event.start) + " to " + Util.toAMPM(event.end), style: "underlined"},
-            ". " + venue.name + " in " + venue.address.city + ", " + venue.address.state + " agrees to pay the above named artists ",
-            {text: "$" + parseFloat(event.price).toFixed(2), style: "underlined"},
+            ". " + venue.name + " in " + venue.address.city + ", " + venue.address.state + " agrees to pay the above named artist(s) ",
+            {text: priceString, style: "underlined"},
             ", and said payment is to be paid upon completion of this performance."
         ],
         style: "formText"
