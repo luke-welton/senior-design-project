@@ -121,13 +121,20 @@ class MonthView extends React.Component {
                     hideArrows = {true}
                     markingType = "multi-dot"
                     markedDates = {this._generateMarkedDates()}
-                    onVisibleMonthsChange = {(date) => {
+                    onVisibleMonthsChange = {date => {
+                        this.setState({
+                            selectedMonth: date.month - 1,
+                            selectedYear: date.year
+                        });
+
                         let fullDate = date[0].dateString;
                         let monthString = fullDate.substring(0, 7);
-                        if(!(loadedData.viewedMonths.includes(monthString)) && !(monthString > loadedData.viewedMonths[0])) {
+
+                        if (!loadedData.viewedMonths.includes(monthString) && monthString < loadedData.viewedMonths[0]) {
                             loadedData.viewedMonths.push(monthString);
-                            Promise.all([db.getMonthEvents(fullDate)]).then(values => {
-                                loadedData.events = loadedData.events.concat(values[0]);
+
+                            db.getMonthEvents(fullDate).then(events => {
+                                loadedData.events = loadedData.events.concat(events[0]);
                                 this.forceUpdate();
                             }).catch(err => console.log(err));
                         }
