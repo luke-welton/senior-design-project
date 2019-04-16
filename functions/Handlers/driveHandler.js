@@ -2,9 +2,9 @@ const {google} = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
 const folderIDs = require("../folders.json");
 const Functions = require("firebase-functions");
-const env = Functions.config();
 const Util = require("../util.js");
 
+const env = Functions.config();
 const {client_id, client_secret, redirect_uris} = env.drive.web;
 const oAuthClient = new OAuth2(client_id, client_secret, redirect_uris[0]);
 oAuthClient.setCredentials({
@@ -17,28 +17,28 @@ const Drive = google.drive({
 });
 
 const getMatchingFolder = function (options) {
+    let queryParams = [];
+    queryParams.push("mimeType='application/vnd.google-apps.folder'");
+
+    if (options.id) {
+        queryParams.push("id = '" + options.id + "'");
+    }
+
+    if (options.name) {
+        queryParams.push("name = '" + options.name + "'");
+    }
+
+    if (options.parents) {
+        options.parents.forEach(id => {
+            queryParams.push("'" + id + "'" + " in parents");
+        });
+    }
+
+    if (!options.searchTrash) {
+        queryParams.push("not trashed");
+    }
+
     return new Promise((res, rej) => {
-        let queryParams = [];
-        queryParams.push("mimeType='application/vnd.google-apps.folder'");
-
-        if (options.id) {
-            queryParams.push("id = " + options.id);
-        }
-
-        if (options.name) {
-            queryParams.push("name = '" + options.name + "'");
-        }
-
-        if (options.parents) {
-            options.parents.forEach(id => {
-                queryParams.push("'" + id + "'" + " in parents");
-            });
-        }
-
-        if (!options.searchTrash) {
-            queryParams.push("not trashed");
-        }
-
         Drive.files.list({
             q: queryParams.join(" and ")
         }).then(response => {
