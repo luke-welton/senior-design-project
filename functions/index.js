@@ -1,7 +1,8 @@
 const Functions = require('firebase-functions');
 const Admin = require("firebase-admin");
-const Email = require("./emailHandler.js");
-const PDF = require("./pdfHandler.js");
+const Email = require("./Handlers/emailHandler.js");
+const PDF = require("./Handlers/pdfHandler.js");
+const Drive = require("./Handlers/driveHandler.js");
 const Util = require("./util.js");
 
 // process.env = require("./.runtimeconfig.json");
@@ -97,7 +98,10 @@ exports.sendAll = Functions.https.onCall((data) => {
                 });
                 sendAllEmails.push(() => {
                     let artistConfirmationPDF = PDF.generateArtistConfirmation(event.client, event, processedData.venue);
-                    return Email.sendArtistConfirmation(event.client, event, processedData.venue, artistConfirmationPDF);
+
+                    return Drive.uploadArtistConfirmation(event, event.client, artistConfirmationPDF);
+
+                    // return Email.sendArtistConfirmation(event.client, event, processedData.venue, artistConfirmationPDF);
                 });
             });
 
@@ -107,6 +111,43 @@ exports.sendAll = Functions.https.onCall((data) => {
             });
         }).catch(handleError);
     });
+});
+
+exports.sendAllReq = Functions.https.onRequest((req, res) => {
+    let handleError = function (errorMessage) {
+        res.send({
+            error: errorMessage
+        });
+    };
+
+    processBookingListAndCalendar(req.query).then(processedData => {
+        let uploadToDrive = [];
+        uploadToDrive.push(() => {
+            let calendarPDF = PDF.generateCalendar(processedData.month, processedData.year, processedData.events);
+            return Drive.uploadCalendar(processedData.venue, processedData.month, processedData.year, calendarPDF);
+        });
+        uploadToDrive.push(() => {
+            let bookingListPDF = PDF.generateBookingList(processedData.month, processedData.year, processedData.events, processedData.venue);
+            return Drive.uploadBookingList(processedData.venue, processedData.month, processedData.year, bookingListPDF);
+        });
+
+        processedData.events.forEach(event => {
+            uploadToDrive.push(() => {
+                let artistConfirmationPDF = PDF.generateArtistConfirmation(event.client, event, processedData.venue);
+                return Drive.uploadArtistConfirmation(event, event.client, artistConfirmationPDF);
+            });
+            uploadToDrive.push(() => {
+                let invoicePDF = PDF.generateInvoice(event.client, event, processedData.venue);
+                return Drive.uploadInvoice(event, event.client, invoicePDF);
+            });
+        });
+
+        Util.staggerPromises(uploadToDrive, 0, 1).then(() => {
+            res.send({
+                success: true
+            });
+        }).catch(handleError);
+    }).catch(handleError);
 });
 
 const processBookingListAndCalendar = function (args) {

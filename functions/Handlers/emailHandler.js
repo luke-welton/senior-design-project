@@ -1,6 +1,6 @@
-const Functions = require('firebase-functions');
+const Functions = require('firebase-functions/lib/index');
 const NodeMailer = require("nodemailer");
-const Util = require("./util.js");
+const Util = require("../util.js");
 
 const env = Functions.config();
 const gmail = NodeMailer.createTransport({
@@ -23,9 +23,7 @@ const sendEmail = function (info) {
         let messageOptions = Object.assign({}, info);
         messageOptions.from = `musicmattersbookings@gmail.com <"Music Matters Bookings">`;
 
-        gmail.sendMail(messageOptions).then(() => {
-            res();
-        }).catch(rej);
+        gmail.sendMail(messageOptions).then(res).catch(rej);
     });
 };
 exports.sendEmail = sendEmail;
@@ -86,7 +84,7 @@ exports.sendCalendar = function (month, year, venue, calendarPDF) {
                 content: calendarPDF
             }
         ]
-    })
+    });
 };
 
 exports.sendBookingList = function(month, year, venue, bookingListPDF) {
@@ -107,5 +105,5 @@ exports.sendBookingList = function(month, year, venue, bookingListPDF) {
                 content: bookingListPDF
             }
         ]
-    })
+    });
 };

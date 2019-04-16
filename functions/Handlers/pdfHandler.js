@@ -1,5 +1,5 @@
 const PDFMake = require("pdfmake");
-const Util = require("./util.js");
+const Util = require("../util.js");
 
 const CAL_BLUE = "#2b4574";
 const CAL_GREY = "#e6e6e6";
@@ -167,13 +167,17 @@ exports.generateInvoice = function (client, event, venue) {
     }));
 
     let eventDate = new Date(Util.toUS(event.date));
+    let eventAddress = venue.address.street1;
+    if (venue.address.street2) {
+        eventAddress += " " + venue.address.street2;
+    }
 
     content.push({
         text: [
             "\u200B\t\t",
             {text: stringifyNames(client.performers), style: "underlined"},
             " agree(s) to perform live music at " + venue.name + ", " +
-                venue.address.street1 + venue.address.street2 + ", " +
+                eventAddress + ", " +
                 venue.address.city + ", " + venue.address.state + ", " + venue.address.zip + " on the evening of ",
             {
                 text: Util.dayEnum(eventDate.getDay()) + ", " +
@@ -222,13 +226,17 @@ exports.generateArtistConfirmation = function (client, event, venue) {
     }));
 
     let eventDate = new Date(Util.toUS(event.date));
+    let eventAddress = venue.address.street1;
+    if (venue.address.street2) {
+        eventAddress += " " + venue.address.street2;
+    }
 
     content.push({
         text: [
             "\u200B\t\t",
             {text: stringifyNames(client.performers), style: "underlined"},
             " agree(s) to perform live music at " + venue.name + ", " +
-            venue.address.street1 + venue.address.street2 + ", " +
+            eventAddress + ", " +
             venue.address.city + ", " + venue.address.state + ", " + venue.address.zip + " on the evening of ",
             {
                 text: Util.dayEnum(eventDate.getDay()) + ", " +

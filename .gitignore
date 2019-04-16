@@ -8,4 +8,6 @@ npm-debug.*
 .idea/
 auth.json
 functions/.runtimeconfig.json
+functions/google.json
+functions/credentials.json
 pdfs
