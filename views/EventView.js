@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Event, Client, Venue } from "../objects";
 import { View, TextInput, Text, TouchableOpacity, Button, StyleSheet } from "react-native";
-import { RadioGroup } from "react-native-btr";
+import {RadioGroup} from "react-native-btr";
 import DateTimePicker from "react-native-modal-datetime-picker/src/index";
 import Styles from "../styles";
 import {
@@ -62,42 +62,21 @@ export default class EventView extends React.Component {
     }
 
     _generateRadioButtons() {
-        let date = new Date(this.props.defaultDate);
+        let date = new Date(toUS(this.state.date));
         let day = date.getDay();
-        let buttons = [];
-        if(day === 5 || day === 6) {
-            buttons = [
-                {
-                    label: defaultTimes[2],
-                    value: 1
-                },
-                {
-                    label: defaultTimes[3],
-                    value: 2
-                },
-                {
-                    label: "Custom",
-                    value: 0
-                }
-            ];
-        }
-        else{
-             buttons = [
-                {
-                    label: defaultTimes[0],
-                    value: 1
-                },
-                {
-                    label: defaultTimes[1],
-                    value: 2
-                },
-                {
-                    label: "Custom",
-                    value: 0
-                }
-            ];
-        }
 
+        let defaultTimeIndices = (day === 5 || day === 6) ? [2, 3] : [0, 1];
+        let buttons = defaultTimeIndices.map(num => {
+            return {
+                label: defaultTimes[num],
+                value: num
+            };
+        });
+
+        buttons.push({
+            label: "Custom",
+            value: "c"
+        });
 
         let timeString = [toAMPM(this.state.startTime), toAMPM(this.state.endTime)].join(" - ");
 
@@ -107,7 +86,6 @@ export default class EventView extends React.Component {
         if (!matchingButton) {
             matchingButton = buttons[buttons.length - 1];
         }
-
         matchingButton.checked = true;
 
         return buttons;
@@ -172,11 +150,12 @@ export default class EventView extends React.Component {
                     <View style={Styles.inputRow}>
                         <Text style={Styles.inputTitle}>Time</Text>
                         <RadioGroup style={Styles.datetimeContainer}
+                            key = {this.state.date}
                             radioButtons = {this._generateRadioButtons()}
                             onPress = {buttons => {
                                 let selected = buttons.find(b => b.checked);
 
-                                if (selected.value === 0 && !this.state.customTime) {
+                                if (selected.value === "c" && !this.state.customTime) {
                                     this.setState({customTime: true});
                                 } else {
                                     let splits = selected.label.split("-");
