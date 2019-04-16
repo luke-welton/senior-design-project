@@ -69,7 +69,7 @@ export class ManageClients extends React.Component {
                         onPress = {() => this.props.navigation.navigate("Client", {
                             clientList: this.state.clientList,
                             onSave: client => {
-                                this.props.database.addVenue(client);
+                                this.props.database.addClient(client);
                                 this.state.clientList.push(client);
                                 this.forceUpdate();
                             }
