@@ -10,7 +10,7 @@ export default StyleSheet.create({
         zIndex: 2
     },
     calendarHeader: {
-        height: Platform.OS == "android" ? 50 : 30,
+        height: Platform.OS === "android" ? 50 : 30,
         display: "flex",
         flexDirection: "row",
         paddingLeft: Platform.OS === "android" ? 0 : 10
