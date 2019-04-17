@@ -9,18 +9,6 @@ import RandomColor from "randomcolor";
 import _ from "lodash";
 import {Svg as SVG, Circle} from "react-native-svg";
 
-//handles converting time from UTC to local time zone
-export function toLocalTime(_time) {
-    let offset = new Date().getTimezoneOffset() / 60;
-    return new Date(_time.getTime() - offset * dayInMS / 24);
-}
-
-//handles converting time from local time zone to UTC
-export function toUTC(_time) {
-    let offset = new Date().getTimezoneOffset() / 60;
-    return new Date(_time.getTime() + offset * dayInMS / 24 );
-}
-
 //handles converting a JS Date object into an ISO date string
 export function toDateString(_date) {
     let year = _date.getFullYear();
