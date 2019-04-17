@@ -1,8 +1,8 @@
 const Functions = require('firebase-functions');
 const Admin = require("firebase-admin");
-const Email = require("./Handlers/emailHandler.js");
-const PDF = require("./Handlers/pdfHandler.js");
-const Drive = require("./Handlers/driveHandler.js");
+const Email = require("./handlers/emailHandler.js");
+const PDF = require("./handlers/pdfHandler.js");
+const Drive = require("./handlers/driveHandler.js");
 const Util = require("./util.js");
 
 Admin.initializeApp();
