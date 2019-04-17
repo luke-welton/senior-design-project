@@ -1,16 +1,19 @@
 import React from 'react';
-import {ActivityIndicator, View, Button, YellowBox} from 'react-native';
+import {ActivityIndicator, Button, View, YellowBox} from 'react-native';
 import DayView from "./views/DayView";
 import EventView from "./views/EventView";
 import {ManageVenues, VenueView} from "./views/VenueViews";
-import {ManageClients, ClientView} from "./views/ClientViews";
+import {ClientView, ManageClients} from "./views/ClientViews";
 import Database from "./Database";
 import Styles from "./styles";
-import {createStackNavigator, createAppContainer, createSwitchNavigator} from "react-navigation";
+import {createAppContainer, createStackNavigator, createSwitchNavigator} from "react-navigation";
 import {CalendarList} from "react-native-calendars";
-import {AppContainer, toDateTime, toDateString, toMonthString, toLocalTime, randomColor, Dropdown, MoreButton} from "./util";
+import {randomColor, toDateString, toDateTime, toMonthString} from "./util";
 import LoginView from "./views/LoginView";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
+import Dropdown from "./components/Dropdown";
+import AppContainer from "./components/AppContainer";
+import MoreButton from "./components/MoreButton";
 
 // Firebase's implementation utilizes long timers,
 // which React Native doesn't like and throws a warning,
@@ -37,7 +40,7 @@ class LoadingScreen extends React.Component {
             loadedData.events = values[1];
             loadedData.venues = values[2];
 
-            loadedData.viewedMonths = [toMonthString(toLocalTime(new Date()))];
+            loadedData.viewedMonths = [toMonthString(new Date())];
 
             this.props.navigation.navigate("App");
         }).catch(err => console.log(err));
@@ -136,7 +139,7 @@ class MonthView extends React.Component {
                             loadedData.viewedMonths.push(monthString);
 
                             db.getMonthEvents(fullDate).then(events => {
-                                if (events[0].length() > 0) {
+                                if (events[0].length > 0) {
                                     loadedData.events = loadedData.events.concat(events[0]);
                                 }
                                 this.forceUpdate();

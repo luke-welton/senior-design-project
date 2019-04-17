@@ -1,4 +1,4 @@
-import {toTimeString, toDateString, toDateTime, dayInMS, toLocalTime, toUTC, toMonthString} from "./util";
+import {toTimeString, toDateString, toDateTime, dayInMS, toMonthString} from "./util";
 
 export class Client {
     constructor(_data, _id) {
@@ -35,7 +35,7 @@ export class Event {
         if (!_data) _data = {
             price: 0.00,
             date: toDateString(new Date()),
-            month: toMonthString(toLocalTime(new Date()))
+            month: toMonthString(new Date())
         };
 
         this.id = _id;
@@ -43,15 +43,15 @@ export class Event {
         this.venueID = _data.venue;
         this.price = parseFloat(_data.price || 0);
 
-        this.start = toLocalTime(toDateTime({
+        this.start = toDateTime({
             date: _data.date,
             time: _data.start
-        }));
+        });
 
-        this.end = toLocalTime(toDateTime({
+        this.end = toDateTime({
             date: _data.date,
             time: _data.end
-        }));
+        });
 
         if (this.end < this.start) {
             this.end.setTime(this.end.getTime() + dayInMS);
@@ -69,7 +69,7 @@ export class Event {
         if (data.end) this.end = data.end;
 
         if (data.date) {
-            this.month = toMonthString(toLocalTime(toDateTime(data.date)));
+            this.month = toMonthString(toDateTime(data.date));
             let splits = data.date.split("-");
             this.start.setFullYear(splits[0], splits[1] -1, splits[2]);
             this.end.setFullYear(splits[0], splits[1] - 1, splits[2]);
@@ -90,13 +90,11 @@ export class Event {
 
 
     toData() {
-        let utcStart = toUTC(this.start);
-
         return {
-            date: toDateString(utcStart),
+            date: toDateString(this.start),
             month: toMonthString(this.start),
-            start: toTimeString(utcStart),
-            end: toTimeString(toUTC(this.end)),
+            start: toTimeString(this.start),
+            end: toTimeString(this.end),
             client: this.clientID || "",
             venue: this.venueID || "",
             price: this.price || 0
@@ -118,12 +116,19 @@ export class Venue {
         this.id = _id || null;
         this.name = _data.name || "";
         this.contactEmail = _data.email || "";
-        this.address = _data.address || {};
+        this.address = _data.address || {
+            street1: "",
+            street2: "",
+            city: "",
+            state: "",
+            zip: ""
+        };
     }
 
     update(data) {
         this.name = data.name || this.name;
         this.contactEmail = data.email || this.contactEmail;
+
         this.address = {
             street1: data.street1 || this.address.street1,
             street2: data.street2 || this.address.street2,
