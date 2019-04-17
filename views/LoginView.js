@@ -1,6 +1,6 @@
 import React from "react";
-import {TextInput, Image, Button, StyleSheet, View} from "react-native";
-import {AppContainer} from "../util";
+import {Button, Image, StyleSheet, TextInput, View} from "react-native";
+import AppContainer from "../components/AppContainer";
 import Styles from "../styles";
 import Firebase from "firebase";
 import auth from "../auth";

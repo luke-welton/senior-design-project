@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {View, Button, Text, TextInput, StyleSheet, FlatList} from 'react-native';
-import { Venue } from '../objects';
+import {Button, FlatList, StyleSheet, Text, TextInput, View} from 'react-native';
+import {Venue} from '../objects';
 import Database from "../Database";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
-import {AppContainer} from "../util";
+import AppContainer from "../components/AppContainer";
 import Styles from "../styles";
 
 @withMappedNavigationProps()
