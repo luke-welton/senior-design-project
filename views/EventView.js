@@ -13,8 +13,10 @@ import Database from "../Database";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
 
 const defaultTimes = [
-    "7:30 PM - 9:00 PM",
-    "9:30 PM - 11:00 PM"
+    "5:00 PM - 7:30 PM",
+    "7:30 PM - 10:00 PM",
+    "5:00 PM - 8:00 PM",
+    "8:00 PM - 11:00 PM"
 ];
 
 @withMappedNavigationProps()
@@ -60,20 +62,21 @@ export default class EventView extends React.Component {
     }
 
     _generateRadioButtons() {
-        let buttons = [
-            {
-                label: defaultTimes[0],
-                value: 1
-            },
-            {
-                label: defaultTimes[1],
-                value: 2
-            },
-            {
-                label: "Custom",
-                value: 0
-            }
-        ];
+        let date = new Date(toUS(this.state.date));
+        let day = date.getDay();
+
+        let defaultTimeIndices = (day === 5 || day === 6) ? [2, 3] : [0, 1];
+        let buttons = defaultTimeIndices.map(num => {
+            return {
+                label: defaultTimes[num],
+                value: num
+            };
+        });
+
+        buttons.push({
+            label: "Custom",
+            value: "c"
+        });
 
         let timeString = [toAMPM(this.state.startTime), toAMPM(this.state.endTime)].join(" - ");
 
@@ -83,7 +86,6 @@ export default class EventView extends React.Component {
         if (!matchingButton) {
             matchingButton = buttons[buttons.length - 1];
         }
-
         matchingButton.checked = true;
 
         return buttons;
@@ -148,22 +150,21 @@ export default class EventView extends React.Component {
                     <View style={Styles.inputRow}>
                         <Text style={Styles.inputTitle}>Time</Text>
                         <RadioGroup style={Styles.datetimeContainer}
+                            key = {this.state.date}
                             radioButtons = {this._generateRadioButtons()}
                             onPress = {buttons => {
                                 let selected = buttons.find(b => b.checked);
 
-                                if (selected.value === 0) {
-                                    let splits = defaultTimes[0].split("-");
+                                if (selected.value === "c") {
+                                    this.setState({customTime: true});
+                                } else {
+                                    let splits = selected.label.split("-");
 
-                                    let newState = {
+                                    this.setState({
                                         startTime: toMilitaryTime(splits[0].trim()),
                                         endTime: toMilitaryTime(splits[1].trim()),
-                                        customTime: true
-                                    };
-
-                                    this.setState(newState);
-                                } else {
-                                    this.setState({customTime: false});
+                                        customTime: false
+                                    });
                                 }
                             }}
                         />

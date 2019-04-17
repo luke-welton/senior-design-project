@@ -161,6 +161,7 @@ export default class DayView extends React.Component {
                                 this.props.database.addEvent(event);
                                 this.props.loadedData.events.push(event);
                                 this._forceRerender();
+                                
                             }
                         })}
                     />
