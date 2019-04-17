@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {View, Button, Text, TextInput, StyleSheet, FlatList} from 'react-native';
+import {View, Button, Text, TextInput, StyleSheet, FlatList, Switch} from 'react-native';
 import { Client } from '../objects';
-import {Database} from "../Database";
+import Database from "../Database";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
 import {AppContainer} from "../util";
 import Styles from "../styles";
@@ -99,7 +99,8 @@ export class ClientView extends React.Component {
         this.state = {
             stageName: client.stageName || "",
             email: client.email || "",
-            performers: client.performers || []
+            performers: client.performers || [],
+            splitCheck: client.splitCheck || false
         };
     }
 
@@ -184,6 +185,15 @@ export class ClientView extends React.Component {
                             let performers = this.state.performers;
                             performers.push(performerName);
                             this.setState({performers: performers});
+                        }}
+                    />
+
+                    {/* Option for splitting checks among performers */}
+                    <Text style={ClientStyles.promptText}>Separate Checks For Each Performer?</Text>
+                    <Switch
+                        value = {this.state.splitCheck}
+                        onValueChange = {(value) => {
+                            this.setState({splitCheck: value});
                         }}
                     />
                 </View>
@@ -361,5 +371,10 @@ const ClientStyles = StyleSheet.create({
     performerTitle: {
         fontSize: 20,
         marginBottom: 5
+    },
+    promptText: {
+        fontSize: 15,
+        marginTop: 10,
+        marginBottom: 10
     }
 });

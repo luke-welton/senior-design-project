@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Event, Client, Venue } from "../objects";
 import { View, TextInput, Text, TouchableOpacity, Button, StyleSheet } from "react-native";
-import {RadioGroup} from "react-native-btr";
+import { RadioGroup } from "react-native-btr";
 import DateTimePicker from "react-native-modal-datetime-picker/src/index";
 import Styles from "../styles";
 import {
@@ -43,7 +43,7 @@ export default class EventView extends React.Component {
             clientID:  event.clientID || this.props.clientList[0].id,
             venueID: this.isNew ? this.props.defaultVenue.id : event.venueID,
             price: event.price.toString() || "",
-            date: toDateString(event.start),
+            date: this.isNew ? toDateString(this.props.defaultDate) : toDateString(event.start),
             startTime: toTimeString(event.start),
             endTime: toTimeString(event.end),
             customTime: false
@@ -138,7 +138,7 @@ export default class EventView extends React.Component {
 
 
                     {/* Date Selector */}
-                    <View style={Styles.inputRow}>
+                    <View style={Styles.dateContainer}>
                         <Text style={Styles.inputTitle}>Date</Text>
                         <DateInput style={Styles.inputBox}
                             value={toUS(this.state.date)}
@@ -155,21 +155,18 @@ export default class EventView extends React.Component {
                             onPress = {buttons => {
                                 let selected = buttons.find(b => b.checked);
 
-                                if (selected.value === "c" && !this.state.customTime) {
-                                    this.setState({customTime: true});
-                                } else {
-                                    let splits = selected.label.split("-");
+                                if (selected.value === "c") {
+                                    let splits = defaultTimes[0].split("-");
 
                                     let newState = {
                                         startTime: toMilitaryTime(splits[0].trim()),
-                                        endTime: toMilitaryTime(splits[1].trim())
+                                        endTime: toMilitaryTime(splits[1].trim()),
+                                        customTime: true
                                     };
 
-                                    if (this.state.customTime) {
-                                        newState.customTime = false;
-                                    }
-
                                     this.setState(newState);
+                                } else {
+                                    this.setState({customTime: false});
                                 }
                             }}
                         />

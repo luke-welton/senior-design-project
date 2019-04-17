@@ -54,21 +54,17 @@ const getMatchingFolder = function (options) {
 };
 
 const createFolder = function (name, options) {
-    return new Promise((res, rej) => {
-        let folderInfo = {
-            name: name,
-            mimeType: "application/vnd.google-apps.folder"
-        };
+    let folderInfo = {
+        name: name,
+        mimeType: "application/vnd.google-apps.folder"
+    };
 
-        if (options.parents) {
-            folderInfo.parents = options.parents;
-        }
+    if (options.parents) {
+        folderInfo.parents = options.parents;
+    }
 
-        Drive.files.create({
-            resource: folderInfo
-        }).then(folder => {
-            res(folder);
-        }).catch(rej);
+    return Drive.files.create({
+        resource: folderInfo
     });
 };
 
@@ -93,7 +89,7 @@ const uploadPDF = function (name, pdf, options) {
 
 exports.uploadArtistConfirmation = function (event, client, pdf) {
     return new Promise((res, rej) => {
-        let eventDate = new Date(event.date);
+        let eventDate = new Date(Util.toUS(event.date));
         let folderName = [Util.monthEnum(eventDate.getMonth()), eventDate.getFullYear()].join(" ");
 
         getMatchingFolder({
@@ -111,7 +107,7 @@ exports.uploadArtistConfirmation = function (event, client, pdf) {
 
 exports.uploadInvoice = function (event, client, pdf) {
     return new Promise((res, rej) => {
-        let eventDate = new Date(event.date);
+        let eventDate = new Date(Util.toUS(event.date));
         let folderName = [Util.monthEnum(eventDate.getMonth()), eventDate.getFullYear()].join(" ");
 
         getMatchingFolder({
