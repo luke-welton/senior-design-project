@@ -139,7 +139,7 @@ class MonthView extends React.Component {
                             loadedData.viewedMonths.push(monthString);
 
                             db.getMonthEvents(fullDate).then(events => {
-                                if (events[0].length() > 0) {
+                                if (events[0].length > 0) {
                                     loadedData.events = loadedData.events.concat(events[0]);
                                 }
                                 this.forceUpdate();

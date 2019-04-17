@@ -6,6 +6,7 @@ import Database from "../Database";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
 import AppContainer from "../components/AppContainer";
 import Styles from "../styles";
+import _ from "lodash";
 
 @withMappedNavigationProps()
 export class ManageVenues extends React.Component {
@@ -37,10 +38,10 @@ export class ManageVenues extends React.Component {
                                 this.props.database.updateVenue(venue).catch(err => console.log(err));
                                 this.forceUpdate()
                             },
-                            onDelete: venueID => {
-                                this.props.database.removeVenue(venueID).catch(err => console.log(err));
+                            onDelete: venue => {
+                                this.props.database.removeVenue(venue).catch(err => console.log(err));
                                 this.setState({
-                                    venueList: this.state.venueList.filter(venue => venue.id !== venueID)
+                                    venueList: this.state.venueList.filter(_venue => _venue.id !== venue.id)
                                 });
                             }
                         })}
@@ -69,9 +70,12 @@ export class ManageVenues extends React.Component {
                         onPress = {() => this.props.navigation.navigate("Venue", {
                             venueList: this.state.venueList,
                             onSave: venue => {
-                                this.props.database.addVenue(venue);
-                                this.state.venueList.push(venue);
-                                this.forceUpdate();
+                                this.props.database.addVenue(venue).then(venue => {
+                                    this.state.venueList.push(venue);
+                                    this.setState({
+                                        venueList: _.sortBy(this.state.venueList, "name")
+                                    });
+                                });
                             }
                         })}
                     />

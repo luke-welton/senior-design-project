@@ -10,7 +10,7 @@ export default StyleSheet.create({
         zIndex: 2
     },
     calendarHeader: {
-        height: Platform.OS === "android" ? 50 : 30,
+        height: Platform.OS === "android" ? 40 : 30,
         display: "flex",
         flexDirection: "row",
         paddingLeft: Platform.OS === "android" ? 0 : 10
@@ -32,7 +32,8 @@ export default StyleSheet.create({
         width: "100%",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center"
+        alignItems: "center",
+        flexShrink: 1
     },
     hide: {
         display: "none"
@@ -100,7 +101,7 @@ export default StyleSheet.create({
     listContainer: {
         flexGrow: 1,
         flexShrink: 0,
-        width: "100%"
+        width: "100%",
     },
     dateContainer: {
         display: "flex",

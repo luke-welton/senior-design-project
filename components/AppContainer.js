@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {StatusBar, View} from "react-native";
-import _ from "../util";
+import _ from "lodash";
 import Styles from "../styles";
 
 export default class AppContainer extends React.Component {

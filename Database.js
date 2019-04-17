@@ -1,6 +1,7 @@
 import Firebase from 'firebase';
 import { Client, Event, Venue } from "./objects";
 import {toMonthString} from "./util";
+import _ from "lodash";
 require("firebase/functions");
 
 export default class Database {
@@ -29,7 +30,8 @@ export default class Database {
                     }
                 }
 
-                res(foundClients);
+                let sortedClients = _.sortBy(foundClients,"stageName");
+                res(sortedClients);
             }).catch(err => rej(err));
         });
     }
@@ -98,7 +100,8 @@ export default class Database {
                     }
                 }
 
-                res(venueList);
+                let sortedVenues = _.sortBy(venueList, "name");
+                res(sortedVenues);
             }).catch(err => rej(err));
         });
     }
@@ -143,7 +146,7 @@ export default class Database {
         return new Promise((res, rej) => {
             let venueRef = this.venueDB.push(_venue.toData());
             _venue.id = venueRef.key;
-            res();
+            res(_venue);
         });
     }
 

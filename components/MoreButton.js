@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {Circle, Svg as SVG} from "react-native-svg";
-import {TouchableOpacity} from "react-native";
+import {TouchableOpacity, Platform} from "react-native";
 import Styles from "../styles";
 
 export default class MoreButton extends React.Component {
@@ -17,9 +17,9 @@ export default class MoreButton extends React.Component {
             circles.push(
                 <Circle
                     key={i.toString()}
-                    cx={position}
-                    cy="50"
-                    r="25"
+                    cx={Platform.OS === "android" ? "50" : position}
+                    cy={Platform.OS === "android" ? position : "50"}
+                    r={"25"}
                     stroke="#111"
                     strokeWidth="1"
                     fill="#111"

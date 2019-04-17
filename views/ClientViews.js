@@ -6,6 +6,7 @@ import Database from "../Database";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
 import AppContainer from "../components/AppContainer";
 import Styles from "../styles";
+import _ from "lodash";
 
 @withMappedNavigationProps()
 export class ManageClients extends React.Component {
@@ -35,12 +36,14 @@ export class ManageClients extends React.Component {
                             clientList: this.state.clientList,
                             onSave: client => {
                                 this.props.database.updateClient(client).catch(err => console.log(err));
-                                this.forceUpdate()
-                            },
-                            onDelete: clientID => {
-                                this.props.database.removeClient(clientID).catch(err => console.log(err));
                                 this.setState({
-                                    clientList: this.state.clientList.filter(client => client.id !== clientID)
+                                    clientList: _.sortBy(this.state.clientList, "stageName")
+                                });
+                            },
+                            onDelete: client => {
+                                this.props.database.removeClient(client).catch(err => console.log(err));
+                                this.setState({
+                                    clientList: this.state.clientList.filter(_client => _client.id !== client.id)
                                 });
                             }
                         })}
@@ -71,7 +74,9 @@ export class ManageClients extends React.Component {
                             onSave: client => {
                                 this.props.database.addClient(client);
                                 this.state.clientList.push(client);
-                                this.forceUpdate();
+                                this.setState({
+                                    clientList: _.sortBy(this.state.clientList, "stageName")
+                                });
                             }
                         })}
                     />
@@ -156,7 +161,7 @@ export class ClientView extends React.Component {
                         <Text style={Styles.inputTitle}>Name</Text>
                         <TextInput style={Styles.inputBox}
                                    value = {this.state.stageName}
-                                   onChangeText = {value => this.setState({name: value})}
+                                   onChangeText = {value => this.setState({stageName: value})}
                         />
                     </View>
 

@@ -1,4 +1,3 @@
-import React from "react";
 import TinyColor from "tinycolor2";
 import RandomColor from "randomcolor";
 
