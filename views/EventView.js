@@ -156,17 +156,15 @@ export default class EventView extends React.Component {
                                 let selected = buttons.find(b => b.checked);
 
                                 if (selected.value === "c") {
-                                    let splits = defaultTimes[0].split("-");
+                                    this.setState({customTime: true});
+                                } else {
+                                    let splits = selected.label.split("-");
 
-                                    let newState = {
+                                    this.setState({
                                         startTime: toMilitaryTime(splits[0].trim()),
                                         endTime: toMilitaryTime(splits[1].trim()),
-                                        customTime: true
-                                    };
-
-                                    this.setState(newState);
-                                } else {
-                                    this.setState({customTime: false});
+                                        customTime: false
+                                    });
                                 }
                             }}
                         />
