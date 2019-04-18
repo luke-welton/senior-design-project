@@ -1,13 +1,10 @@
 {
-  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "eject": "expo eject"
+    "start": "react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios"
   },
   "dependencies": {
-    "expo": "^32.0.0",
     "firebase": "^5.8.0",
     "lodash": "latest",
     "prop-types": "latest",
@@ -19,6 +16,7 @@
     "react-native-keyboard-aware-scrollview": "^2.0.0",
     "react-native-modal-datetime-picker": "^6.0.0",
     "react-native-picker-select": "^6.0.0",
+    "react-native-svg": "^9.4.0",
     "react-navigation": "^3.3.0",
     "react-navigation-props-mapper": "^0.4.0",
     "tinycolor2": "^1.4.1"

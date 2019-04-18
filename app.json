@@ -1,35 +1,4 @@
 {
-  "expo": {
-    "name": "Music Matters Booking System",
-    "slug": "music-matters",
-    "privacy": "public",
-    "sdkVersion": "32.0.0",
-    "platforms": [
-      "ios",
-      "android"
-    ],
-    "version": "0.0.1",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.musicmatters.bookingsystem"
-    },
-    "android": {
-      "package": "com.musicmatters.bookingsystem"
-    },
-    "description": "This is the prototype for our calendar booking system for Music Matters, a musical performance booking venue in Montgomery, AL.",
-    "githubUrl": "https://github.com/luke-welton/senior-design-project"
-  }
+  "displayName": "Music Matters",
+  "name": "MusicMatters"
 }
