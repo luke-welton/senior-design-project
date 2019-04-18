@@ -14,4 +14,4 @@ pdfs
 functions/node_modules/**/*
 *.xcworkspace
 ios/MusicMatters.xcodeproj/xcuserdata
-
+ios/assets/node_modules
