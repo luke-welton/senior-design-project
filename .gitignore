@@ -13,4 +13,5 @@ functions/credentials.json
 pdfs
 functions/node_modules/**/*
 *.xcworkspace
+ios/MusicMatters.xcodeproj/xcuserdata
 

@@ -2,9 +2,11 @@
   "scripts": {
     "start": "react-native start",
     "android": "react-native run-android",
-    "ios": "react-native run-ios"
+    "ios": "react-native run-ios",
+    "build:ios": "react-native bundle --entry-file='App.js' --bundle-output='./ios/YourAppName/main.jsbundle' --dev=false --platform='ios' --assets-dest='./ios'"
   },
   "dependencies": {
+    "@babel/runtime": "7.0.0-beta.55",
     "firebase": "^5.8.0",
     "lodash": "latest",
     "prop-types": "latest",
