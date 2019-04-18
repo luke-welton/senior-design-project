@@ -12,3 +12,5 @@ functions/google.json
 functions/credentials.json
 pdfs
 functions/node_modules/**/*
+*.xcworkspace
+
