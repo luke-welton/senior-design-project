@@ -33,14 +33,6 @@ export default class LoginView extends React.Component {
         });
     }
 
-    _devAuthenticate() {
-        Firebase.auth().signInWithEmailAndPassword("musicmattersbookings@gmail.com", "Mus1cMatter$").then(() => {
-            this.props.navigation.navigate("Loading");
-        }).catch(err => {
-            alert(err.toString());
-        })
-    }
-
     render() {
         return (
             <AppContainer>
@@ -74,16 +66,6 @@ export default class LoginView extends React.Component {
                             title = "Log In"
                             color = "blue"
                             onPress = {() => this._authenticate()}
-                        />
-
-                        {/* This makes it easier to log in as Mr. Moody.
-
-                                THIS MUST BE DELETED BEFORE PUBLISHING!
-                        */}
-                        <Button
-                            title = "Dev Mode"
-                            color = "red"
-                            onPress = {() => this._devAuthenticate()}
                         />
                     </View>
                 </View>
