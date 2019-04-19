@@ -16,8 +16,7 @@ so we are using the React Native framework, which requires Node.js
 * [React Native](https://facebook.github.io/react-native/) - A framework written by the supreme overlords over at Facebook to be able to utilize JavaScript when writing for iOS and Android. Based on React, by the same overlords, for web browsers.
 * [Expo](https://expo.io) - A toolkit to assist in React Native development, allowing you to write on your computer and super-simply view the product on your phone or relatively-simply on an emulator. It also handles all the compilation into IPA and APK, allowing you to do the former on Windows and the latter without waiting for Android Studio to boot up.
 * [Firebase Realtime Database](https://firebase.google.com/docs/database/) - A NoSQL-based cloud database provided by other digital overlords, Google. We chose this one because it's free up to 1GB and works decently well with React Native and Expo.
-* Our API Key for Firebase - Don't have it? You probably shouldn't then. This should be in the hands of our sponsor or Dr. Chang, so contact one of them if you're desperate to help the app development.
-Alternatively, you can use this with your own database's API key, change around a few things, and it should work fine.
+* [Firebase CLI](https://www.npmjs.com/package/firebase-tools) - A Firebase Command Line Interface that allows you to deploy your microservices to Firebase Cloud Functions, which is where we have our email generation & Drive upload.
 
 # Getting Started
 Got everything installed? Good! There's a few more steps to make sure everything's up and running.
@@ -29,15 +28,15 @@ Got everything installed? Good! There's a few more steps to make sure everything
         apiKey: <your api key here>
     }
     ```
-4. Create a file named `auth.json` in the root project folder, and enter the code shown above.
+4. Create a file named `auth.json` in the root project folder, and enter the code shown above, alongside the API key.
 This will allow you to access the database to be able to retrieve information from it and write to it.
     * ***UNDER NO CIRCUMSTANCES SHOULD YOU EVER ADD THIS FILE TO YOUR REPOSITORY*** (or post it anywhere public).
-This will compromise the security of the database, and if you're a group member, congrats, you just wrecked the entire project for everyone.
 4. Run `expo start`. This will get everything running to be able to access the app from your phone.
 5. Code to your heart's content using your preferred text editor.
 7. When you're ready to compile everything into an app, hit Ctrl+C and enter `expo build:ios` or `expo build:android`.
-    * It'll ask if you want to include your own certificate.
+    * For Android, it'll ask if you want to include your own certificate.
 If you have one, feel free to use it, or just let Expo do their own thing.
+    * For iOS, you'll need to log into an Apple Developer account that is enrolled in the Apple Development Program, which costs $99/year. Sorry man, Apple cares far too much about security (and your money) to get around that cost.
 
 Once Expo's machines finish up everything, you'll get a nice IPA or APK for you to upload to the corresponding app marketplace! 
 
@@ -48,4 +47,8 @@ Once Expo's machines finish up everything, you'll get a nice IPA or APK for you 
 * [React Native Calendars Repository](https://github.com/wix/react-native-calendars) - This is the framework we used to make our calendar. Thanks, Wix, for making our project a hell of a lot easier. They include some examples and documentation in the readme for their repository.
 * [Firebase Realtime Database Documentation](https://firebase.google.com/docs/database/) - Documentation on how to interact with Firebase to access and change information.
     * [Firebase Reference Documentation](https://firebase.google.com/docs/reference/js/) - The above guide is useful for finding out how to do a thing you want correctly, but this is useful for knowing exactly what a function will do.
-* [Expo Documentation](https://docs.expo.io/versions/latest/) - All the documentation you need for how to work with Expo. Not quite as necessary as the other two, as Expo is more limited, but it's still come in handy in a few instances.
+* [Expo Documentation](https://docs.expo.io/versions/latest/) - All the documentation you need for how to work with Expo. Not quite as necessary as everything else here, as Expo is more limited, but it's still come in handy in a few instances.
+* [Firebase CLI Documentation](https://firebase.google.com/docs/cli/) - Documentation on the capabilities of the Firebase CLI.
+* [PDFMake Documentation](https://pdfmake.github.io/docs/) - Documentation on PDFMake, which is the package we're using to generate our PDFs.
+* [Nodemailer Documentation](https://nodemailer.com/about/) - Nodemailer is the package we're using to send out emails. I highly recommend taking a look at it to understand how to work with it.
+* [Drive API Reference](https://developers.google.com/drive/api/v3/about-sdk) - As we're uploading our documents to Mr. Moody's Google Drive, we utilized this API to connect to it.
