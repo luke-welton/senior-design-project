@@ -57,4 +57,4 @@ buck-out/
 
 auth.json
 *.un~
-.gitignore~
+*.*~
