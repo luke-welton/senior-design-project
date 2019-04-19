@@ -120,7 +120,6 @@ class MonthView extends React.Component {
                             }
                         })}
                     />
-                    />
                     <NavigationEvents
                         onWillFocus = {() => {
                             this.forceUpdate();
