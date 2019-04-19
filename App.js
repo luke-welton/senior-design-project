@@ -9,6 +9,7 @@ import Styles from "./styles";
 import {createAppContainer, createStackNavigator, createSwitchNavigator} from "react-navigation";
 import {CalendarList} from "react-native-calendars";
 import {randomColor, toDateString, toDateTime, toMonthString} from "./util";
+import _ from "lodash";
 import LoginView from "./views/LoginView";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
 import Dropdown from "./components/Dropdown";
@@ -128,21 +129,23 @@ class MonthView extends React.Component {
                     markedDates = {this._generateMarkedDates()}
                     onVisibleMonthsChange = {date => {
                         this.setState({
-                            selectedMonth: date.month - 1,
-                            selectedYear: date.year
+                            selectedMonth: date[0] ? date[0].month - 1 : this.state.selectedMonth,
+                            selectedYear: date[0] ? date[0].year : this.state.selectedYear
                         });
 
-                        let fullDate = date[0].dateString;
+                        let backupDate = this.state.selectedYear + "-" + this.state.selectedMonth + 1;
+
+                        let fullDate = date[0] ? date[0].dateString : backupDate;
                         let monthString = fullDate.substring(0, 7);
 
                         if (!loadedData.viewedMonths.includes(monthString) && monthString < loadedData.viewedMonths[0]) {
                             loadedData.viewedMonths.push(monthString);
 
                             db.getMonthEvents(fullDate).then(events => {
-                                if (events[0].length > 0) {
-                                    loadedData.events = loadedData.events.concat(events[0]);
+                                if (events.length > 0) {
+                                    loadedData.events = _.unionBy(loadedData.events, events, "id");
+                                    this.forceUpdate();
                                 }
-                                this.forceUpdate();
                             }).catch(err => console.log(err));
                         }
                     }}
