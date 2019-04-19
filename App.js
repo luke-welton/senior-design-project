@@ -6,7 +6,7 @@ import {ManageVenues, VenueView} from "./views/VenueViews";
 import {ClientView, ManageClients} from "./views/ClientViews";
 import Database from "./Database";
 import Styles from "./styles";
-import {createAppContainer, createStackNavigator, createSwitchNavigator} from "react-navigation";
+import {createAppContainer, createStackNavigator, createSwitchNavigator, NavigationEvents} from "react-navigation";
 import {CalendarList} from "react-native-calendars";
 import {randomColor, toDateString, toDateTime, toMonthString} from "./util";
 import _ from "lodash";
@@ -119,6 +119,12 @@ class MonthView extends React.Component {
                                 console.log(venues);
                             }
                         })}
+                    />
+                    />
+                    <NavigationEvents
+                        onWillFocus = {() => {
+                            this.forceUpdate();
+                        }}
                     />
                 </View>
                 <CalendarList style={Styles.monthView}
