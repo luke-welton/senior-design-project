@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, FlatList, StyleSheet, Text, TextInput, View} from 'react-native';
+import {Alert, Button, FlatList, StyleSheet, Text, TextInput, View} from 'react-native';
 import {Venue} from '../objects';
 import Database from "../Database";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
@@ -231,8 +231,22 @@ export class VenueView extends React.Component {
                             title = "Delete Venue"
                             color = "red"
                             onPress = {() => {
-                                this.props.navigation.goBack();
-                                this.props.onDelete(this.props.venue);
+                                Alert.alert("Confirmation",
+                                    "Are you sure you want to delete this venue?",
+                                    [
+                                        {
+                                            text: "Cancel"
+                                        },
+                                        {
+                                            text: "OK",
+                                            onPress: () => {
+                                                this.props.navigation.goBack();
+                                                this.props.onDelete(this.props.venue);
+                                            }
+                                        }
+                                    ],
+                                    {cancelable: true}
+                                );
                             }}
                         />
                     }

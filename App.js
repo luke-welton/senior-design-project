@@ -1,5 +1,5 @@
 import React from 'react';
-import {ActivityIndicator, Button, View, YellowBox} from 'react-native';
+import {ActivityIndicator, Button, View, YellowBox, Alert} from 'react-native';
 import DayView from "./views/DayView";
 import EventView from "./views/EventView";
 import {ManageVenues, VenueView} from "./views/VenueViews";
@@ -92,6 +92,27 @@ class MonthView extends React.Component {
         return markedDates;
     }
 
+    _handleDocumentButtonPress() {
+        let formDate = new Date(this.state.selectedYear, this.state.selectedMonth, 1);
+        db.sendForms(this.state.selectedVenue, formDate).then(() => {
+            alert("Emails successfully sent!")
+        }).catch(err => {
+            alert("An error occurred while sending the emails.\n" + err);
+            console.error(err);
+        }).finally(() => {
+            this.setState({
+                disableSendingEmails: false
+            })
+        });
+
+        alert("Emails have now begun sending." +
+            " Please wait until all emails have been sent before requesting more." +
+            " This may take up to a minute to complete.");
+        this.setState({
+            disableSendingEmails: true
+        });
+    }
+
     render() {
         return (
             <AppContainer>
@@ -160,24 +181,19 @@ class MonthView extends React.Component {
                         title = "Generate Forms"
                         disabled = {this.state.disableSendingEmails}
                         onPress = {() => {
-                            let formDate = new Date(this.state.selectedYear, this.state.selectedMonth, 1);
-                            db.sendForms(this.state.selectedVenue, formDate).then(() => {
-                                alert("Emails successfully sent!")
-                            }).catch(err => {
-                                alert("An error occurred while sending the emails.\n" + err);
-                                console.error(err);
-                            }).finally(() => {
-                                this.setState({
-                                    disableSendingEmails: false
-                                })
-                            });
-
-                            alert("Emails have now begun sending." +
-                                " Please wait until all emails have been sent before requesting more." +
-                                " This may take up to a minute to complete.");
-                            this.setState({
-                                disableSendingEmails: true
-                            });
+                            Alert.alert("Confirmation",
+                                "Are you sure you want to send out documents for this month?",
+                                [
+                                    {
+                                        text: "Cancel"
+                                    },
+                                    {
+                                        text: "OK",
+                                        onPress: () => this._handleDocumentButtonPress()
+                                    }
+                                ],
+                                {cancelable: true}
+                            );
                         }}
                     />
                 </View>
