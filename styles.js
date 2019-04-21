@@ -6,7 +6,7 @@ export default StyleSheet.create({
         flexDirection: "column",
         height: "100%",
         paddingTop: Platform.OS === "android" ? 25 : 30,
-        backgroundColor: Platform.OS === "android" ? "#fff" : "#add8e6aa",
+        backgroundColor: "#fff",
         zIndex: 2
     },
     calendarHeader: {

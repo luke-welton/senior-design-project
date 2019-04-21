@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Client, Event, Venue} from "../objects";
-import {Button, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {Alert, Button, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {RadioGroup} from "react-native-btr";
 import DateTimePicker from "react-native-modal-datetime-picker/src/index";
 import Styles from "../styles";
@@ -210,7 +210,7 @@ export default class EventView extends React.Component {
                 <View style={Styles.buttonContainer}>
                     {/* Create/Update Button */}
                     <Button
-                        title = {this.isNew ? "Create Event" : "Save Event"}
+                        title = {this.isNew ? "Create Booking" : "Save Booking"}
                         onPress = {() => {
                             let event = this.props.event || new Event();
                             event.update(this.state);
@@ -225,11 +225,25 @@ export default class EventView extends React.Component {
                     { /* Delete Button */
                         this.isNew ? null :
                             <Button
-                                title = "Delete Event"
+                                title = "Delete Booking"
                                 color = "red"
                                 onPress = {() => {
-                                    this.props.navigation.goBack();
-                                    this.props.onDelete(this.props.event);
+                                    Alert.alert("Confirmation",
+                                        "Are you sure you want to delete this booking?",
+                                        [
+                                            {
+                                                text: "Cancel"
+                                            },
+                                            {
+                                                text: "OK",
+                                                onPress: () => {
+                                                    this.props.navigation.goBack();
+                                                    this.props.onDelete(this.props.event);
+                                                }
+                                            }
+                                        ],
+                                        {cancelable: true}
+                                    );
                                 }}
                             />
                     }
