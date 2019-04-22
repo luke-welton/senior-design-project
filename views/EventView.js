@@ -194,6 +194,7 @@ export default class EventView extends React.Component {
                         <Text style={Styles.inputTitle}>Price</Text>
                         <TextInput style={Styles.inputBox}
                             keyboardType = "numeric"
+                            returnKeyType = "done"
                             value = {this.state.price}
                             onChangeText = {value => {
                                 if (new RegExp(`^\\d*(\\.\\d{0,2})?$`).test(value)) {

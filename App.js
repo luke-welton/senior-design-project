@@ -154,25 +154,30 @@ class MonthView extends React.Component {
                     markingType = "multi-dot"
                     markedDates = {this._generateMarkedDates()}
                     onVisibleMonthsChange = {date => {
-                        this.setState({
-                            selectedMonth: date[0] ? date[0].month - 1 : this.state.selectedMonth,
-                            selectedYear: date[0] ? date[0].year : this.state.selectedYear
-                        });
+                        if (date[0]) {
+                            let backupDate = this.state.selectedYear + "-" + this.state.selectedMonth + 1;
 
-                        let backupDate = this.state.selectedYear + "-" + this.state.selectedMonth + 1;
+                            let fullDate = date[0] ? date[0].dateString : backupDate;
+                            let monthString = fullDate.substring(0, 7);
 
-                        let fullDate = date[0] ? date[0].dateString : backupDate;
-                        let monthString = fullDate.substring(0, 7);
+                            if (!loadedData.viewedMonths.includes(monthString) && monthString < loadedData.viewedMonths[0]) {
+                                loadedData.viewedMonths.push(monthString);
 
-                        if (!loadedData.viewedMonths.includes(monthString) && monthString < loadedData.viewedMonths[0]) {
-                            loadedData.viewedMonths.push(monthString);
+                                db.getMonthEvents(fullDate).then(events => {
+                                    if (events.length > 0) {
+                                        loadedData.events = _.unionBy(loadedData.events, events, "id");
+                                        this.forceUpdate();
+                                    }
+                                }).catch(err => console.log(err));
+                            }
 
-                            db.getMonthEvents(fullDate).then(events => {
-                                if (events.length > 0) {
-                                    loadedData.events = _.unionBy(loadedData.events, events, "id");
-                                    this.forceUpdate();
-                                }
-                            }).catch(err => console.log(err));
+
+                            if (this.state.selectedMonth !== date[0].month - 1 || this.state.selectedYear !== date[0].year) {
+                                this.setState({
+                                    selectedMonth: date[0].month - 1,
+                                    selectedYear: date[0].year
+                                });
+                            }
                         }
                     }}
                     onDayPress = {day => {
