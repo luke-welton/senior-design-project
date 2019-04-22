@@ -31,8 +31,7 @@ exports.generateDocument = Functions.https.onCall(data => new Promise((res, rej)
                         Email.sendCalendar(processedData.month, processedData.year, processedData.venue, calendarPDF),
                         Drive.uploadCalendar(processedData.venue, processedData.month, processedData.year, calendarPDF)
                     ]).then(handleSuccess).catch(handleError);
-                }
-                if (emailType === "booking_list") {
+                } else {
                     let bookingListPDF = PDF.generateBookingList(processedData.month, processedData.year, processedData.events, processedData.venue);
 
                     Promise.all([
