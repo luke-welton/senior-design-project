@@ -6,7 +6,7 @@ import {ManageVenues, VenueView} from "./views/VenueViews";
 import {ClientView, ManageClients} from "./views/ClientViews";
 import Database from "./Database";
 import Styles from "./styles";
-import {createAppContainer, createStackNavigator, createSwitchNavigator, NavigationEvents} from "react-navigation";
+import {createAppContainer, createStackNavigator, createSwitchNavigator} from "react-navigation";
 import {CalendarList} from "react-native-calendars";
 import {randomColor, toDateString, toDateTime, toMonthString} from "./util";
 import _ from "lodash";
@@ -96,7 +96,7 @@ class MonthView extends React.Component {
     _handleDocumentButtonPress() {
         let formDate = new Date(this.state.selectedYear, this.state.selectedMonth, 1);
         db.sendForms(this.state.selectedVenue, formDate).then(() => {
-            alert("Emails successfully sent!")
+            alert("Emails successfully sent!");
         }).catch(err => {
             alert("An error occurred while sending the emails.\n" + err);
             console.error(err);
@@ -108,7 +108,9 @@ class MonthView extends React.Component {
 
         alert("Emails have now begun sending." +
             " Please wait until all emails have been sent before requesting more." +
-            " This may take up to a minute to complete.");
+            " This may take up to a minute to complete."
+        );
+
         this.setState({
             disableSendingEmails: true
         });
@@ -140,11 +142,6 @@ class MonthView extends React.Component {
                                 console.log(venues);
                             }
                         })}
-                    />
-                    <NavigationEvents
-                        onWillFocus = {() => {
-                            this.forceUpdate();
-                        }}
                     />
                 </View>
                 <CalendarList style={Styles.monthView}

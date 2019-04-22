@@ -92,10 +92,53 @@ export default class EventView extends React.Component {
         return buttons;
     }
 
+    _handleDocumentSending(includeMonthDocs) {
+        let docQueries = [];
+        docQueries.push(this.props.database.sendForm({
+            type: "artist_confirmation",
+            event: this.props.event.id
+        }));
+        docQueries.push(this.props.database.sendForm({
+            type: "invoice",
+            event: this.props.event.id
+        }));
+
+        if (includeMonthDocs) {
+            docQueries.push(this.props.database.sendForm({
+                type: "booking_list",
+                venue: this.props.event.venueID,
+                month: this.props.event.start.getMonth() + 1,
+                year: this.props.event.start.getFullYear()
+            }));
+            docQueries.push(this.props.database.sendForm({
+                type: "calendar",
+                venue: this.props.event.venueID,
+                month: this.props.event.start.getMonth() + 1,
+                year: this.props.event.start.getFullYear()
+            }));
+        }
+
+        Promise.all(docQueries).then(() => {
+            alert("Emails successfully sent!");
+        }).catch(err => {
+            alert("An error occurred while sending the emails.\n" + err);
+            console.error(err);
+        });
+
+        alert("Emails have now begun sending." +
+            " Please wait until all emails have been sent before requesting more." +
+            " This may take up to a minute to complete."
+        );
+    }
+
     render() {
         return (
             <AppContainer style={Styles.infoView}>
                 <View style={Styles.contentContainer}>
+                    <Text style={Styles.infoTitle}>
+                        {this.isNew ? "Create New Booking" : "Manage Booking"}
+                    </Text>
+
                     {/* Client Selector */}
                     <View style={Styles.inputRow}>
                         <Text style={Styles.inputTitle}>Client</Text>
@@ -208,6 +251,35 @@ export default class EventView extends React.Component {
                 </View>
 
                 <View style={Styles.buttonContainer}>
+                    {this.isNew ? null :
+                        <Button
+                            title = "Generate Forms"
+                            color = "green"
+                            onPress = {() => {
+                                Alert.alert(
+                                    "Confirmation",
+                                    "Would you also like to generate the Calendar and Booking List containing this event?",
+                                    [
+                                        {
+                                            text: "Cancel"
+                                        },
+                                        {
+                                            text: "No",
+                                            onPress: () => this._handleDocumentSending(false)
+                                        },
+                                        {
+                                            text: "Yes",
+                                            onPress: () => this._handleDocumentSending(true)
+                                        }
+                                    ],
+                                    {cancelable: true}
+                                )
+                            }}
+                        />
+                    }
+
+                    {this.isNew ? null : <View style={Styles.buttonBuffer}/>}
+
                     {/* Create/Update Button */}
                     <Button
                         title = {this.isNew ? "Create Booking" : "Save Booking"}
