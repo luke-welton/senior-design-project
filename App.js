@@ -127,7 +127,6 @@ class MonthView extends React.Component {
                 db.getMonthEvents(fullDate).then(events => {
                     if (events.length > 0) {
                         loadedData.events = _.unionBy(loadedData.events, events, "id");
-                        console.log(events);
                         this.forceUpdate();
                     }
                 }).catch(err => console.log(err));
