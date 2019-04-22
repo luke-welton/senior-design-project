@@ -14,6 +14,7 @@ export default class Database {
         this.venueDB = this.db.ref("database/venues");
 
         this.sendAllForms = this.func.httpsCallable("sendAll");
+        this.sendForm = this.func.httpsCallable("generateDocument");
     }
 
     // load information on all clients
@@ -172,9 +173,19 @@ export default class Database {
                 } else {
                     res();
                 }
-            }).catch(err =>  {
-                rej(err.message)
-            });
+            }).catch(err => rej(err.message));
+        });
+    }
+
+    generateDocument(data) {
+        return new Promise((res, rej) => {
+            this.sendForm(data).then(response => {
+                if (response.error) {
+                    rej(response.error);
+                } else {
+                    res();
+                }
+            }).catch(err => rej(err.message));
         });
     }
 }
