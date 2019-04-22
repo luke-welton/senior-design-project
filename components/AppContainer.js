@@ -19,7 +19,7 @@ export default class AppContainer extends React.Component {
     render() {
         return (
             <View style={_.flatten([Styles.appContainer, this.props.style])}>
-                <StatusBar barStyle="light-content" backgroundColor="#fff"/>
+                <StatusBar barStyle="dark-content" backgroundColor="#fff"/>
                 {this.props.children}
             </View>
         );

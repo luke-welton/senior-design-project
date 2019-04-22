@@ -8,11 +8,11 @@
       "ios",
       "android"
     ],
-    "version": "0.0.1",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
-      "image": "./assets/icon.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -24,7 +24,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.musicmatters.bookingsystem"
+      "bundleIdentifier": "com.bookingsystem.musicmatters"
     },
     "android": {
       "package": "com.musicmatters.bookingsystem"
