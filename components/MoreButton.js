@@ -1,8 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {Circle, Svg as SVG} from "react-native-svg";
+import {Svg as SVG} from "expo";
 import {TouchableOpacity, Platform} from "react-native";
 import Styles from "../styles";
+const Circle = SVG.Circle;
 
 export default class MoreButton extends React.Component {
     static propTypes = {

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, FlatList, StyleSheet, Switch, Text, TextInput, View} from 'react-native';
+import {Alert, Button, FlatList, StyleSheet, Switch, Text, TextInput, View} from 'react-native';
 import {Client} from '../objects';
 import Database from "../Database";
 import {withMappedNavigationProps} from "react-navigation-props-mapper";
@@ -224,8 +224,22 @@ export class ClientView extends React.Component {
                             title = "Delete Client"
                             color = "red"
                             onPress = {() => {
-                                this.props.navigation.goBack();
-                                this.props.onDelete(this.props.client);
+                                Alert.alert("Confirmation",
+                                    "Are you sure you want to delete this client?",
+                                    [
+                                        {
+                                            text: "Cancel"
+                                        },
+                                        {
+                                            text: "OK",
+                                            onPress: () => {
+                                                this.props.navigation.goBack();
+                                                this.props.onDelete(this.props.client);
+                                            }
+                                        }
+                                    ],
+                                    {cancelable: true}
+                                );
                             }}
                         />
                     }

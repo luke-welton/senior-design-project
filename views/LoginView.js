@@ -38,7 +38,7 @@ export default class LoginView extends React.Component {
             <AppContainer>
                 <View style={Styles.contentContainer}>
                     <Image
-                        source = {require("../assets/icon.png")}
+                        source = {require("../assets/icon-transparent.png")}
                         style = {LoginViewStyles.icon}
                     />
 
